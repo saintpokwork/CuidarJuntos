@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import Home from '../pages/Home';
 import Dashboard from '../pages/Dashboard';
 import Perfil from '../pages/Perfil';
@@ -40,6 +41,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/dashboard/definicoes" element={<Definicoes />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <Analytics />
     </>
   );
 };
