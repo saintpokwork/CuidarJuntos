@@ -21,6 +21,14 @@
   backdrop-filter: blur(8px);
 }
 
+.emergency-gradient {
+  background: linear-gradient(135deg, #ba1a1a 0%, #93000a 100%);
+}
+
+.task-card-shadow {
+  box-shadow: 0 8px 24px rgba(0, 93, 172, 0.04);
+}
+
 ::-webkit-scrollbar {
   width: 8px;
 }
