@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { caregiver } from '../data/initialData';
+import { useCareData } from '../context/CareDataContext';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -21,7 +22,7 @@ const menuItems = [
 
 const mobileNavItems = [
   { path: '/dashboard', label: 'Início', icon: 'home', exact: true },
-  { path: '/dashboard/medicamentos', label: 'Meds', icon: 'pill', exact: false },
+  { path: '/dashboard/medicamentos', label: 'Medic.', icon: 'pill', exact: false },
   { path: '/dashboard/consultas', label: 'Consultas', icon: 'calendar_today', exact: false },
   { path: '/dashboard/tarefas', label: 'Tarefas', icon: 'assignment', exact: false },
   { path: '/dashboard/mais', label: 'Mais', icon: 'more_horiz', exact: false, maisGroup: true },
@@ -44,10 +45,18 @@ const isActive = (pathname: string, path: string, exact: boolean, maisGroup?: bo
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const location = useLocation();
+  const { resetDemoData } = useCareData();
+
+  const handleResetDemo = () => {
+    const confirmar = window.confirm(
+      'Tem a certeza que pretende repor os dados de demonstração? Todas as alterações locais serão perdidas.'
+    );
+    if (confirmar) resetDemoData();
+  };
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <aside className="h-screen w-64 hidden lg:flex flex-col sticky left-0 top-0 bg-surface-container shadow-sm py-stack-md px-base">
+    <div className="flex min-h-screen bg-background overflow-x-hidden">
+      <aside className="h-screen w-64 hidden lg:flex flex-col sticky left-0 top-0 bg-surface-container shadow-sm py-stack-md px-base shrink-0">
         <div className="px-4 mb-stack-lg">
           <Link to="/" className="text-headline-md font-headline-md font-bold text-primary">
             CuidarJuntos
@@ -84,23 +93,38 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         </div>
       </aside>
 
-      <div className="flex-1 flex flex-col relative min-w-0">
-        {children}
-        <nav className="lg:hidden fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface shadow-[0_-4px_24px_rgba(0,93,172,0.04)] rounded-t-xl">
+      <div className="flex-1 flex flex-col relative min-w-0 overflow-x-hidden">
+        <div className="bg-primary-fixed/40 border-b border-primary/10 px-container-padding-mobile md:px-container-padding-desktop py-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-label-sm text-on-surface-variant">
+          <p className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-primary text-base">info</span>
+            Está a utilizar uma versão demo. Os dados ficam guardados apenas neste navegador.
+          </p>
+          <button
+            type="button"
+            onClick={handleResetDemo}
+            className="text-primary font-bold hover:underline whitespace-nowrap self-start sm:self-auto"
+          >
+            Repor demo
+          </button>
+        </div>
+
+        <div className="flex-1 pb-28 lg:pb-0">{children}</div>
+
+        <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center px-2 py-2 bg-surface shadow-[0_-4px_24px_rgba(0,93,172,0.04)] rounded-t-xl safe-bottom">
           {mobileNavItems.map((item) => {
             const active = isActive(location.pathname, item.path, item.exact, item.maisGroup);
             return (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all ${
+                className={`flex flex-col items-center justify-center min-w-[56px] p-2 rounded-xl transition-all ${
                   active
-                    ? 'bg-primary-container text-on-primary-container px-4 py-1 scale-90 shadow-md'
+                    ? 'bg-primary-container text-on-primary-container px-3 py-1 shadow-md'
                     : 'text-on-surface-variant'
                 }`}
               >
-                <span className="material-symbols-outlined">{item.icon}</span>
-                <span className="text-label-sm">{item.label}</span>
+                <span className="material-symbols-outlined text-xl">{item.icon}</span>
+                <span className="text-[10px] font-semibold mt-0.5">{item.label}</span>
               </Link>
             );
           })}

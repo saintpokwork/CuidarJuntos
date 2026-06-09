@@ -74,6 +74,9 @@ const Home: React.FC = () => {
                   Ver como funciona
                 </a>
               </div>
+              <p className="mt-4 text-label-sm text-on-surface-variant">
+                Versão demo — não é necessário criar conta.
+              </p>
             </div>
             <div className="flex-1 w-full relative">
               <div className="relative z-10 glass-card p-6 rounded-2xl soft-shadow border border-white/40">
@@ -327,6 +330,9 @@ const Home: React.FC = () => {
               >
                 Começar gratuitamente agora
               </Link>
+              <p className="mt-6 text-label-sm text-on-surface-variant">
+                Versão demo — não é necessário criar conta.
+              </p>
               <div className="mt-12 flex flex-wrap justify-center gap-8 opacity-60 grayscale hover:grayscale-0 transition-all">
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined">verified_user</span>
@@ -378,7 +384,9 @@ const Home: React.FC = () => {
                     </a>
                   </li>
                   <li>
-                    <span className="text-on-surface-variant text-label-md">Segurança</span>
+                    <Link className="text-on-surface-variant hover:text-primary transition-all text-label-md" to="/privacidade">
+                      Segurança
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -400,8 +408,16 @@ const Home: React.FC = () => {
               <div>
                 <h4 className="font-label-md text-primary mb-4">Legal</h4>
                 <ul className="space-y-2">
-                  <li><span className="text-on-surface-variant text-label-md">Termos</span></li>
-                  <li><span className="text-on-surface-variant text-label-md">Privacidade</span></li>
+                  <li>
+                    <Link className="text-on-surface-variant hover:text-primary transition-all text-label-md" to="/termos">
+                      Termos
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="text-on-surface-variant hover:text-primary transition-all text-label-md" to="/privacidade">
+                      Privacidade
+                    </Link>
+                  </li>
                 </ul>
               </div>
             </div>

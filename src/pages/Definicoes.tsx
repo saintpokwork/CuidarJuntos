@@ -47,10 +47,10 @@ const Definicoes: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <main className="flex-1 w-full relative pb-24 lg:pb-8">
+      <main className="flex-1 w-full relative ">
         <DashboardPageHeader title="Definições" showSearch={false} />
 
-        <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop pb-32">
+        <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop ">
           <div className="mb-stack-lg p-6 rounded-[24px] bg-secondary-container/20 border-l-4 border-secondary flex items-start gap-4">
             <span className="material-symbols-outlined text-secondary text-3xl shrink-0">info</span>
             <p className="text-body-md text-on-secondary-container italic">

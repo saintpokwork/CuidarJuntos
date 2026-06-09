@@ -50,7 +50,7 @@ const Tarefas: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <main className="flex-1 w-full relative pb-24 lg:pb-8">
+      <main className="flex-1 w-full relative ">
         <DashboardPageHeader
           title="Tarefas da família"
           showSearch={false}

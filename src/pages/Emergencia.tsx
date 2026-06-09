@@ -44,7 +44,7 @@ const Emergencia: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <main className="flex-1 w-full relative pb-24 lg:pb-8 emergency-print-area">
+      <main className="flex-1 w-full relative  emergency-print-area">
         <div className="no-print">
           <DashboardPageHeader title="Ficha de emergência" showSearch={false} />
         </div>

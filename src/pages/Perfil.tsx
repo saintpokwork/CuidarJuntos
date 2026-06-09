@@ -14,7 +14,7 @@ const Perfil: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <main className="flex-1 w-full relative pb-24 lg:pb-8">
+      <main className="flex-1 w-full relative ">
         <DashboardPageHeader title="Perfil do familiar" showSearch={false} />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
