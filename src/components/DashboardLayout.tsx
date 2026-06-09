@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { caregiver } from '../data/mockData';
+import { caregiver } from '../data/initialData';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -24,11 +24,23 @@ const mobileNavItems = [
   { path: '/dashboard/medicamentos', label: 'Meds', icon: 'pill', exact: false },
   { path: '/dashboard/consultas', label: 'Consultas', icon: 'calendar_today', exact: false },
   { path: '/dashboard/tarefas', label: 'Tarefas', icon: 'assignment', exact: false },
-  { path: '/dashboard/definicoes', label: 'Mais', icon: 'more_horiz', exact: false },
+  { path: '/dashboard/mais', label: 'Mais', icon: 'more_horiz', exact: false, maisGroup: true },
 ];
 
-const isActive = (pathname: string, path: string, exact: boolean) =>
-  exact ? pathname === path : pathname === path || pathname.startsWith(`${path}/`);
+const maisPaths = [
+  '/dashboard/mais',
+  '/dashboard/perfil',
+  '/dashboard/documentos',
+  '/dashboard/emergencia',
+  '/dashboard/familia',
+  '/dashboard/notas',
+  '/dashboard/definicoes',
+];
+
+const isActive = (pathname: string, path: string, exact: boolean, maisGroup?: boolean) => {
+  if (maisGroup) return maisPaths.includes(pathname);
+  return exact ? pathname === path : pathname === path || pathname.startsWith(`${path}/`);
+};
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const location = useLocation();
@@ -76,7 +88,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         {children}
         <nav className="lg:hidden fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface shadow-[0_-4px_24px_rgba(0,93,172,0.04)] rounded-t-xl">
           {mobileNavItems.map((item) => {
-            const active = isActive(location.pathname, item.path, item.exact);
+            const active = isActive(location.pathname, item.path, item.exact, item.maisGroup);
             return (
               <Link
                 key={item.path}

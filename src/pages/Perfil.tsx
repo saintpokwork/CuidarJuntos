@@ -1,7 +1,7 @@
 import React from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
-import { careProfile } from '../data/mockData';
+import { careProfile } from '../data/initialData';
 
 const Perfil: React.FC = () => {
   const fields = [

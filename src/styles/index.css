@@ -29,6 +29,43 @@
   box-shadow: 0 8px 24px rgba(0, 93, 172, 0.04);
 }
 
+@keyframes fade-in {
+  from { opacity: 0; transform: translate(-50%, -8px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: #0f1d25 !important;
+  }
+
+  .emergency-print-area {
+    padding: 0 !important;
+  }
+
+  .glass-card {
+    background: white !important;
+    border: 1px solid #d6e5ef !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+
+  .emergency-gradient {
+    background: #ba1a1a !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
 ::-webkit-scrollbar {
   width: 8px;
 }

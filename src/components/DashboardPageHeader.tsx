@@ -1,5 +1,5 @@
 import React from 'react';
-import { caregiver } from '../data/mockData';
+import { caregiver } from '../data/initialData';
 
 interface DashboardPageHeaderProps {
   title?: string;

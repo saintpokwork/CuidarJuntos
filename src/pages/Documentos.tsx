@@ -1,31 +1,57 @@
-import React from 'react';
+import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
-import { documents, documentCategories } from '../data/mockData';
+import EmptyState from '../components/EmptyState';
+import { useCareData, DocumentCategory } from '../context/CareDataContext';
+import { documentCategories } from '../data/initialData';
 
 const Documentos: React.FC = () => {
+  const { data, addDocument, removeDocument } = useCareData();
+  const { documents } = data;
+  const [filtro, setFiltro] = useState<DocumentCategory | 'Todos'>('Todos');
+  const [titulo, setTitulo] = useState('');
+  const [categoria, setCategoria] = useState<DocumentCategory>('Outros');
+  const [dataValidade, setDataValidade] = useState('');
+  const [notas, setNotas] = useState('');
+  const [erro, setErro] = useState('');
+
+  const filtrados =
+    filtro === 'Todos' ? documents : documents.filter((d) => d.categoria === filtro);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const nomeFicheiro = titulo.trim() || 'documento_novo.pdf';
+    const ok = addDocument({
+      titulo: nomeFicheiro.endsWith('.pdf') || nomeFicheiro.endsWith('.jpg') ? nomeFicheiro : `${nomeFicheiro}.pdf`,
+      categoria,
+      dataValidade,
+      notas,
+    });
+    if (!ok) {
+      setErro('Preencha o nome do ficheiro.');
+      return;
+    }
+    setErro('');
+    setTitulo('');
+    setDataValidade('');
+    setNotas('');
+  };
+
   return (
     <DashboardLayout>
       <main className="flex-1 w-full relative pb-24 lg:pb-8">
-        <DashboardPageHeader
-          title="Documentos"
-          showSearch={false}
-          action={
-            <button
-              type="button"
-              className="hidden md:flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-full font-bold shadow-lg hover:opacity-90 transition-all"
-            >
-              <span className="material-symbols-outlined">upload</span>
-              <span className="text-label-md">Enviar</span>
-            </button>
-          }
-        />
+        <DashboardPageHeader title="Documentos" showSearch={false} />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
           <div className="flex flex-wrap gap-2 mb-stack-lg">
             <button
               type="button"
-              className="px-4 py-2 bg-primary text-on-primary rounded-full text-label-md font-bold"
+              onClick={() => setFiltro('Todos')}
+              className={`px-4 py-2 rounded-full text-label-md font-bold transition-colors ${
+                filtro === 'Todos'
+                  ? 'bg-primary text-on-primary'
+                  : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'
+              }`}
             >
               Todos
             </button>
@@ -33,7 +59,12 @@ const Documentos: React.FC = () => {
               <button
                 key={cat}
                 type="button"
-                className="px-4 py-2 bg-surface-container-low text-on-surface-variant rounded-full text-label-md font-medium hover:bg-surface-container-high transition-colors"
+                onClick={() => setFiltro(cat)}
+                className={`px-4 py-2 rounded-full text-label-md font-medium transition-colors ${
+                  filtro === cat
+                    ? 'bg-primary text-on-primary'
+                    : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'
+                }`}
               >
                 {cat}
               </button>
@@ -41,66 +72,91 @@ const Documentos: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {documents.map((doc) => (
-                <div
-                  key={doc.id}
-                  className="glass-card p-5 rounded-2xl soft-shadow border border-white/40 hover:border-primary/30 transition-all cursor-pointer"
-                >
-                  <div className="flex items-start gap-3">
-                    <span className="material-symbols-outlined text-primary text-3xl">
-                      {doc.titulo.endsWith('.pdf') ? 'picture_as_pdf' : 'image'}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-label-md font-bold text-on-surface truncate">{doc.titulo}</p>
-                      <span className="inline-block mt-1 px-2 py-0.5 bg-primary-fixed/20 text-primary rounded-full text-[10px] font-bold">
-                        {doc.categoria}
-                      </span>
-                      <p className="text-label-sm text-on-surface-variant mt-2">
-                        Adicionado {doc.dataAdicao.toLowerCase()}
-                      </p>
-                      {doc.dataValidade && (
-                        <p className="text-label-sm text-on-surface-variant">
-                          Validade: {doc.dataValidade}
-                        </p>
-                      )}
-                      {doc.notas && (
-                        <p className="text-label-sm text-on-surface-variant italic mt-1">{doc.notas}</p>
-                      )}
+            <div className="lg:col-span-2">
+              {filtrados.length === 0 ? (
+                <EmptyState message="Ainda não há documentos." icon="folder_open" />
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {filtrados.map((doc) => (
+                    <div
+                      key={doc.id}
+                      className="glass-card p-5 rounded-2xl soft-shadow border border-white/40 hover:border-primary/30 transition-all"
+                    >
+                      <div className="flex items-start gap-3">
+                        <span className="material-symbols-outlined text-primary text-3xl">
+                          {doc.titulo.endsWith('.pdf') ? 'picture_as_pdf' : 'image'}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex justify-between items-start gap-2">
+                            <p className="text-label-md font-bold text-on-surface truncate">{doc.titulo}</p>
+                            <button
+                              type="button"
+                              onClick={() => removeDocument(doc.id)}
+                              className="p-1 rounded-full hover:bg-error-container/30 text-error transition-colors shrink-0"
+                              aria-label="Remover documento"
+                            >
+                              <span className="material-symbols-outlined text-lg">delete</span>
+                            </button>
+                          </div>
+                          <span className="inline-block mt-1 px-2 py-0.5 bg-primary-fixed/20 text-primary rounded-full text-[10px] font-bold">
+                            {doc.categoria}
+                          </span>
+                          <p className="text-label-sm text-on-surface-variant mt-2">
+                            Adicionado {doc.dataAdicao.toLowerCase()}
+                          </p>
+                          {doc.dataValidade && (
+                            <p className="text-label-sm text-on-surface-variant">
+                              Validade: {doc.dataValidade}
+                            </p>
+                          )}
+                          {doc.notas && (
+                            <p className="text-label-sm text-on-surface-variant italic mt-1">{doc.notas}</p>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
 
             <div className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40 h-fit">
               <div className="border-2 border-dashed border-primary/30 rounded-2xl p-6 text-center mb-6">
                 <span className="material-symbols-outlined text-primary text-4xl mb-2">cloud_upload</span>
-                <p className="text-label-md font-bold text-on-surface">Arrastar ficheiro ou clicar</p>
+                <p className="text-label-md font-bold text-on-surface">Envio simulado</p>
                 <p className="text-label-sm text-on-surface-variant">PDF, JPG ou PNG até 10 MB</p>
               </div>
-              <h3 className="text-headline-md font-headline-md text-on-surface mb-4">Enviar documento</h3>
-              <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+              <h3 className="text-headline-md font-headline-md text-on-surface mb-4">Adicionar documento</h3>
+              {erro && (
+                <p className="text-label-sm text-error mb-4 p-3 bg-error-container/20 rounded-xl">{erro}</p>
+              )}
+              <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">Título</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">Nome do ficheiro *</label>
                   <input
+                    value={titulo}
+                    onChange={(e) => setTitulo(e.target.value)}
                     className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
-                    placeholder="Ex: Análises de julho"
+                    placeholder="Ex: Análises_Julho_2024.pdf"
                   />
                 </div>
                 <div>
                   <label className="text-label-sm font-bold text-on-surface block mb-1">Categoria</label>
-                  <select className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none">
+                  <select
+                    value={categoria}
+                    onChange={(e) => setCategoria(e.target.value as DocumentCategory)}
+                    className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
+                  >
                     {documentCategories.map((cat) => (
                       <option key={cat}>{cat}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">
-                    Data de validade
-                  </label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">Data de validade</label>
                   <input
+                    value={dataValidade}
+                    onChange={(e) => setDataValidade(e.target.value)}
                     className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
                     type="date"
                   />
@@ -108,6 +164,8 @@ const Documentos: React.FC = () => {
                 <div>
                   <label className="text-label-sm font-bold text-on-surface block mb-1">Notas</label>
                   <textarea
+                    value={notas}
+                    onChange={(e) => setNotas(e.target.value)}
                     className="w-full px-4 py-3 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none resize-none"
                     placeholder="Descrição opcional..."
                     rows={2}

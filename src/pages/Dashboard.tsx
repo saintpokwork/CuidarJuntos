@@ -2,19 +2,25 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
-import {
-  dashboardSummary,
-  medicationsToday,
-  appointments,
-  tasks,
-  documents,
-  emergencyContacts,
-  latestCareNote,
-} from '../data/mockData';
-
-const pendingTasks = tasks.filter((t) => t.status === 'por_fazer');
+import { useCareData } from '../context/CareDataContext';
 
 const Dashboard: React.FC = () => {
+  const { data, dashboardSummary } = useCareData();
+  const { medications, appointments, tasks, documents, emergencyContacts, careNotes } = data;
+
+  const medicationsToday = medications
+    .filter((m) => m.estado === 'Ativo')
+    .slice(0, 2)
+    .map((m) => ({
+      id: m.id,
+      nome: `${m.nome} ${m.dosagem}`,
+      horario: m.horario.split(',')[0]?.trim() || m.horario,
+      instrucoes: m.instrucoes || m.frequencia,
+    }));
+
+  const pendingTasks = tasks.filter((t) => t.status === 'por_fazer');
+  const latestCareNote = careNotes[0];
+
   return (
     <DashboardLayout>
       <main className="flex-1 w-full relative pb-24 lg:pb-8">
@@ -77,36 +83,40 @@ const Dashboard: React.FC = () => {
                 </div>
                 <span className="material-symbols-outlined text-primary text-3xl">pill</span>
               </div>
-              <div className="space-y-4">
-                {medicationsToday.map((med, i) => (
-                  <div
-                    key={med.id}
-                    className={`flex items-center p-3 rounded-xl ${
-                      i === 0 ? 'bg-primary-fixed/20' : 'bg-surface-container'
-                    }`}
-                  >
+              {medicationsToday.length === 0 ? (
+                <p className="text-label-md text-on-surface-variant py-4">Ainda não há medicamentos registados.</p>
+              ) : (
+                <div className="space-y-4">
+                  {medicationsToday.map((med, i) => (
                     <div
-                      className={`p-2 rounded-lg mr-3 ${
-                        i === 0
-                          ? 'bg-primary text-on-primary'
-                          : 'bg-outline-variant text-on-surface-variant'
+                      key={med.id}
+                      className={`flex items-center p-3 rounded-xl ${
+                        i === 0 ? 'bg-primary-fixed/20' : 'bg-surface-container'
                       }`}
                     >
-                      <span className="material-symbols-outlined">alarm</span>
+                      <div
+                        className={`p-2 rounded-lg mr-3 ${
+                          i === 0
+                            ? 'bg-primary text-on-primary'
+                            : 'bg-outline-variant text-on-surface-variant'
+                        }`}
+                      >
+                        <span className="material-symbols-outlined">alarm</span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-label-md font-bold">{med.nome}</p>
+                        <p className="text-label-sm text-on-surface-variant">
+                          {med.horario} • {med.instrucoes}
+                        </p>
+                      </div>
+                      <input
+                        className="w-6 h-6 rounded-lg text-primary border-outline-variant focus:ring-primary"
+                        type="checkbox"
+                      />
                     </div>
-                    <div className="flex-1">
-                      <p className="text-label-md font-bold">{med.nome}</p>
-                      <p className="text-label-sm text-on-surface-variant">
-                        {med.horario} • {med.instrucoes}
-                      </p>
-                    </div>
-                    <input
-                      className="w-6 h-6 rounded-lg text-primary border-outline-variant focus:ring-primary"
-                      type="checkbox"
-                    />
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
               <Link
                 to="/dashboard/medicamentos"
                 className="mt-6 block w-full text-center text-primary font-bold text-label-md py-2 hover:bg-primary-fixed/10 rounded-lg transition-colors"
@@ -128,7 +138,7 @@ const Dashboard: React.FC = () => {
                   <div className="w-16 h-16 bg-secondary-container/30 rounded-full flex items-center justify-center mb-4">
                     <span className="material-symbols-outlined text-secondary text-2xl">event_busy</span>
                   </div>
-                  <p className="text-label-md font-semibold text-on-surface">Sem consultas marcadas</p>
+                  <p className="text-label-md font-semibold text-on-surface">Ainda não há consultas marcadas.</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -158,24 +168,28 @@ const Dashboard: React.FC = () => {
                 </div>
                 <span className="material-symbols-outlined text-tertiary text-3xl">assignment</span>
               </div>
-              <div className="space-y-4">
-                {pendingTasks.slice(0, 2).map((task) => (
-                  <div
-                    key={task.id}
-                    className="group flex items-start p-4 border border-outline-variant rounded-xl hover:border-primary transition-colors cursor-pointer"
-                  >
-                    <div className="bg-tertiary-container/10 text-tertiary p-2 rounded-lg mr-4">
-                      <span className="material-symbols-outlined">shopping_cart</span>
+              {pendingTasks.length === 0 ? (
+                <p className="text-label-md text-on-surface-variant py-4">Ainda não há tarefas.</p>
+              ) : (
+                <div className="space-y-4">
+                  {pendingTasks.slice(0, 2).map((task) => (
+                    <div
+                      key={task.id}
+                      className="group flex items-start p-4 border border-outline-variant rounded-xl hover:border-primary transition-colors cursor-pointer"
+                    >
+                      <div className="bg-tertiary-container/10 text-tertiary p-2 rounded-lg mr-4">
+                        <span className="material-symbols-outlined">shopping_cart</span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-label-md font-bold group-hover:text-primary">{task.titulo}</p>
+                        <p className="text-label-sm text-on-surface-variant">
+                          {task.local} • {task.prioridade}
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <p className="text-label-md font-bold group-hover:text-primary">{task.titulo}</p>
-                      <p className="text-label-sm text-on-surface-variant">
-                        {task.local} • {task.prioridade}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
               <Link
                 to="/dashboard/tarefas"
                 className="mt-6 block w-full text-center text-on-surface-variant font-bold text-label-md py-2 hover:bg-surface-container-highest rounded-lg transition-colors"
@@ -192,22 +206,28 @@ const Dashboard: React.FC = () => {
                 </div>
                 <span className="material-symbols-outlined text-primary text-3xl">description</span>
               </div>
-              <div className="space-y-3">
-                {documents.slice(0, 2).map((doc) => (
-                  <div
-                    key={doc.id}
-                    className="flex items-center gap-3 p-2 hover:bg-surface-container-low rounded-xl transition-colors cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-primary">
-                      {doc.titulo.endsWith('.pdf') ? 'picture_as_pdf' : 'description'}
-                    </span>
-                    <div className="flex-1 overflow-hidden">
-                      <p className="text-label-md font-medium truncate">{doc.titulo}</p>
-                      <p className="text-[10px] text-on-surface-variant">Adicionado {doc.dataAdicao.toLowerCase()}</p>
+              {documents.length === 0 ? (
+                <p className="text-label-md text-on-surface-variant py-4">Ainda não há documentos.</p>
+              ) : (
+                <div className="space-y-3">
+                  {documents.slice(0, 2).map((doc) => (
+                    <div
+                      key={doc.id}
+                      className="flex items-center gap-3 p-2 hover:bg-surface-container-low rounded-xl transition-colors cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-primary">
+                        {doc.titulo.endsWith('.pdf') ? 'picture_as_pdf' : 'description'}
+                      </span>
+                      <div className="flex-1 overflow-hidden">
+                        <p className="text-label-md font-medium truncate">{doc.titulo}</p>
+                        <p className="text-[10px] text-on-surface-variant">
+                          Adicionado {doc.dataAdicao.toLowerCase()}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
               <Link
                 to="/dashboard/documentos"
                 className="mt-4 block text-primary font-bold text-label-sm"
@@ -262,11 +282,15 @@ const Dashboard: React.FC = () => {
                 </div>
                 <span className="material-symbols-outlined text-tertiary text-3xl">event_note</span>
               </div>
-              <div className="bg-tertiary-fixed/30 p-4 rounded-xl rotate-1">
-                <p className="text-body-md italic text-on-tertiary-fixed-variant">
-                  &ldquo;{latestCareNote.nota}&rdquo;
-                </p>
-              </div>
+              {latestCareNote ? (
+                <div className="bg-tertiary-fixed/30 p-4 rounded-xl rotate-1">
+                  <p className="text-body-md italic text-on-tertiary-fixed-variant">
+                    &ldquo;{latestCareNote.nota}&rdquo;
+                  </p>
+                </div>
+              ) : (
+                <p className="text-label-md text-on-surface-variant py-4">Ainda não há notas de cuidado.</p>
+              )}
               <Link
                 to="/dashboard/notas"
                 className="mt-4 flex justify-end text-primary font-bold text-label-sm items-center gap-1"

@@ -1,16 +1,10 @@
 import React from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
-import { caregiver } from '../data/mockData';
+import { useCareData } from '../context/CareDataContext';
+import { caregiver } from '../data/initialData';
 
 const settingsSections = [
-  {
-    id: 'perfil',
-    titulo: 'Perfil',
-    descricao: 'Dados pessoais e preferências da conta',
-    icon: 'person',
-    cor: 'bg-primary-fixed',
-  },
   {
     id: 'notificacoes',
     titulo: 'Notificações',
@@ -42,6 +36,15 @@ const settingsSections = [
 ];
 
 const Definicoes: React.FC = () => {
+  const { resetDemoData } = useCareData();
+
+  const handleReset = () => {
+    const confirmar = window.confirm(
+      'Tem a certeza que pretende repor os dados de demonstração? Todas as alterações locais serão perdidas.'
+    );
+    if (confirmar) resetDemoData();
+  };
+
   return (
     <DashboardLayout>
       <main className="flex-1 w-full relative pb-24 lg:pb-8">
@@ -67,10 +70,7 @@ const Definicoes: React.FC = () => {
                     </div>
                     <h2 className="text-headline-md font-headline-md">Perfil do cuidador</h2>
                   </div>
-                  <button
-                    type="button"
-                    className="text-primary font-bold text-label-md hover:underline"
-                  >
+                  <button type="button" className="text-primary font-bold text-label-md hover:underline">
                     Editar
                   </button>
                 </div>
@@ -88,8 +88,8 @@ const Definicoes: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {settingsSections.slice(1).map((section) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                {settingsSections.map((section) => (
                   <button
                     key={section.id}
                     type="button"
@@ -119,6 +119,24 @@ const Definicoes: React.FC = () => {
                   </button>
                 ))}
               </div>
+
+              <div className="bg-white p-6 rounded-[24px] soft-shadow border border-outline-variant/30">
+                <h3 className="text-headline-md font-headline-md text-on-surface mb-2">
+                  Dados de demonstração
+                </h3>
+                <p className="text-label-md text-on-surface-variant mb-4">
+                  Repor todos os dados ao estado inicial de demonstração. As alterações guardadas no
+                  navegador serão apagadas.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="px-6 py-3 border-2 border-primary text-primary font-bold rounded-full hover:bg-primary/5 transition-colors flex items-center gap-2"
+                >
+                  <span className="material-symbols-outlined">restart_alt</span>
+                  Repor dados de demonstração
+                </button>
+              </div>
             </div>
 
             <div className="md:col-span-4 space-y-4">
@@ -134,12 +152,12 @@ const Definicoes: React.FC = () => {
                     <div key={item.label} className="flex items-center justify-between">
                       <span className="text-label-md text-on-surface">{item.label}</span>
                       <div
-                        className={`w-12 h-7 rounded-full relative cursor-pointer transition-colors ${
+                        className={`w-12 h-7 rounded-full relative ${
                           item.ativo ? 'bg-primary' : 'bg-outline-variant'
                         }`}
                       >
                         <div
-                          className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow transition-transform ${
+                          className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow ${
                             item.ativo ? 'right-1' : 'left-1'
                           }`}
                         />
@@ -152,7 +170,7 @@ const Definicoes: React.FC = () => {
               <div className="bg-white p-6 rounded-[24px] soft-shadow">
                 <h3 className="text-headline-md font-headline-md text-on-surface mb-2">Privacidade</h3>
                 <p className="text-label-md text-on-surface-variant mb-4">
-                  Os seus dados são encriptados e armazenados em servidores na União Europeia.
+                  Os seus dados são encriptados e armazenados localmente no seu navegador.
                 </p>
                 <button
                   type="button"

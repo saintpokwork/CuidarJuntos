@@ -11,12 +11,19 @@ import Emergencia from '../pages/Emergencia';
 import Familia from '../pages/Familia';
 import Notas from '../pages/Notas';
 import Definicoes from '../pages/Definicoes';
+import Mais from '../pages/Mais';
+import FeedbackMessage from './FeedbackMessage';
+import { useCareData } from '../context/CareDataContext';
 
-const App: React.FC = () => {
+const AppRoutes: React.FC = () => {
+  const { feedback } = useCareData();
   return (
-    <Routes>
+    <>
+      <FeedbackMessage message={feedback} />
+      <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/dashboard/mais" element={<Mais />} />
       <Route path="/dashboard/perfil" element={<Perfil />} />
       <Route path="/dashboard/medicamentos" element={<Medicamentos />} />
       <Route path="/dashboard/consultas" element={<Consultas />} />
@@ -27,7 +34,10 @@ const App: React.FC = () => {
       <Route path="/dashboard/notas" element={<Notas />} />
       <Route path="/dashboard/definicoes" element={<Definicoes />} />
     </Routes>
+    </>
   );
 };
+
+const App: React.FC = () => <AppRoutes />;
 
 export default App;
