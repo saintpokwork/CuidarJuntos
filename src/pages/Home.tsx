@@ -10,12 +10,12 @@ const Home: React.FC = () => {
             CuidarJuntos
           </Link>
           <div className="hidden md:flex items-center gap-8">
-            <a
+            <Link
               className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-md text-label-md"
-              href="#como-funciona"
+              to="/como-funciona"
             >
               Como funciona
-            </a>
+            </Link>
             <a
               className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-md text-label-md"
               href="#funcionalidades"
@@ -67,12 +67,12 @@ const Home: React.FC = () => {
                 >
                   Começar gratuitamente
                 </Link>
-                <a
+                <Link
                   className="bg-surface-container-low text-primary px-8 py-4 rounded-full font-headline-md text-[18px] hover:bg-surface-container-high transition-colors text-center"
-                  href="#como-funciona"
+                  to="/como-funciona"
                 >
                   Ver como funciona
-                </a>
+                </Link>
               </div>
               <p className="mt-4 text-label-sm text-on-surface-variant">
                 Versão demo — não é necessário criar conta.
@@ -373,6 +373,11 @@ const Home: React.FC = () => {
               <div>
                 <h4 className="font-label-md text-primary mb-4">Plataforma</h4>
                 <ul className="space-y-2">
+                  <li>
+                    <Link className="text-on-surface-variant hover:text-primary transition-all text-label-md" to="/como-funciona">
+                      Como funciona
+                    </Link>
+                  </li>
                   <li>
                     <a className="text-on-surface-variant hover:text-primary transition-all text-label-md" href="#funcionalidades">
                       Funcionalidades

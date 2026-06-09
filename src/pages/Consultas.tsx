@@ -4,6 +4,7 @@ import DashboardPageHeader from '../components/DashboardPageHeader';
 import EmptyState from '../components/EmptyState';
 import { useCareData } from '../context/CareDataContext';
 import { caregiver } from '../data/initialData';
+import HelpTip from '../components/HelpTip';
 
 const Consultas: React.FC = () => {
   const { data, addAppointment, removeAppointment } = useCareData();
@@ -37,6 +38,7 @@ const Consultas: React.FC = () => {
         <DashboardPageHeader title="Consultas e exames" showSearch={false} />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
+          <HelpTip text="adicione também exames, deslocações e quem acompanha o familiar." />
           <p className="text-body-lg text-on-surface-variant mb-stack-lg">
             Agenda partilhada para toda a família cuidadora.
           </p>

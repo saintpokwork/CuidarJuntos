@@ -32,9 +32,11 @@ npm run build
 | Rota | Página |
 |------|--------|
 | `/` | Landing page |
+| `/como-funciona` | Como usar o CuidarJuntos (público) |
 | `/privacidade` | Política de privacidade |
 | `/termos` | Termos de utilização |
 | `/dashboard` | Painel principal |
+| `/dashboard/guia` | Guia rápido (onboarding) |
 | `/dashboard/perfil` | Perfil do familiar |
 | `/dashboard/medicamentos` | Medicamentos |
 | `/dashboard/consultas` | Consultas e exames |

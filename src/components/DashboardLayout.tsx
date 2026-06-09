@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { caregiver } from '../data/initialData';
 import { useCareData } from '../context/CareDataContext';
+import GuideBanner from './GuideBanner';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -9,6 +10,7 @@ interface DashboardLayoutProps {
 
 const menuItems = [
   { path: '/dashboard', label: 'Painel', icon: 'dashboard', exact: true },
+  { path: '/dashboard/guia', label: 'Guia rápido', icon: 'menu_book', exact: false },
   { path: '/dashboard/perfil', label: 'Perfil', icon: 'person', exact: false },
   { path: '/dashboard/medicamentos', label: 'Medicamentos', icon: 'pill', exact: false },
   { path: '/dashboard/consultas', label: 'Consultas', icon: 'calendar_today', exact: false },
@@ -30,6 +32,7 @@ const mobileNavItems = [
 
 const maisPaths = [
   '/dashboard/mais',
+  '/dashboard/guia',
   '/dashboard/perfil',
   '/dashboard/documentos',
   '/dashboard/emergencia',
@@ -94,6 +97,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       </aside>
 
       <div className="flex-1 flex flex-col relative min-w-0 overflow-x-hidden">
+        <GuideBanner />
+
         <div className="bg-primary-fixed/40 border-b border-primary/10 px-container-padding-mobile md:px-container-padding-desktop py-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-label-sm text-on-surface-variant">
           <p className="flex items-center gap-2">
             <span className="material-symbols-outlined text-primary text-base">info</span>

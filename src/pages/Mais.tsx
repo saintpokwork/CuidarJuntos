@@ -4,6 +4,7 @@ import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
 
 const maisLinks = [
+  { path: '/dashboard/guia', label: 'Guia rápido', descricao: 'Como usar o CuidarJuntos', icon: 'menu_book' },
   { path: '/dashboard/perfil', label: 'Perfil', descricao: 'Dados do familiar ao cuidado', icon: 'person' },
   { path: '/dashboard/documentos', label: 'Documentos', descricao: 'Receitas, exames e ficheiros', icon: 'description' },
   { path: '/dashboard/emergencia', label: 'Emergência', descricao: 'Ficha de emergência rápida', icon: 'emergency' },

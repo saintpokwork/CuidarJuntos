@@ -3,6 +3,7 @@ import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
 import EmptyState from '../components/EmptyState';
 import { useCareData, FamilyRole } from '../context/CareDataContext';
+import HelpTip from '../components/HelpTip';
 
 const roleStyles: Record<string, string> = {
   Administrador: 'bg-primary-fixed text-primary',
@@ -40,6 +41,7 @@ const Familia: React.FC = () => {
         <DashboardPageHeader title="Família e cuidadores" showSearch={false} />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
+          <HelpTip text="convide apenas pessoas de confiança para aceder aos dados do familiar." />
           <p className="text-body-lg text-on-surface-variant mb-stack-lg">
             Círculo de cuidado — todos os membros com acesso à informação partilhada.
           </p>

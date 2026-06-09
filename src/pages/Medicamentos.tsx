@@ -4,6 +4,7 @@ import DashboardPageHeader from '../components/DashboardPageHeader';
 import EmptyState from '../components/EmptyState';
 import { useCareData } from '../context/CareDataContext';
 import { caregiver } from '../data/initialData';
+import HelpTip from '../components/HelpTip';
 
 const estadoStyles: Record<string, string> = {
   Ativo: 'bg-secondary-container text-on-secondary-container',
@@ -43,6 +44,7 @@ const Medicamentos: React.FC = () => {
         <DashboardPageHeader title="Medicamentos" showSearch={false} />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
+          <HelpTip text="comece pelos medicamentos tomados todos os dias e confirme sempre os horários com a receita ou profissional de saúde." />
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-gutter mb-stack-lg">
             {[
               { valor: ativos, label: 'Ativos', cor: 'text-primary' },

@@ -15,6 +15,8 @@ import Mais from '../pages/Mais';
 import Privacidade from '../pages/Privacidade';
 import Termos from '../pages/Termos';
 import NotFound from '../pages/NotFound';
+import ComoFunciona from '../pages/ComoFunciona';
+import Guia from '../pages/Guia';
 import FeedbackMessage from './FeedbackMessage';
 import { useCareData } from '../context/CareDataContext';
 
@@ -25,9 +27,11 @@ const AppRoutes: React.FC = () => {
       <FeedbackMessage message={feedback} />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/como-funciona" element={<ComoFunciona />} />
         <Route path="/privacidade" element={<Privacidade />} />
         <Route path="/termos" element={<Termos />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard/guia" element={<Guia />} />
         <Route path="/dashboard/mais" element={<Mais />} />
         <Route path="/dashboard/perfil" element={<Perfil />} />
         <Route path="/dashboard/medicamentos" element={<Medicamentos />} />

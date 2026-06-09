@@ -4,6 +4,7 @@ import DashboardPageHeader from '../components/DashboardPageHeader';
 import EmptyState from '../components/EmptyState';
 import { useCareData, TaskStatus } from '../context/CareDataContext';
 import { caregiver } from '../data/initialData';
+import HelpTip from '../components/HelpTip';
 
 const columns: { status: TaskStatus; label: string; cor: string }[] = [
   { status: 'por_fazer', label: 'Por fazer', cor: 'bg-error' },
@@ -67,6 +68,7 @@ const Tarefas: React.FC = () => {
         />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
+          <HelpTip text="use tarefas para dividir responsabilidades entre irmãos, familiares ou cuidadores." />
           <p className="text-body-lg text-on-surface-variant mb-stack-lg">
             Gerir as responsabilidades diárias com calma e clareza.
           </p>

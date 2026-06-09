@@ -4,6 +4,7 @@ import DashboardPageHeader from '../components/DashboardPageHeader';
 import EmptyState from '../components/EmptyState';
 import { useCareData, DocumentCategory } from '../context/CareDataContext';
 import { documentCategories } from '../data/initialData';
+import HelpTip from '../components/HelpTip';
 
 const Documentos: React.FC = () => {
   const { data, addDocument, removeDocument } = useCareData();
@@ -43,6 +44,7 @@ const Documentos: React.FC = () => {
         <DashboardPageHeader title="Documentos" showSearch={false} />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
+          <HelpTip text="nesta demo o upload é simulado. Na versão futura poderá guardar ficheiros reais com segurança." />
           <div className="flex flex-wrap gap-2 mb-stack-lg">
             <button
               type="button"

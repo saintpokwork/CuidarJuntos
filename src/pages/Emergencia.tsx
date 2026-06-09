@@ -1,13 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
 import { useCareData } from '../context/CareDataContext';
 import { careProfile } from '../data/initialData';
+import HelpTip from '../components/HelpTip';
 
 const Emergencia: React.FC = () => {
   const { data, getEmergencySummary, showFeedback } = useCareData();
   const { medications, emergencyContacts } = data;
   const [partilhaMsg, setPartilhaMsg] = useState('');
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('cuidarjuntos-emergency-viewed', 'true');
+    } catch {
+      /* ignorar */
+    }
+  }, []);
 
   const medicamentosAtuais = medications
     .filter((m) => m.estado === 'Ativo')
@@ -50,6 +59,9 @@ const Emergencia: React.FC = () => {
         </div>
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
+          <div className="no-print">
+            <HelpTip text="imprima esta ficha e mantenha uma cópia acessível em casa." />
+          </div>
           <section className="flex flex-wrap gap-3 mb-stack-lg no-print">
             <button
               type="button"

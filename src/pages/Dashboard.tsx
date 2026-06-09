@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
 import { useCareData } from '../context/CareDataContext';
+import OnboardingChecklist from '../components/OnboardingChecklist';
 
 const Dashboard: React.FC = () => {
   const { data, dashboardSummary } = useCareData();
@@ -27,6 +28,12 @@ const Dashboard: React.FC = () => {
         <DashboardPageHeader />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
+          <p className="text-label-sm text-on-surface-variant mb-4 p-3 bg-surface-container-low rounded-xl">
+            Os dados apresentados são exemplos para demonstrar como a plataforma funciona.
+          </p>
+
+          <OnboardingChecklist />
+
           <section className="mb-stack-lg">
             <h1 className="text-headline-lg font-headline-lg text-on-surface mb-2">
               {dashboardSummary.saudacao}
