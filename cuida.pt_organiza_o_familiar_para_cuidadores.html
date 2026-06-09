@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="pt" class="">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Cuida.pt | Organização Familiar para Cuidadores</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-on-surface": "#e4f3fe",
+                    "surface-container-high": "#dbeaf5",
+                    "surface-tint": "#005faf",
+                    "on-primary-fixed-variant": "#004786",
+                    "on-error": "#ffffff",
+                    "surface-container-low": "#e9f5ff",
+                    "on-secondary-fixed": "#002107",
+                    "error-container": "#ffdad6",
+                    "on-tertiary": "#ffffff",
+                    "surface-dim": "#cddce7",
+                    "on-error-container": "#93000a",
+                    "primary-fixed": "#d4e3ff",
+                    "on-tertiary-fixed": "#1e1b13",
+                    "primary-container": "#1976d2",
+                    "secondary-container": "#abf4ac",
+                    "on-surface": "#0f1d25",
+                    "primary-fixed-dim": "#a5c8ff",
+                    "surface-container-highest": "#d6e5ef",
+                    "tertiary": "#615c51",
+                    "secondary-fixed": "#abf4ac",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container": "#e1f0fb",
+                    "outline": "#717783",
+                    "on-secondary-fixed-variant": "#07521d",
+                    "on-secondary-container": "#2e7238",
+                    "error": "#ba1a1a",
+                    "on-primary-container": "#fffdff",
+                    "on-tertiary-container": "#fffdff",
+                    "on-tertiary-fixed-variant": "#4b463c",
+                    "tertiary-fixed": "#e9e2d3",
+                    "outline-variant": "#c1c6d4",
+                    "on-primary-fixed": "#001c3a",
+                    "on-primary": "#ffffff",
+                    "surface": "#f5faff",
+                    "background": "#f5faff",
+                    "on-surface-variant": "#414752",
+                    "secondary": "#286b33",
+                    "tertiary-container": "#7a7569",
+                    "surface-bright": "#f5faff",
+                    "inverse-surface": "#24323a",
+                    "surface-variant": "#d6e5ef",
+                    "on-background": "#0f1d25",
+                    "inverse-primary": "#a5c8ff",
+                    "primary": "#005dac",
+                    "secondary-fixed-dim": "#90d792",
+                    "on-secondary": "#ffffff",
+                    "warm-beige": "#FDF5E6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "2xl": "1.5rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "sans": ["Plus Jakarta Sans", "ui-sans-serif", "system-ui"]
+            }
+          },
+        },
+      }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .soft-shadow {
+            box-shadow: 0 8px 24px rgba(0, 95, 175, 0.04);
+        }
+        .soft-shadow-hover:hover {
+            box-shadow: 0 12px 32px rgba(0, 95, 175, 0.08);
+            transform: translateY(-2px);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d6e5ef; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #c1c6d4; }
+        .emergency-gradient {
+            background: linear-gradient(135deg, #ba1a1a 0%, #93000a 100%);
+        }
+        .btn-gradient {
+            background: linear-gradient(135deg, #005dac 0%, #1976d2 100%);
+        }
+        .drag-dash {
+            background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%23005DACFF' stroke-width='2' stroke-dasharray='8%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+    <div id="root"></div>
+
+    <!-- React and Libraries -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/history@5/umd/history.development.js"></script>
+    <script src="https://unpkg.com/react-router@6.3.0/umd/react-router.development.js"></script>
+    <script src="https://unpkg.com/react-router-dom@6.3.0/umd/react-router-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { createRoot } = ReactDOM;
+        const { MemoryRouter, Routes, Route, Link, useNavigate, useLocation } = ReactRouterDOM;
+
+        // --- Common Components ---
+
+        const DesktopSidebar = () => {
+            const location = useLocation();
+            const navigate = useNavigate();
+            const menuItems = [
+                { path: '/dashboard', label: 'Dashboard', icon: 'dashboard' },
+                { path: '/profile', label: 'Profile', icon: 'person' },
+                { path: '/medications', label: 'Medications', icon: 'pill' },
+                { path: '/appointments', label: 'Appointments', icon: 'calendar_today' },
+                { path: '/tasks', label: 'Tasks', icon: 'assignment' },
+                { path: '/documents', label: 'Documents', icon: 'description' },
+                { path: '/emergency', label: 'Emergency', icon: 'emergency' },
+                { path: '/family', label: 'Family', icon: 'group' },
+                { path: '/notes', label: 'Notes', icon: 'event_note' },
+                { path: '/settings', label: 'Settings', icon: 'settings' },
+            ];
+
+            return (
+                <aside className="h-screen w-64 hidden lg:flex flex-col sticky left-0 top-0 bg-surface-container shadow-sm py-4 px-2 overflow-y-auto">
+                    <div className="px-4 mb-8">
+                        <Link to="/" className="text-2xl font-bold text-primary">Cuida Care</Link>
+                        <p className="text-on-surface-variant text-xs font-semibold uppercase mt-1">Family Lead</p>
+                    </div>
+                    <nav className="flex-1 space-y-1">
+                        {menuItems.map(item => (
+                            <Link 
+                                key={item.path}
+                                to={item.path} 
+                                className={`flex items-center px-4 py-3 rounded-lg transition-colors ${location.pathname === item.path ? 'text-primary font-bold border-r-4 border-primary bg-surface-container-high' : 'text-on-surface-variant hover:bg-surface-container-highest'}`}
+                            >
+                                <span className="material-symbols-outlined mr-3">{item.icon}</span>
+                                <span className="text-sm font-semibold">{item.label}</span>
+                            </Link>
+                        ))}
+                    </nav>
+                    <div className="px-4 mt-auto">
+                        <div className="flex items-center gap-3 p-2 rounded-xl bg-surface-container-high">
+                            <img alt="Ana" className="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrPXztbyOYTTQCl760tVuMOIgwXU_Ea-JCTvkNgmleAvT1--BeaWO8k0vsTXLp55H0GT-vTKPWV-3UjDypVHRHCKrKcBEkf290KL7xHl8eRIU6viBI0fXvEHd1uY4wGmYbvILh2kW5BNytoETMzHRsxgNQNAqEaB8B_SjHRmAnFdnulJEce6ql7Ag8eaAXm6QauRVuLwMCr49ax72MqarTFft8T7eeNcVy51Rrz85bacw5syFK3MTcQQckKMhkgyJS9jRPBZZXTZxx" />
+                            <div className="overflow-hidden">
+                                <p className="text-sm font-bold text-on-surface truncate">Ana Silva</p>
+                                <p className="text-[10px] text-on-surface-variant uppercase">Family Lead</p>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            );
+        };
+
+        const MobileBottomNav = () => {
+            const location = useLocation();
+            const navItems = [
+                { path: '/dashboard', label: 'Home', icon: 'home' },
+                { path: '/medications', label: 'Meds', icon: 'pill' },
+                { path: '/appointments', label: 'Appts', icon: 'calendar_today' },
+                { path: '/tasks', label: 'Tasks', icon: 'assignment' },
+                { path: '/settings', label: 'More', icon: 'more_horiz' },
+            ];
+
+            return (
+                <nav className="lg:hidden fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface shadow-[0_-4px_24px_rgba(0,93,172,0.04)] rounded-t-xl">
+                    {navItems.map(item => (
+                        <Link 
+                            key={item.path}
+                            to={item.path} 
+                            className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all ${location.pathname === item.path ? 'bg-primary-container text-on-primary-container px-4 py-1 scale-90 shadow-md' : 'text-on-surface-variant'}`}
+                        >
+                            <span className="material-symbols-outlined">{item.icon}</span>
+                            <span className="text-[10px] font-semibold">{item.label}</span>
+                        </Link>
+                    ))}
+                </nav>
+            );
+        };
+
+        const Layout = ({ children, hideNav = false }) => {
+            return (
+                <div className="flex min-h-screen">
+                    {!hideNav && <DesktopSidebar />}
+                    <div className="flex-1 flex flex-col relative min-w-0">
+                        {children}
+                        {!hideNav && <MobileBottomNav />}
+                    </div>
+                </div>
+            );
+        };
+
+        // --- Screens ---
+
+        const LandingPage = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-surface selection:bg-primary/20">
+                    <header className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md shadow-sm">
+                        <nav className="max-w-[1200px] mx-auto flex justify-between items-center px-6 md:px-10 h-20">
+                            <Link to="/" className="text-2xl font-bold text-primary">Cuida.pt</Link>
+                            <div className="hidden md:flex items-center gap-8">
+                                <a className="text-on-surface-variant hover:text-primary transition-colors font-semibold text-sm" href="#como-funciona">Como funciona</a>
+                                <a className="text-on-surface-variant hover:text-primary transition-colors font-semibold text-sm" href="#funcionalidades">Funcionalidades</a>
+                                <a className="text-on-surface-variant hover:text-primary transition-colors font-semibold text-sm" href="#precos">Preços</a>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <button onClick={() => navigate('/dashboard')} className="hidden md:block text-primary font-bold hover:text-primary-container transition-colors text-sm">Entrar</button>
+                                <button onClick={() => navigate('/onboarding')} className="bg-primary text-on-primary px-6 py-2.5 rounded-full font-bold text-sm shadow-sm hover:scale-105 active:scale-95 transition-all">Começar</button>
+                            </div>
+                        </nav>
+                    </header>
+                    <main className="pt-20">
+                        <section className="relative overflow-hidden py-16 md:py-24">
+                            <div className="max-w-[1200px] mx-auto px-6 md:px-10 flex flex-col md:flex-row items-center gap-16">
+                                <div className="flex-1 text-center md:text-left z-10">
+                                    <span className="inline-block px-4 py-1.5 bg-secondary-container text-on-secondary-container rounded-full text-xs font-bold mb-6">Organização para famílias cuidadoras</span>
+                                    <h1 className="text-4xl md:text-5xl font-bold text-on-surface mb-6 leading-tight">Cuide melhor dos seus pais, com toda a família organizada num só lugar.</h1>
+                                    <p className="text-lg text-on-surface-variant mb-10 max-w-xl">Guarde medicamentos, consultas, documentos, contactos de emergência e tarefas familiares numa plataforma simples feita para famílias portuguesas.</p>
+                                    <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                                        <button onClick={() => navigate('/onboarding')} className="bg-primary text-on-primary px-8 py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">Começar gratuitamente</button>
+                                        <button className="bg-surface-container-low text-primary px-8 py-4 rounded-full font-bold text-lg hover:bg-surface-container-high transition-colors">Ver como funciona</button>
+                                    </div>
+                                </div>
+                                <div className="flex-1 w-full relative">
+                                    <div className="relative z-10 glass-card p-6 rounded-2xl soft-shadow border border-white/40">
+                                        <img className="rounded-xl w-full h-auto shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdx1dfUc-1E1-dYKkda1s4AwDWV7zd-DsYZJBZT1Ga2a0l-pQO1WcPbToRKFI5mPb_T5Ew92lKs5To6EsrajdzDPYPDGaJbjxK5ltreRmhaDGqgXtM6-5hsoW8lNTpJuO9zquo31d-PAv4xrtNDmvhazpcGU-SATjU9z7h-hfvRaVbJp1qGfTJLUWuO2uZXhoxmWpE-fryqH8nRz9V8Rbv9DAVHoRbexzgA6VxLcuz150OWXd1Oo8yDQR9t19Of2_f6NzzLEj0N66N" />
+                                    </div>
+                                    <div className="absolute -top-20 -right-20 w-80 h-80 bg-primary/5 rounded-full blur-3xl"></div>
+                                </div>
+                            </div>
+                        </section>
+                        {/* More Landing sections (Problems, Features, Pricing) would go here as static content */}
+                        <section className="py-20 bg-surface-container-lowest text-center">
+                             <h2 className="text-3xl font-bold mb-4">Pronto para transformar o cuidado da sua família?</h2>
+                             <button onClick={() => navigate('/onboarding')} className="bg-primary text-on-primary px-10 py-5 rounded-full font-bold text-xl shadow-xl hover:scale-105 transition-all">Começar Agora</button>
+                        </section>
+                    </main>
+                </div>
+            );
+        };
+
+        const Onboarding = () => {
+            const navigate = useNavigate();
+            return (
+                <div className="bg-background min-h-screen flex flex-col items-center">
+                    <header className="w-full flex justify-center py-8 px-6">
+                        <div className="flex items-center gap-2">
+                            <div className="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-on-primary-container">
+                                <span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 1"}}>favorite</span>
+                            </div>
+                            <span className="text-2xl font-bold text-primary">Cuida Care</span>
+                        </div>
+                    </header>
+                    <main className="w-full max-w-[1200px] flex flex-col lg:flex-row gap-8 px-6 pb-12">
+                        <section className="lg:w-5/12 flex flex-col justify-center gap-6 order-2 lg:order-1">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary-container text-on-secondary-container rounded-full text-sm font-bold w-fit">
+                                <span className="material-symbols-outlined text-[18px]">verified_user</span> Primeiro Passo
+                            </div>
+                            <h1 className="text-4xl font-bold text-on-background max-w-md leading-tight">Vamos começar a cuidar do seu familiar</h1>
+                            <p className="text-lg text-on-surface-variant max-w-lg">Para que possamos organizar as tarefas de saúde e bem-estar, precisamos de conhecer quem vai estar ao seu cuidado. Os dados são encriptados e seguros.</p>
+                            <img className="w-full h-64 object-cover rounded-3xl shadow-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgyV2IOEoM8rZtqf0GZawPnILAbIS3gbGBRPfCNEBEeOTRCe3BpgUtAluhUeWl1aKRVYo7ejmSdZITm3J9ZDdbreVHKTnF2iQTAIxUhEsExJa2MePwo-tmYA7pewg32CtWHU1FyNdqEeZxHAkQojuk6LbA2GnRu4C5RV3m0HixhTL3Ae7wCmHpvIDg2LO0ZgJ7LAlIfT_GTaarZDP5pYY2WSSMZtLrZ3QhtTcO3RfLohQKQwxKW1Sht2E3DEj1baiS4G_VRZHHKmX4" />
+                        </section>
+                        <section className="lg:w-7/12 order-1 lg:order-2">
+                            <div className="glass-card bg-surface-container-lowest rounded-3xl p-8 shadow-2xl border border-surface-container">
+                                <div className="flex items-center justify-between mb-8">
+                                    <div className="flex gap-2 w-full">
+                                        <div className="h-1.5 w-1/3 bg-primary rounded-full"></div>
+                                        <div className="h-1.5 w-1/3 bg-surface-container-high rounded-full"></div>
+                                        <div className="h-1.5 w-1/3 bg-surface-container-high rounded-full"></div>
+                                    </div>
+                                    <span className="ml-4 text-xs font-semibold text-on-surface-variant whitespace-nowrap">Passo 1 de 3</span>
+                                </div>
+                                <form className="flex flex-col gap-6" onSubmit={(e) => { e.preventDefault(); navigate('/dashboard'); }}>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-1">
+                                            <label className="text-sm font-bold text-on-surface">Nome do familiar</label>
+                                            <input className="w-full h-12 px-4 bg-surface border-none rounded-xl focus:ring-2 focus:ring-primary/20 outline-none" placeholder="Ex: Maria dos Santos" required />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-sm font-bold text-on-surface">Data de nascimento</label>
+                                            <input type="date" className="w-full h-12 px-4 bg-surface border-none rounded-xl focus:ring-2 focus:ring-primary/20 outline-none" required />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-sm font-bold text-on-surface">Número SNS</label>
+                                            <input className="w-full h-12 px-4 bg-surface border-none rounded-xl focus:ring-2 focus:ring-primary/20 outline-none" placeholder="9 dígitos" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-sm font-bold text-on-surface">Médico de família</label>
+                                            <input className="w-full h-12 px-4 bg-surface border-none rounded-xl focus:ring-2 focus:ring-primary/20 outline-none" placeholder="Dr. Nome do Médico" />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-sm font-bold text-on-surface">Condições importantes</label>
+                                        <textarea className="w-full px-4 py-3 bg-surface border-none rounded-xl focus:ring-2 focus:ring-primary/20 outline-none resize-none" placeholder="Ex: Diabetes Tipo 2, Hipertensão" rows="3"></textarea>
+                                    </div>
+                                    <div className="mt-4 flex flex-col md:flex-row items-center justify-between gap-6">
+                                        <button className="text-primary font-bold text-sm hover:underline order-2 md:order-1" type="button" onClick={() => navigate('/dashboard')}>Pular por agora</button>
+                                        <button className="w-full md:w-auto px-10 py-4 bg-primary text-on-primary font-bold rounded-full shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-3 order-1 md:order-2" type="submit">
+                                            Criar perfil <span className="material-symbols-outlined">arrow_forward</span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </section>
+                    </main>
+                </div>
+            );
+        };
+
+        const Dashboard = () => {
+            const navigate = useNavigate();
+            return (
+                <Layout>
+                    <main className="flex-1 w-full max-w-[1200px] mx-auto px-6 md:px-10 py-8 pb-24 lg:pb-8">
+                        <section className="mb-8">
+                            <h1 className="text-3xl font-bold text-on-surface mb-2">Bom dia, Ana</h1>
+                            <p className="text-lg text-on-surface-variant">Hoje há 2 medicamentos, 1 tarefa pendente e nenhuma consulta marcada.</p>
+                        </section>
+                        <section className="mb-10 flex flex-wrap gap-4">
+                            <button onClick={() => navigate('/medications')} className="flex items-center gap-2 px-6 py-4 bg-primary text-on-primary rounded-full font-bold shadow-lg hover:opacity-90 active:scale-95 transition-all">
+                                <span className="material-symbols-outlined">add_circle</span> <span className="text-sm">Adicionar medicamento</span>
+                            </button>
+                            <button onClick={() => navigate('/appointments')} className="flex items-center gap-2 px-6 py-4 bg-secondary text-on-secondary rounded-full font-bold shadow-lg hover:opacity-90 active:scale-95 transition-all">
+                                <span className="material-symbols-outlined">event</span> <span className="text-sm">Marcar consulta</span>
+                            </button>
+                            <button onClick={() => navigate('/emergency')} className="flex items-center gap-2 px-6 py-4 bg-error-container text-on-error-container rounded-full font-bold hover:opacity-90 transition-all">
+                                <span className="material-symbols-outlined">medical_services</span> <span className="text-sm">Ficha de emergência</span>
+                            </button>
+                        </section>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="glass-card rounded-3xl p-6 soft-shadow border border-white/40">
+                                <div className="flex justify-between items-start mb-6">
+                                    <div><h3 className="text-xl font-bold">Medicamentos</h3><p className="text-xs text-on-surface-variant">Próximas tomas para hoje</p></div>
+                                    <span className="material-symbols-outlined text-primary text-3xl">pill</span>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="flex items-center p-3 bg-primary-fixed/20 rounded-xl">
+                                        <div className="bg-primary text-on-primary p-2 rounded-lg mr-3"><span className="material-symbols-outlined">alarm</span></div>
+                                        <div className="flex-1"><p className="text-sm font-bold">Aspirina 100mg</p><p className="text-xs text-on-surface-variant">09:00 • Após o pequeno-almoço</p></div>
+                                        <input className="w-6 h-6 rounded-lg text-primary border-outline-variant focus:ring-primary" type="checkbox"/>
+                                    </div>
+                                </div>
+                                <button onClick={() => navigate('/medications')} className="mt-6 w-full text-center text-primary font-bold text-sm py-2 hover:bg-primary-fixed/10 rounded-lg">Ver plano completo</button>
+                            </div>
+                            <div className="glass-card rounded-3xl p-6 soft-shadow border border-white/40">
+                                <div className="flex justify-between items-start mb-6">
+                                    <div><h3 className="text-xl font-bold">Consultas</h3><p className="text-xs text-on-surface-variant">Agenda da semana</p></div>
+                                    <span className="material-symbols-outlined text-secondary text-3xl">calendar_today</span>
+                                </div>
+                                <div className="flex flex-col items-center justify-center py-8 text-center">
+                                    <div className="w-16 h-16 bg-secondary-container/30 rounded-full flex items-center justify-center mb-4"><span className="material-symbols-outlined text-secondary text-2xl">event_busy</span></div>
+                                    <p className="text-sm font-semibold">Sem consultas marcadas</p>
+                                </div>
+                                <button onClick={() => navigate('/appointments')} className="mt-6 w-full text-center text-secondary font-bold text-sm py-2 hover:bg-secondary-fixed/10 rounded-lg">Agendar nova consulta</button>
+                            </div>
+                            <div className="glass-card rounded-3xl p-6 soft-shadow border border-white/40">
+                                <div className="flex justify-between items-start mb-6">
+                                    <div><h3 className="text-xl font-bold">Tarefas</h3><p className="text-xs text-on-surface-variant">1 pendente</p></div>
+                                    <span className="material-symbols-outlined text-tertiary text-3xl">assignment</span>
+                                </div>
+                                <div className="group flex items-start p-4 border border-outline-variant rounded-xl hover:border-primary transition-colors cursor-pointer" onClick={() => navigate('/tasks')}>
+                                    <div className="bg-tertiary-container/10 text-tertiary p-2 rounded-lg mr-4"><span className="material-symbols-outlined">shopping_cart</span></div>
+                                    <div className="flex-1"><p className="text-sm font-bold group-hover:text-primary">Comprar medicação</p><p className="text-xs text-on-surface-variant">Urgente</p></div>
+                                </div>
+                                <button onClick={() => navigate('/tasks')} className="mt-6 w-full text-center text-on-surface-variant font-bold text-sm py-2 hover:bg-surface-container-highest rounded-lg">Ver todas as tarefas</button>
+                            </div>
+                        </div>
+                    </main>
+                </Layout>
+            );
+        };
+
+        const Medications = () => {
+            const [isModalOpen, setIsModalOpen] = useState(false);
+            return (
+                <Layout>
+                    <main className="flex-1 max-w-[1200px] mx-auto px-6 md:px-10 py-8 pb-24">
+                        <header className="flex justify-between items-center mb-8">
+                            <h1 className="text-3xl font-bold text-primary">Medicamentos</h1>
+                            <button onClick={() => setIsModalOpen(true)} className="bg-primary text-on-primary px-6 py-3 rounded-full font-bold shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+                                <span className="material-symbols-outlined">add</span> <span className="hidden sm:inline">Adicionar</span>
+                            </button>
+                        </header>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                             <div className="glass-card p-6 rounded-3xl shadow-md flex flex-col relative overflow-hidden group border border-white/40">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div><h3 className="text-xl font-bold">Metformina</h3><p className="text-sm text-on-surface-variant">500mg • Comprimido</p></div>
+                                    <span className="px-3 py-1 bg-secondary-container text-on-secondary-container text-xs rounded-full font-bold">Ativo</span>
+                                </div>
+                                <div className="space-y-3 mb-6">
+                                    <div className="flex items-center gap-3 text-sm"><span className="material-symbols-outlined text-primary">schedule</span> 08:00, 20:00</div>
+                                    <div className="flex items-center gap-3 text-sm"><span className="material-symbols-outlined text-primary">event_repeat</span> Diariamente</div>
+                                </div>
+                                <button className="mt-auto w-full py-3 rounded-xl bg-surface-container-low text-primary font-bold hover:bg-primary hover:text-on-primary transition-all flex justify-center items-center gap-2">
+                                    <span className="material-symbols-outlined">check_circle</span> Confirmar Toma
+                                </button>
+                            </div>
+                        </div>
+                        {isModalOpen && (
+                            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                                <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
+                                <div className="relative bg-surface w-full max-w-2xl rounded-3xl p-8 shadow-2xl overflow-y-auto max-h-[921px]">
+                                    <h2 className="text-2xl font-bold text-primary mb-6">Novo Medicamento</h2>
+                                    <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); setIsModalOpen(false); }}>
+                                        <input className="w-full h-12 px-4 bg-white border-outline-variant rounded-xl" placeholder="Nome do Medicamento" required />
+                                        <input className="w-full h-12 px-4 bg-white border-outline-variant rounded-xl" placeholder="Dosagem (ex: 500mg)" required />
+                                        <select className="w-full h-12 px-4 bg-white border-outline-variant rounded-xl">
+                                            <option>Diariamente</option>
+                                            <option>A cada 8 horas</option>
+                                        </select>
+                                        <input type="time" className="w-full h-12 px-4 bg-white border-outline-variant rounded-xl" />
+                                        <div className="flex gap-4 pt-4">
+                                            <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 text-on-surface-variant font-bold">Cancelar</button>
+                                            <button type="submit" className="flex-2 bg-primary text-on-primary py-3 px-8 rounded-xl font-bold">Guardar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        )}
+                    </main>
+                </Layout>
+            );
+        };
+
+        const Appointments = () => {
+            return (
+                <Layout>
+                    <main className="flex-1 max-w-[1200px] mx-auto px-6 md:px-10 py-8 pb-24">
+                        <header className="flex justify-between items-center mb-8">
+                            <h1 className="text-3xl font-bold text-primary">Consultas e exames</h1>
+                            <button className="bg-primary text-on-primary px-6 py-3 rounded-full font-bold shadow-lg flex items-center gap-2">
+                                <span className="material-symbols-outlined">add</span> Nova Consulta
+                            </button>
+                        </header>
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                            <div className="lg:col-span-4 flex flex-col gap-6">
+                                <section className="bg-surface-container-lowest rounded-3xl p-6 soft-shadow">
+                                    <h3 className="text-sm font-bold mb-4 uppercase">Outubro 2023</h3>
+                                    <div className="grid grid-cols-7 gap-1 text-center text-xs">
+                                        <div className="py-2 text-on-surface-variant font-bold">D</div><div className="py-2 text-on-surface-variant font-bold">S</div><div className="py-2 text-on-surface-variant font-bold">T</div><div className="py-2 text-on-surface-variant font-bold">Q</div><div className="py-2 text-on-surface-variant font-bold">Q</div><div className="py-2 text-on-surface-variant font-bold">S</div><div className="py-2 text-on-surface-variant font-bold">S</div>
+                                        <div className="py-3 text-outline-variant">25</div><div className="py-3 text-outline-variant">26</div><div className="py-3 text-outline-variant">27</div><div className="py-3 text-outline-variant">28</div><div className="py-3 text-outline-variant">29</div><div className="py-3 text-outline-variant">30</div><div className="py-3">1</div><div className="py-3">2</div><div className="py-3 bg-primary-container text-on-primary-container rounded-full font-bold">3</div><div className="py-3">4</div><div className="py-3">5</div><div className="py-3 relative">6<div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-secondary rounded-full"></div></div><div className="py-3">7</div>
+                                    </div>
+                                </section>
+                            </div>
+                            <div className="lg:col-span-8 space-y-6">
+                                <article className="bg-surface-container-lowest rounded-3xl p-6 soft-shadow border-l-4 border-primary">
+                                    <div className="flex gap-6">
+                                        <div className="flex flex-col items-center justify-center bg-primary-fixed text-on-primary-fixed-variant rounded-2xl p-4 min-w-[80px]">
+                                            <span className="text-[10px] font-bold uppercase">Out</span><span className="text-2xl font-extrabold">03</span><span className="text-xs">14:30</span>
+                                        </div>
+                                        <div className="flex-1">
+                                            <h2 className="text-xl font-bold mb-2">Cardiologia - Check-up Anual</h2>
+                                            <div className="space-y-1 text-sm text-on-surface-variant mb-4">
+                                                <p className="flex items-center gap-2"><span className="material-symbols-outlined text-primary text-lg">medical_services</span> Dr. Ricardo Mendes</p>
+                                                <p className="flex items-center gap-2"><span className="material-symbols-outlined text-primary text-lg">location_on</span> Hospital Sírio Libanês</p>
+                                            </div>
+                                            <div className="bg-surface-container rounded-xl p-3 text-sm italic">"Levar os últimos exames de sangue."</div>
+                                        </div>
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
+                    </main>
+                </Layout>
+            );
+        };
+
+        const Tasks = () => {
+            return (
+                <Layout>
+                    <main className="flex-1 max-w-[1200px] mx-auto px-6 md:px-10 py-8 pb-24">
+                        <header className="flex justify-between items-end mb-8">
+                            <div><h1 className="text-3xl font-bold">Tarefas da família</h1><p className="text-on-surface-variant mt-1">Gerencie as responsabilidades diárias.</p></div>
+                            <button className="bg-primary text-on-primary px-8 py-4 rounded-full font-bold shadow-lg flex items-center gap-2 transition-all active:scale-95">
+                                <span className="material-symbols-outlined">add</span> Criar tarefa
+                            </button>
+                        </header>
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <section className="space-y-4">
+                                <h3 className="text-xl font-bold flex items-center gap-2 px-2"><span className="w-3 h-3 bg-error rounded-full"></span> Por fazer</h3>
+                                <div className="bg-surface p-6 rounded-3xl soft-shadow border border-surface-container-low hover:border-primary-container transition-all cursor-pointer">
+                                    <span className="bg-error-container text-on-error-container text-[10px] font-bold px-3 py-1 rounded-full uppercase">Alta Prioridade</span>
+                                    <h4 className="font-bold text-lg mt-3 mb-2">Comprar medicação (Cardio)</h4>
+                                    <p className="text-sm text-on-surface-variant mb-6">Pegar a nova receita na gaveta e ir à farmácia.</p>
+                                    <div className="flex items-center justify-between mt-auto">
+                                        <div className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-[10px] text-white font-bold">AS</div>
+                                        <div className="flex items-center gap-1 text-xs text-on-surface-variant"><span className="material-symbols-outlined text-sm">calendar_today</span> Hoje, 18:00</div>
+                                    </div>
+                                </div>
+                            </section>
+                            <section className="space-y-4 opacity-50">
+                                <h3 className="text-xl font-bold flex items-center gap-2 px-2"><span className="w-3 h-3 bg-primary rounded-full"></span> Em progresso</h3>
+                                <div className="border-2 border-dashed border-outline-variant rounded-3xl p-8 flex flex-col items-center justify-center text-center">
+                                    <span className="material-symbols-outlined text-4xl mb-2">person_add</span><p className="text-xs">Delegue tarefas aqui</p>
+                                </div>
+                            </section>
+                            <section className="space-y-4">
+                                <h3 className="text-xl font-bold flex items-center gap-2 px-2"><span className="w-3 h-3 bg-secondary rounded-full"></span> Concluído</h3>
+                                <div className="bg-surface-container-low p-6 rounded-3xl soft-shadow opacity-75">
+                                    <h4 className="font-bold text-lg line-through opacity-60">Marcar Consulta Geriatra</h4>
+                                    <div className="flex items-center gap-2 mt-4"><div className="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-[10px] text-white font-bold">AS</div><span className="text-xs text-on-surface-variant">Concluído</span></div>
+                                </div>
+                            </section>
+                        </div>
+                    </main>
+                </Layout>
+            );
+        };
+
+        const Documents = () => {
+            return (
+                <Layout>
+                    <main className="flex-1 max-w-[1200px] mx-auto px-6 md:px-10 py-8 pb-24">
+                        <h1 className="text-3xl font-bold text-primary mb-8">Documentos</h1>
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                            <div className="lg:col-span-3 space-y-4">
+                                <div className="bg-surface-container-low rounded-3xl p-4 soft-shadow border border-surface-variant/30">
+                                    <h3 className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-4 px-2">Categorias</h3>
+                                    <div className="space-y-1">
+                                        <button className="w-full flex items-center justify-between px-3 py-3 rounded-xl bg-primary text-on-primary"><div className="flex items-center gap-3"><span className="material-symbols-outlined">folder</span><span className="text-sm font-bold">Todos</span></div><span className="text-xs">24</span></button>
+                                        <button className="w-full flex items-center justify-between px-3 py-3 rounded-xl hover:bg-surface-container-highest transition-colors"><div className="flex items-center gap-3"><span className="material-symbols-outlined text-primary">description</span><span className="text-sm font-bold">Receitas</span></div><span className="text-xs font-bold">8</span></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="lg:col-span-9 space-y-6">
+                                <div className="bg-surface-container-lowest rounded-3xl p-8 soft-shadow border border-surface-variant/30">
+                                    <div className="flex items-center gap-2 mb-6"><span className="material-symbols-outlined text-primary">cloud_upload</span><h3 className="text-xl font-bold">Novo Documento</h3></div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="drag-dash rounded-3xl flex flex-col items-center justify-center p-8 bg-background group cursor-pointer hover:bg-primary-fixed/5 transition-all">
+                                            <span className="material-symbols-outlined text-4xl text-primary mb-3">upload_file</span>
+                                            <p className="text-sm font-bold">Arraste arquivos aqui</p>
+                                        </div>
+                                        <div className="space-y-4">
+                                            <input className="w-full h-12 rounded-xl bg-surface-container-low border-none px-4 text-sm" placeholder="Título do Documento" />
+                                            <button className="w-full bg-primary text-on-primary font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-all">Guardar documento</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                </Layout>
+            );
+        };
+
+        const Emergency = () => {
+            return (
+                <Layout>
+                    <main className="flex-1 max-w-[1200px] mx-auto px-6 md:px-10 py-8 pb-24">
+                        <header className="flex justify-between items-center mb-8">
+                             <h1 className="text-3xl font-bold text-primary">Ficha de emergência</h1>
+                             <button className="flex items-center gap-2 bg-primary text-on-primary px-6 py-4 rounded-full font-bold shadow-lg" onClick={() => window.print()}>
+                                <span className="material-symbols-outlined">print</span> Imprimir
+                             </button>
+                        </header>
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                            <div className="lg:col-span-8 space-y-6">
+                                <div className="emergency-gradient p-8 rounded-3xl text-on-primary shadow-xl relative overflow-hidden">
+                                    <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center md:items-start">
+                                        <img className="w-32 h-32 md:w-40 md:h-40 rounded-3xl object-cover border-4 border-white/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJhjcLass0I-I0RMyqktqwzAOuQYBqVgwQTiUJtK9XpFG-NWzNLauiCBOoo2l9u6BHFp8nmHmxHmnUOBlro2ywkH-Cr6VxCp65fxdYuWeIndulzhJ1LrMl9VlNIM0o0G7EpmpFdYYr5btDwBKHnMPaj6BdIKjhq-EIT1zL-PcgxVZ0xbUTtcmm1fz_1lJto-kSfkkKrocSraCClaKkWPyLAKjvTKIiABNAnIlzZBS8K8YVJocrBd-BMqGsWPaAfDCCpSouHQ_icKMV" />
+                                        <div className="flex-1 text-center md:text-left">
+                                            <h3 className="text-3xl font-bold mb-4">António G. Martins</h3>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                <div className="bg-white/10 p-4 rounded-xl">
+                                                    <p className="text-[10px] uppercase opacity-70">Nascimento</p><p className="text-lg font-bold">14 Mai 1942</p>
+                                                </div>
+                                                <div className="bg-white/10 p-4 rounded-xl">
+                                                    <p className="text-[10px] uppercase opacity-70">SNS</p><p className="text-lg font-bold">123 456 789</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="bg-surface-container-lowest p-8 rounded-3xl shadow-sm border border-error/10">
+                                    <h4 className="text-xl font-bold text-error mb-4 flex items-center gap-3"><span className="material-symbols-outlined" style={{fontVariationSettings: "'FILL' 1"}}>warning</span> Alergias</h4>
+                                    <ul className="space-y-2">
+                                        <li className="bg-error-container text-on-error-container px-4 py-3 rounded-xl font-bold">Penicilina (Grave)</li>
+                                        <li className="bg-error-container/30 text-on-error-container px-4 py-3 rounded-xl">Frutos Secos</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div className="lg:col-span-4 space-y-6">
+                                <div className="bg-surface-container-high p-6 rounded-3xl shadow-sm">
+                                    <h4 className="text-xl font-bold mb-4 flex items-center gap-2"><span className="material-symbols-outlined text-primary">call</span> Contactos SOS</h4>
+                                    <div className="bg-surface-container-lowest p-4 rounded-2xl flex items-center justify-between group cursor-pointer hover:bg-primary text-on-surface hover:text-on-primary transition-all">
+                                        <div><p className="font-bold">Maria Silva</p><p className="text-xs opacity-70">Cuidadora Principal</p></div>
+                                        <span className="material-symbols-outlined">phone_android</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                </Layout>
+            );
+        };
+
+        const Family = () => {
+            return (
+                <Layout>
+                    <main className="flex-1 max-w-[1200px] mx-auto px-6 md:px-10 py-8 pb-24">
+                        <h1 className="text-3xl font-bold text-primary mb-8">Círculo de Cuidado</h1>
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                            <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="glass-card p-6 rounded-3xl soft-shadow flex flex-col gap-4 border-l-4 border-primary">
+                                    <div className="flex justify-between items-start">
+                                        <img className="w-16 h-16 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcAKGgDVxDUwPY_HEkn9NbLQTOlxbswa3tZQCia4f9D5-KirdlxYhRuuS2Tew4V5G1Uwc1KLQ4Q-ZUEtq86Psgjm8AJ86Ry0iqFWAROTS_K15xx9ckPRnw9FVpcUWxwZUznHglFVF0HqVAFVki7c_UHrI_W-KOc50XvdYOyYOE8KnSUm7jpmMdqxTXqxpmJxooY5iw-NeR_80Zpma7Z3Z9uqPGE8jgIXFOHIk-txVCXm21Dzi3mV_zhfp3mdeHXJuJQtMT0yjmiTP4" />
+                                        <span className="bg-primary/10 text-primary text-[10px] font-bold px-3 py-1 rounded-full uppercase">Admin</span>
+                                    </div>
+                                    <div><h4 className="font-bold">Ana Silva</h4><p className="text-on-surface-variant text-xs">Cuidadora Principal</p></div>
+                                </div>
+                                <div className="glass-card p-6 rounded-3xl soft-shadow flex flex-col gap-4">
+                                    <div className="flex justify-between items-start">
+                                        <img className="w-16 h-16 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9KzPWYlnKFuluAquTz8Y19YNaoYS6ph-w5DNn-6UJUKYV4_b5MgFTT6TLUJ9Uep-IIcTYIRbUDC0mhy77R5FFZ3cV0jYCOCT-l8g_bx-N15ZiB-YifN3J4UQaorJF04w9BIscwR0UlJX3uHH_euZjGs1OT81PMywdqIYhzUQcOyOM25h7Ppt7UvBd4GJumfmMrdB3fqV3Z1fExrGxpCOgJN9twTi-CqaLB702yH12YI6TFxmTU5xG4pm_vgiUtxXscLH8RLqNVhqq" />
+                                        <span className="bg-secondary-container/30 text-secondary text-[10px] font-bold px-3 py-1 rounded-full uppercase">Familiar</span>
+                                    </div>
+                                    <div><h4 className="font-bold">Carlos Mendes</h4><p className="text-on-surface-variant text-xs">Irmão</p></div>
+                                </div>
+                            </div>
+                            <div className="lg:col-span-4">
+                                <div className="bg-white rounded-3xl p-8 soft-shadow border border-primary/5">
+                                    <h3 className="text-xl font-bold text-primary mb-6">Convidar Membro</h3>
+                                    <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                                        <input className="w-full h-12 px-4 rounded-xl bg-surface-container-low border-none" placeholder="Email ou Telefone" />
+                                        <select className="w-full h-12 px-4 rounded-xl bg-surface-container-low border-none"><option>Filho(a)</option><option>Irmão/Irmã</option></select>
+                                        <button className="w-full py-4 rounded-full text-white font-bold btn-gradient shadow-lg">Convidar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                </Layout>
+            );
+        };
+
+        const Notes = () => {
+            return (
+                <Layout>
+                    <main className="flex-1 max-w-[800px] mx-auto px-6 md:px-10 py-8 pb-48">
+                        <header className="mb-8">
+                            <h1 className="text-3xl font-bold text-primary">Notas de cuidado</h1>
+                            <p className="text-sm text-on-surface-variant italic mt-2">"A pequena atenção de hoje é o conforto de amanhã."</p>
+                        </header>
+                        <div className="space-y-8 relative">
+                            <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-surface-variant/50"></div>
+                            <div className="relative pl-12">
+                                <div className="absolute left-4 w-4 h-4 bg-primary rounded-full border-4 border-background z-10"></div>
+                                <div className="glass-card bg-surface-container-lowest rounded-3xl p-6 shadow-sm border border-white/40">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <img className="w-10 h-10 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcAKGgDVxDUwPY_HEkn9NbLQTOlxbswa3tZQCia4f9D5-KirdlxYhRuuS2Tew4V5G1Uwc1KLQ4Q-ZUEtq86Psgjm8AJ86Ry0iqFWAROTS_K15xx9ckPRnw9FVpcUWxwZUznHglFVF0HqVAFVki7c_UHrI_W-KOc50XvdYOyYOE8KnSUm7jpmMdqxTXqxpmJxooY5iw-NeR_80Zpma7Z3Z9uqPGE8jgIXFOHIk-txVCXm21Dzi3mV_zhfp3mdeHXJuJQtMT0yjmiTP4" />
+                                        <div><h4 className="font-bold">Ana Silva</h4><p className="text-xs text-on-surface-variant">Hoje, 09:15</p></div>
+                                    </div>
+                                    <p className="text-on-surface">Tomou os remédios da manhã sem problemas. Pressão 12/8.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="fixed bottom-0 left-0 right-0 lg:left-64 z-50 p-6 glass-card border-t border-surface-container">
+                            <div className="max-w-[800px] mx-auto bg-white shadow-2xl rounded-full p-2 flex items-center gap-2">
+                                <input className="flex-1 bg-transparent border-none focus:ring-0 px-6 py-3 text-sm" placeholder="Escreva uma nota de cuidado..." />
+                                <button className="bg-primary text-on-primary px-8 py-3 rounded-full font-bold shadow-lg"><span className="material-symbols-outlined">send</span></button>
+                            </div>
+                        </div>
+                    </main>
+                </Layout>
+            );
+        };
+
+        const Settings = () => {
+            return (
+                <Layout>
+                    <main className="flex-1 max-w-[1200px] mx-auto px-6 md:px-10 py-8 pb-24">
+                        <h1 className="text-3xl font-bold text-primary mb-8">Definições</h1>
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+                             <div className="md:col-span-8">
+                                <div className="bg-white p-8 rounded-3xl soft-shadow">
+                                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><span className="material-symbols-outlined text-primary">person</span> Perfil</h2>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div className="p-4 bg-surface-container-low rounded-xl"><p className="text-xs opacity-70">Nome</p><p className="font-bold">Maria Santos Silva</p></div>
+                                        <div className="p-4 bg-surface-container-low rounded-xl"><p className="text-xs opacity-70">Email</p><p className="font-bold">maria.silva@email.com</p></div>
+                                    </div>
+                                </div>
+                             </div>
+                             <div className="md:col-span-4">
+                                <div className="bg-white p-8 rounded-3xl soft-shadow h-full">
+                                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><span className="material-symbols-outlined text-secondary">notifications</span> Alertas</h2>
+                                    <div className="space-y-4">
+                                        <div className="flex justify-between items-center"><span className="text-sm font-bold">Medicação</span><input type="checkbox" checked className="w-10 h-5 bg-gray-200 rounded-full appearance-none checked:bg-primary relative before:content-[''] before:absolute before:w-4 before:h-4 before:bg-white before:rounded-full before:top-0.5 before:left-0.5 checked:before:translate-x-5 transition-all" /></div>
+                                        <div className="flex justify-between items-center"><span className="text-sm font-bold">Consultas</span><input type="checkbox" checked className="w-10 h-5 bg-gray-200 rounded-full appearance-none checked:bg-primary relative before:content-[''] before:absolute before:w-4 before:h-4 before:bg-white before:rounded-full before:top-0.5 before:left-0.5 checked:before:translate-x-5 transition-all" /></div>
+                                    </div>
+                                </div>
+                             </div>
+                             <div className="md:col-span-12">
+                                 <div className="bg-error-container/10 border border-error/10 p-8 rounded-3xl flex justify-between items-center">
+                                     <div><h3 className="font-bold text-error">Zona de Perigo</h3><p className="text-xs text-on-surface-variant">Apagar conta e todos os dados familiares.</p></div>
+                                     <button className="text-error font-bold border border-error/20 px-6 py-2 rounded-xl hover:bg-error/10 transition-colors">Iniciar processo</button>
+                                 </div>
+                             </div>
+                        </div>
+                    </main>
+                </Layout>
+            );
+        };
+
+        const Profile = () => {
+            return (
+                <Layout>
+                    <main className="flex-1 max-w-[1200px] mx-auto px-6 md:px-10 py-8 pb-24">
+                        <h1 className="text-3xl font-bold text-primary mb-8">Perfil do Familiar</h1>
+                        <div className="bg-white p-8 rounded-3xl soft-shadow">
+                            <div className="flex flex-col md:flex-row gap-8 items-center mb-8">
+                                <img className="w-32 h-32 rounded-3xl object-cover border-4 border-surface-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJhjcLass0I-I0RMyqktqwzAOuQYBqVgwQTiUJtK9XpFG-NWzNLauiCBOoo2l9u6BHFp8nmHmxHmnUOBlro2ywkH-Cr6VxCp65fxdYuWeIndulzhJ1LrMl9VlNIM0o0G7EpmpFdYYr5btDwBKHnMPaj6BdIKjhq-EIT1zL-PcgxVZ0xbUTtcmm1fz_1lJto-kSfkkKrocSraCClaKkWPyLAKjvTKIiABNAnIlzZBS8K8YVJocrBd-BMqGsWPaAfDCCpSouHQ_icKMV" />
+                                <div><h2 className="text-4xl font-bold">António G. Martins</h2><p className="text-lg text-on-surface-variant">81 anos • Lisboa</p></div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                    <h3 className="font-bold text-xl border-b pb-2">Dados de Saúde</h3>
+                                    <div className="p-4 bg-surface-container-low rounded-xl"><p className="text-xs opacity-70">Número SNS</p><p className="font-bold">123 456 789</p></div>
+                                    <div className="p-4 bg-error-container/20 rounded-xl"><p className="text-xs text-error font-bold">Alergias</p><p className="font-bold text-error">Penicilina (Grave)</p></div>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                </Layout>
+            );
+        };
+
+        // --- App Component ---
+
+        const App = () => {
+            return (
+                <MemoryRouter>
+                    <Routes>
+                        <Route path="/" element={<LandingPage />} />
+                        <Route path="/onboarding" element={<Onboarding />} />
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/profile" element={<Profile />} />
+                        <Route path="/medications" element={<Medications />} />
+                        <Route path="/appointments" element={<Appointments />} />
+                        <Route path="/tasks" element={<Tasks />} />
+                        <Route path="/documents" element={<Documents />} />
+                        <Route path="/emergency" element={<Emergency />} />
+                        <Route path="/family" element={<Family />} />
+                        <Route path="/notes" element={<Notes />} />
+                        <Route path="/settings" element={<Settings />} />
+                    </Routes>
+                </MemoryRouter>
+            );
+        };
+
+        const container = document.getElementById('root');
+        const root = createRoot(container);
+        root.render(<App />);
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html lang="pt"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cuida Care - Criar Perfil do Familiar</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .form-input-focus:focus-within {
+            background-color: #FDF5E6; /* Warm Beige Focus from Style Guidance */
+            transition: background-color 0.3s ease;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-container": "#7a7569",
+                      "on-error": "#ffffff",
+                      "surface-container-high": "#dbeaf5",
+                      "on-tertiary-container": "#fffdff",
+                      "tertiary": "#615c51",
+                      "on-secondary-fixed": "#002107",
+                      "inverse-on-surface": "#e4f3fe",
+                      "on-primary": "#ffffff",
+                      "tertiary-fixed-dim": "#cdc6b8",
+                      "surface-container-low": "#e9f5ff",
+                      "surface-dim": "#cddce7",
+                      "background": "#f5faff",
+                      "on-background": "#0f1d25",
+                      "tertiary-fixed": "#e9e2d3",
+                      "on-primary-fixed-variant": "#004786",
+                      "on-tertiary-fixed-variant": "#4b463c",
+                      "surface-bright": "#f5faff",
+                      "secondary-fixed": "#abf4ac",
+                      "on-tertiary-fixed": "#1e1b13",
+                      "on-secondary": "#ffffff",
+                      "primary-container": "#1976d2",
+                      "outline": "#717783",
+                      "primary-fixed": "#d4e3ff",
+                      "on-surface": "#0f1d25",
+                      "surface-container": "#e1f0fb",
+                      "secondary-container": "#abf4ac",
+                      "surface-variant": "#d6e5ef",
+                      "surface-container-highest": "#d6e5ef",
+                      "secondary": "#286b33",
+                      "outline-variant": "#c1c6d4",
+                      "on-error-container": "#93000a",
+                      "primary": "#005dac",
+                      "inverse-surface": "#24323a",
+                      "primary-fixed-dim": "#a5c8ff",
+                      "on-primary-fixed": "#001c3a",
+                      "on-primary-container": "#fffdff",
+                      "on-tertiary": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "surface": "#f5faff",
+                      "secondary-fixed-dim": "#90d792",
+                      "on-secondary-fixed-variant": "#07521d",
+                      "inverse-primary": "#a5c8ff",
+                      "surface-tint": "#005faf",
+                      "on-surface-variant": "#414752",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-container": "#2e7238",
+                      "error": "#ba1a1a"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-lg": "2rem",
+                      "gutter": "1.5rem",
+                      "base": "8px",
+                      "container-padding-mobile": "1.25rem",
+                      "stack-sm": "0.5rem",
+                      "container-padding-desktop": "2.5rem",
+                      "stack-md": "1rem"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": ["Plus Jakarta Sans"],
+                      "headline-lg": ["Plus Jakarta Sans"],
+                      "label-md": ["Plus Jakarta Sans"],
+                      "headline-md": ["Plus Jakarta Sans"],
+                      "body-md": ["Plus Jakarta Sans"],
+                      "body-lg": ["Plus Jakarta Sans"],
+                      "headline-xl": ["Plus Jakarta Sans"],
+                      "label-sm": ["Plus Jakarta Sans"]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col items-center">
+<!-- Top Navigation Suppression: As per mandate, navigation shell is suppressed for linear onboarding flow -->
+<header class="w-full flex justify-center py-stack-lg px-container-padding-mobile md:px-container-padding-desktop">
+<div class="flex items-center gap-base">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</div>
+<span class="text-headline-md font-headline-md text-primary">Cuida Care</span>
+</div>
+</header>
+<main class="w-full max-w-[1200px] flex flex-col lg:flex-row gap-stack-lg px-container-padding-mobile md:px-container-padding-desktop pb-stack-lg">
+<!-- Left Column: Welcoming Content & Context -->
+<section class="lg:w-5/12 flex flex-col justify-center gap-stack-md order-2 lg:order-1">
+<div class="hidden lg:block mb-stack-md">
+<div class="inline-flex items-center gap-2 px-4 py-2 bg-secondary-container text-on-secondary-container rounded-full text-label-md font-label-md">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+                    Primeiro Passo
+                </div>
+</div>
+<h1 class="font-headline-lg-mobile md:font-headline-xl text-headline-lg-mobile md:text-headline-xl text-on-background max-w-md">
+                Vamos começar a cuidar do seu familiar
+            </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-lg">
+                Para que possamos organizar as tarefas de saúde e bem-estar, precisamos de conhecer quem vai estar ao seu cuidado. Os dados são encriptados e seguros.
+            </p>
+<!-- Onboarding Illustration -->
+<div class="mt-stack-lg relative overflow-hidden rounded-[24px] shadow-lg group">
+<img alt="Cuidador e familiar idoso" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105" data-alt="A warm and cinematic photograph of a compassionate young caregiver holding the hands of an elderly person in a brightly lit, cozy living room. The scene is filled with soft, natural light and a gentle morning haze, reflecting the Supportive Hearth brand identity. The color palette is dominated by soft blues and warm beiges, creating a feeling of safety, reliability, and calm control. High-quality lifestyle photography with a shallow depth of field focusing on the connection between the two people." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgyV2IOEoM8rZtqf0GZawPnILAbIS3gbGBRPfCNEBEeOTRCe3BpgUtAluhUeWl1aKRVYo7ejmSdZITm3J9ZDdbreVHKTnF2iQTAIxUhEsExJa2MePwo-tmYA7pewg32CtWHU1FyNdqEeZxHAkQojuk6LbA2GnRu4C5RV3m0HixhTL3Ae7wCmHpvIDg2LO0ZgJ7LAlIfT_GTaarZDP5pYY2WSSMZtLrZ3QhtTcO3RfLohQKQwxKW1Sht2E3DEj1baiS4G_VRZHHKmX4"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent"></div>
+</div>
+<div class="mt-stack-lg flex items-center gap-4">
+<div class="flex -space-x-2">
+<div class="w-10 h-10 rounded-full border-2 border-surface-container-lowest bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[20px]">person</span>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-surface-container-lowest bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[20px]">group</span>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-surface-container-lowest bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[20px]">favorite</span>
+</div>
+</div>
+<p class="text-label-md font-label-md text-on-surface-variant">
+                    Junte-se a +5,000 famílias em Portugal
+                </p>
+</div>
+</section>
+<!-- Right Column: Focus Form -->
+<section class="lg:w-7/12 order-1 lg:order-2">
+<div class="glass-card bg-surface-container-lowest rounded-[24px] p-8 md:p-10 shadow-[0_24px_48px_rgba(0,93,172,0.06)] border border-surface-container">
+<!-- Progress Indicator -->
+<div class="flex items-center justify-between mb-stack-lg">
+<div class="flex gap-2 w-full">
+<div class="h-1.5 w-1/3 bg-primary rounded-full"></div>
+<div class="h-1.5 w-1/3 bg-surface-container-high rounded-full"></div>
+<div class="h-1.5 w-1/3 bg-surface-container-high rounded-full"></div>
+</div>
+<span class="ml-4 text-label-sm font-label-sm text-on-surface-variant whitespace-nowrap">Passo 1 de 3</span>
+</div>
+<form class="flex flex-col gap-6" onsubmit="return false;">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Nome do familiar -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface" for="nome">Nome do familiar</label>
+<div class="relative form-input-focus rounded-xl">
+<input class="w-full h-12 px-4 py-3 bg-surface border-none rounded-xl focus:ring-2 focus:ring-primary/20 text-body-md outline-none" id="nome" placeholder="Ex: Maria dos Santos" type="text"/>
+</div>
+</div>
+<!-- Data de nascimento -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface" for="nascimento">Data de nascimento</label>
+<div class="relative form-input-focus rounded-xl">
+<input class="w-full h-12 px-4 py-3 bg-surface border-none rounded-xl focus:ring-2 focus:ring-primary/20 text-body-md outline-none" id="nascimento" type="date"/>
+</div>
+</div>
+<!-- Número SNS -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface" for="sns">Número SNS</label>
+<div class="relative form-input-focus rounded-xl">
+<input class="w-full h-12 px-4 py-3 bg-surface border-none rounded-xl focus:ring-2 focus:ring-primary/20 text-body-md outline-none" id="sns" placeholder="9 dígitos" type="text"/>
+</div>
+</div>
+<!-- Médico de família -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface" for="medico">Médico de família</label>
+<div class="relative form-input-focus rounded-xl">
+<input class="w-full h-12 px-4 py-3 bg-surface border-none rounded-xl focus:ring-2 focus:ring-primary/20 text-body-md outline-none" id="medico" placeholder="Dr. Nome do Médico" type="text"/>
+</div>
+</div>
+</div>
+<!-- Morada (Full Width) -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface" for="morada">Morada</label>
+<div class="relative form-input-focus rounded-xl">
+<input class="w-full h-12 px-4 py-3 bg-surface border-none rounded-xl focus:ring-2 focus:ring-primary/20 text-body-md outline-none" id="morada" placeholder="Rua, número e localidade" type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Alergias -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface" for="alergias">Alergias</label>
+<div class="relative form-input-focus rounded-xl">
+<textarea class="w-full px-4 py-3 bg-surface border-none rounded-xl focus:ring-2 focus:ring-primary/20 text-body-md outline-none resize-none" id="alergias" placeholder="Ex: Penicilina, Amendoins" rows="3"></textarea>
+</div>
+</div>
+<!-- Condições importantes -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface" for="condicoes">Condições importantes</label>
+<div class="relative form-input-focus rounded-xl">
+<textarea class="w-full px-4 py-3 bg-surface border-none rounded-xl focus:ring-2 focus:ring-primary/20 text-body-md outline-none resize-none" id="condicoes" placeholder="Ex: Diabetes Tipo 2, Hipertensão" rows="3"></textarea>
+</div>
+</div>
+</div>
+<!-- Farmácia habitual -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface" for="farmacia">Farmácia habitual</label>
+<div class="relative form-input-focus rounded-xl flex items-center">
+<span class="material-symbols-outlined absolute left-4 text-outline">medication</span>
+<input class="w-full h-12 pl-12 pr-4 py-3 bg-surface border-none rounded-xl focus:ring-2 focus:ring-primary/20 text-body-md outline-none" id="farmacia" placeholder="Nome da farmácia ou morada próxima" type="text"/>
+</div>
+</div>
+<!-- CTA Section -->
+<div class="mt-stack-md flex flex-col md:flex-row items-center justify-between gap-6">
+<button class="text-primary font-label-md text-label-md hover:underline order-2 md:order-1" type="button">
+                            Pular por agora
+                        </button>
+<button class="w-full md:w-auto px-10 py-4 bg-primary text-on-primary font-headline-md text-headline-md rounded-full shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 order-1 md:order-2" type="submit">
+                            Criar perfil
+                            <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</form>
+</div>
+<p class="text-center mt-6 text-label-sm font-label-sm text-on-surface-variant flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+                Seus dados estão protegidos de acordo com o RGPD.
+            </p>
+</section>
+</main>
+<!-- Background Decorations -->
+<div class="fixed top-0 right-0 -z-10 w-1/3 h-1/2 opacity-20 pointer-events-none">
+
+</div>
+<div class="fixed bottom-0 left-0 -z-10 w-1/4 h-1/3 opacity-30 pointer-events-none filter blur-3xl bg-secondary-container rounded-full"></div>
+<script>
+        // Simple Interaction logic
+        document.querySelectorAll('input, textarea').forEach(el => {
+            el.addEventListener('focus', () => {
+                el.parentElement.parentElement.classList.add('scale-[1.01]');
+                el.parentElement.parentElement.classList.add('transition-transform');
+            });
+            el.addEventListener('blur', () => {
+                el.parentElement.parentElement.classList.remove('scale-[1.01]');
+            });
+        });
+
+        const form = document.querySelector('form');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">refresh</span> Guardando...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                alert('Perfil criado com sucesso! Vamos agora configurar os medicamentos.');
+                btn.innerHTML = 'Criar perfil <span class="material-symbols-outlined">arrow_forward</span>';
+                btn.disabled = false;
+            }, 1500);
+        });
+    </script>
+</body></html>

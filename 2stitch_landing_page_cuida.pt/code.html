@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+
+<html lang="pt"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cuida.pt | Organização Familiar para Cuidadores</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-on-surface": "#e4f3fe",
+                    "surface-container-high": "#dbeaf5",
+                    "surface-tint": "#005faf",
+                    "on-primary-fixed-variant": "#004786",
+                    "on-error": "#ffffff",
+                    "surface-container-low": "#e9f5ff",
+                    "on-secondary-fixed": "#002107",
+                    "error-container": "#ffdad6",
+                    "on-tertiary": "#ffffff",
+                    "surface-dim": "#cddce7",
+                    "on-error-container": "#93000a",
+                    "primary-fixed": "#d4e3ff",
+                    "on-tertiary-fixed": "#1e1b13",
+                    "primary-container": "#1976d2",
+                    "secondary-container": "#abf4ac",
+                    "on-surface": "#0f1d25",
+                    "primary-fixed-dim": "#a5c8ff",
+                    "surface-container-highest": "#d6e5ef",
+                    "tertiary": "#615c51",
+                    "secondary-fixed": "#abf4ac",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container": "#e1f0fb",
+                    "outline": "#717783",
+                    "on-secondary-fixed-variant": "#07521d",
+                    "on-secondary-container": "#2e7238",
+                    "error": "#ba1a1a",
+                    "on-primary-container": "#fffdff",
+                    "on-tertiary-container": "#fffdff",
+                    "on-tertiary-fixed-variant": "#4b463c",
+                    "tertiary-fixed": "#e9e2d3",
+                    "outline-variant": "#c1c6d4",
+                    "on-primary-fixed": "#001c3a",
+                    "on-primary": "#ffffff",
+                    "surface": "#f5faff",
+                    "background": "#f5faff",
+                    "on-surface-variant": "#414752",
+                    "secondary": "#286b33",
+                    "tertiary-container": "#7a7569",
+                    "surface-bright": "#f5faff",
+                    "inverse-surface": "#24323a",
+                    "surface-variant": "#d6e5ef",
+                    "on-background": "#0f1d25",
+                    "inverse-primary": "#a5c8ff",
+                    "primary": "#005dac",
+                    "secondary-fixed-dim": "#90d792",
+                    "on-secondary": "#ffffff",
+                    "warm-beige": "#FDF5E6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "2xl": "1.5rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-sm": "0.5rem",
+                    "base": "8px",
+                    "stack-md": "1rem",
+                    "container-padding-desktop": "2.5rem",
+                    "container-padding-mobile": "1.25rem",
+                    "stack-lg": "2rem",
+                    "gutter": "1.5rem"
+            },
+            "fontFamily": {
+                    "headline-xl": ["Plus Jakarta Sans"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "label-md": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .soft-shadow {
+            box-shadow: 0 8px 24px rgba(0, 95, 175, 0.04);
+        }
+        .soft-shadow-hover:hover {
+            box-shadow: 0 12px 32px rgba(0, 95, 175, 0.08);
+            transform: translateY(-2px);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d6e5ef; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #c1c6d4; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md selection:bg-primary/20">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md shadow-sm">
+<nav class="max-w-[1200px] mx-auto flex justify-between items-center px-container-padding-mobile md:px-container-padding-desktop h-20">
+<a class="font-headline-md text-headline-md font-bold text-primary" href="#">Cuida.pt</a>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-md text-label-md" href="#como-funciona">Como funciona</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-md text-label-md" href="#funcionalidades">Funcionalidades</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-md text-label-md" href="#precos">Preços</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden md:block text-primary font-bold hover:text-primary-container transition-colors font-label-md text-label-md">Entrar</button>
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-full font-label-md text-label-md shadow-sm hover:scale-105 active:scale-95 transition-all">Começar</button>
+</div>
+</nav>
+</header>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="relative overflow-hidden py-16 md:py-24">
+<div class="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop flex flex-col md:flex-row items-center gap-16">
+<div class="flex-1 text-center md:text-left z-10">
+<span class="inline-block px-4 py-1.5 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-sm mb-6">
+                        Organização para famílias cuidadoras
+                    </span>
+<h1 class="font-headline-xl text-headline-xl md:text-[48px] md:leading-[56px] text-on-surface mb-6">
+                        Cuide melhor dos seus pais, com toda a família organizada num só lugar.
+                    </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-xl">
+                        Guarde medicamentos, consultas, documentos, contactos de emergência e tarefas familiares numa plataforma simples feita para famílias portuguesas.
+                    </p>
+<div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+<button class="bg-primary text-on-primary px-8 py-4 rounded-full font-headline-md text-[18px] shadow-lg hover:shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+                            Começar gratuitamente
+                        </button>
+<button class="bg-surface-container-low text-primary px-8 py-4 rounded-full font-headline-md text-[18px] hover:bg-surface-container-high transition-colors">
+                            Ver como funciona
+                        </button>
+</div>
+</div>
+<div class="flex-1 w-full relative">
+<div class="relative z-10 glass-card p-6 rounded-2xl soft-shadow border border-white/40">
+<img alt="Cuida.pt Dashboard Interface" class="rounded-xl w-full h-auto shadow-sm" data-alt="A clean and modern high-fidelity software dashboard interface displayed on a tablet screen. The UI shows medical task management cards with calming blue and green accents, including a medication schedule, upcoming doctor appointments, and family notes. The background is a warm, sunlit Portuguese home interior with soft lighting, evoking a sense of calm organization and professional care." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdx1dfUc-1E1-dYKkda1s4AwDWV7zd-DsYZJBZT1Ga2a0l-pQO1WcPbToRKFI5mPb_T5Ew92lKs5To6EsrajdzDPYPDGaJbjxK5ltreRmhaDGqgXtM6-5hsoW8lNTpJuO9zquo31d-PAv4xrtNDmvhazpcGU-SATjU9z7h-hfvRaVbJp1qGfTJLUWuO2uZXhoxmWpE-fryqH8nRz9V8Rbv9DAVHoRbexzgA6VxLcuz150OWXd1Oo8yDQR9t19Of2_f6NzzLEj0N66N"/>
+<!-- Floating Micro-UI elements -->
+<div class="absolute -top-4 -right-4 bg-secondary-container p-4 rounded-xl shadow-lg animate-bounce duration-3000">
+<span class="material-symbols-outlined text-on-secondary-container">done_all</span>
+</div>
+</div>
+<!-- Decorative background blob -->
+<div class="absolute -top-20 -right-20 w-80 h-80 bg-primary/5 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-20 -left-20 w-80 h-80 bg-secondary/5 rounded-full blur-3xl"></div>
+</div>
+</div>
+</section>
+<!-- Problem Section -->
+<section class="py-20 bg-surface-container-lowest">
+<div class="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop">
+<div class="text-center max-w-3xl mx-auto mb-16">
+<h2 class="font-headline-lg text-headline-lg md:text-headline-xl text-on-surface mb-4">
+                        Cuidar de um familiar não devia depender de mensagens perdidas no WhatsApp.
+                    </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+                        A dispersão de informação causa stress e erros graves. Nós resolvemos os problemas mais comuns do dia-a-dia.
+                    </p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Problem Card 1 -->
+<div class="bg-surface p-8 rounded-2xl border border-outline-variant/30 soft-shadow-hover transition-all">
+<span class="material-symbols-outlined text-error mb-4 text-3xl">calendar_today</span>
+<h3 class="font-headline-md text-headline-md mb-2">Consultas esquecidas</h3>
+<p class="text-on-surface-variant">A marcação ficou no telemóvel de um irmão e ninguém apareceu no hospital.</p>
+</div>
+<!-- Problem Card 2 -->
+<div class="bg-surface p-8 rounded-2xl border border-outline-variant/30 soft-shadow-hover transition-all">
+<span class="material-symbols-outlined text-error mb-4 text-3xl">medical_services</span>
+<h3 class="font-headline-md text-headline-md mb-2">Medicamentos errados</h3>
+<p class="text-on-surface-variant">Dúvidas sobre se a dose da manhã já foi tomada ou se a receita expirou.</p>
+</div>
+<!-- Problem Card 3 -->
+<div class="bg-surface p-8 rounded-2xl border border-outline-variant/30 soft-shadow-hover transition-all">
+<span class="material-symbols-outlined text-error mb-4 text-3xl">folder_off</span>
+<h3 class="font-headline-md text-headline-md mb-2">Documentos espalhados</h3>
+<p class="text-on-surface-variant">Onde está o último relatório médico ou o cartão do subsistema de saúde?</p>
+</div>
+<!-- Problem Card 4 -->
+<div class="bg-surface p-8 rounded-2xl border border-outline-variant/30 soft-shadow-hover transition-all">
+<span class="material-symbols-outlined text-error mb-4 text-3xl">groups</span>
+<h3 class="font-headline-md text-headline-md mb-2">Irmãos sem coordenação</h3>
+<p class="text-on-surface-variant">"Pensava que ias tu buscar os medicamentos..." — a falta de clareza gera conflitos.</p>
+</div>
+<!-- Problem Card 5 -->
+<div class="bg-surface p-8 rounded-2xl border border-outline-variant/30 soft-shadow-hover transition-all">
+<span class="material-symbols-outlined text-error mb-4 text-3xl">search_off</span>
+<h3 class="font-headline-md text-headline-md mb-2">Informação perdida</h3>
+<p class="text-on-surface-variant">O contacto da fisioterapeuta ou o nome daquele novo sintoma perdeu-se no chat.</p>
+</div>
+<!-- Problem Card 6 -->
+<div class="bg-surface p-8 rounded-2xl border border-outline-variant/30 soft-shadow-hover transition-all">
+<span class="material-symbols-outlined text-error mb-4 text-3xl">emergency_home</span>
+<h3 class="font-headline-md text-headline-md mb-2">Emergências cegas</h3>
+<p class="text-on-surface-variant">Chegar ao hospital e não saber a lista completa de doenças ou alergias.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Solution Section (Bento Grid) -->
+<section class="py-24 bg-surface" id="funcionalidades">
+<div class="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg text-headline-lg md:text-headline-xl mb-4">Tudo o que a família precisa, num só lugar.</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Uma ferramenta centralizada para paz de espírito e segurança.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-6 auto-rows-[240px]">
+<!-- Solution 1: Meds -->
+<div class="md:col-span-3 lg:col-span-4 row-span-2 bg-primary-container text-on-primary-container p-8 rounded-2xl flex flex-col justify-between soft-shadow relative overflow-hidden group">
+<div>
+<span class="material-symbols-outlined text-4xl mb-6">medication</span>
+<h3 class="font-headline-md text-headline-md mb-3">Medicamentos e horários</h3>
+<p class="opacity-90">Controle rigoroso de stock e alertas de toma para nunca falhar uma dose.</p>
+</div>
+<img alt="Medicine organization" class="absolute bottom-[-10%] right-[-10%] w-48 rotate-12 opacity-20 group-hover:rotate-0 transition-transform duration-500" data-alt="Close up of a wooden medical organizer with various medicine bottles and pills. The lighting is soft and natural, emphasizing safety and order. The background is a clean white marble surface with a professional, calming aesthetic that matches a health-focused mobile application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSaYhHRAjxEFhAY_GgwwMZyRXHtzbRZHPVYdWkCuvbKlN-4pmVBByv6nPG7CXyRapscB4R59EbYnMF9PZIltjy2TJBEb_X6-0GfMubtvtO3r33C-Jdj0QnafXINODcQltVCTu94YUl_Vwkn8dltv5o4B7UA8xerJH7XdsWNZHQbSwJ-P02hs0oRgoakHt7QjjhPLzLwWaYgpCjoHTd9yzOSBKfduCmdKSqTo553q6t6H5jIP2xXvFIFZfyGrk9EbSQh4FoRdNBviMm"/>
+</div>
+<!-- Solution 2: Appointments -->
+<div class="md:col-span-3 lg:col-span-8 bg-surface-container-low p-8 rounded-2xl flex flex-col justify-between soft-shadow-hover transition-all">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-headline-md mb-2">Consultas e exames</h3>
+<p class="text-on-surface-variant">Histórico completo e lembretes partilhados para toda a rede de cuidadores.</p>
+</div>
+<span class="material-symbols-outlined text-primary text-3xl">event_available</span>
+</div>
+</div>
+<!-- Solution 3: Docs -->
+<div class="md:col-span-3 lg:col-span-4 bg-warm-beige p-8 rounded-2xl flex flex-col justify-between soft-shadow-hover transition-all">
+<span class="material-symbols-outlined text-secondary text-3xl mb-4">description</span>
+<div>
+<h3 class="font-headline-md text-headline-md mb-2">Documentos importantes</h3>
+<p class="text-on-surface-variant">Digitalize e aceda a receitas, análises e relatórios médicos em segundos.</p>
+</div>
+</div>
+<!-- Solution 4: Tasks -->
+<div class="md:col-span-3 lg:col-span-4 bg-surface-container-high p-8 rounded-2xl flex flex-col justify-between soft-shadow-hover transition-all">
+<span class="material-symbols-outlined text-primary text-3xl mb-4">task_alt</span>
+<div>
+<h3 class="font-headline-md text-headline-md mb-2">Tarefas da família</h3>
+<p class="text-on-surface-variant">Atribua quem faz as compras ou quem leva o familiar ao passeio diário.</p>
+</div>
+</div>
+<!-- Solution 5: Emergency -->
+<div class="md:col-span-6 lg:col-span-4 bg-secondary p-8 rounded-2xl text-on-secondary flex flex-col justify-between soft-shadow relative overflow-hidden group">
+<div>
+<span class="material-symbols-outlined text-3xl mb-4">contact_phone</span>
+<h3 class="font-headline-md text-headline-md mb-2">Contactos de emergência</h3>
+<p class="opacity-90">Lista rápida de médicos, vizinhos e familiares acessível em qualquer situação.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- How it Works -->
+<section class="py-24 bg-surface-container-lowest" id="como-funciona">
+<div class="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop">
+<div class="text-center mb-20">
+<h2 class="font-headline-lg text-headline-lg md:text-headline-xl">Comece a cuidar em 4 passos simples</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+<div class="text-center">
+<div class="w-16 h-16 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center mx-auto mb-6 text-xl font-bold">1</div>
+<h4 class="font-headline-md text-headline-md mb-3">Crie o perfil</h4>
+<p class="text-on-surface-variant">Registe o seu familiar com os dados básicos e foto.</p>
+</div>
+<div class="text-center">
+<div class="w-16 h-16 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center mx-auto mb-6 text-xl font-bold">2</div>
+<h4 class="font-headline-md text-headline-md mb-3">Adicione dados</h4>
+<p class="text-on-surface-variant">Insira medicamentos, próximas consultas e documentos.</p>
+</div>
+<div class="text-center">
+<div class="w-16 h-16 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center mx-auto mb-6 text-xl font-bold">3</div>
+<h4 class="font-headline-md text-headline-md mb-3">Convide a família</h4>
+<p class="text-on-surface-variant">Envie convites para os seus irmãos ou outros cuidadores.</p>
+</div>
+<div class="text-center">
+<div class="w-16 h-16 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center mx-auto mb-6 text-xl font-bold">4</div>
+<h4 class="font-headline-md text-headline-md mb-3">Receba alertas</h4>
+<p class="text-on-surface-variant">Mantenha todos atualizados com notificações automáticas.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Pricing Section -->
+<section class="py-24 bg-surface" id="precos">
+<div class="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop">
+<div class="text-center mb-16">
+<h2 class="font-headline-lg text-headline-lg md:text-headline-xl mb-4">Um plano para cada família</h2>
+<p class="text-on-surface-variant font-body-lg">Paz de espírito acessível a todos.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Basic -->
+<div class="bg-surface-container-lowest p-8 rounded-2xl border border-outline-variant soft-shadow flex flex-col">
+<h3 class="font-headline-md text-headline-md mb-2">Grátis</h3>
+<div class="flex items-baseline gap-1 mb-6">
+<span class="text-3xl font-bold">0€</span>
+<span class="text-on-surface-variant">/mês</span>
+</div>
+<p class="text-on-surface-variant mb-8 flex-grow">Essencial para quem está a começar a organizar-se.</p>
+<ul class="space-y-4 mb-8">
+<li class="flex items-center gap-3"><span class="material-symbols-outlined text-secondary">check</span> 1 Familiar</li>
+<li class="flex items-center gap-3"><span class="material-symbols-outlined text-secondary">check</span> Até 2 Cuidadores</li>
+<li class="flex items-center gap-3"><span class="material-symbols-outlined text-secondary">check</span> Registo de Medicamentos</li>
+</ul>
+<button class="w-full py-3 rounded-full border border-primary text-primary font-bold hover:bg-primary/5 transition-colors">Escolher este</button>
+</div>
+<!-- Pro -->
+<div class="bg-primary text-on-primary p-8 rounded-2xl soft-shadow scale-105 flex flex-col z-10 relative">
+<div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary text-on-secondary px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Mais Popular</div>
+<h3 class="font-headline-md text-headline-md mb-2">Família</h3>
+<div class="flex items-baseline gap-1 mb-6">
+<span class="text-3xl font-bold">4,99€</span>
+<span class="text-on-primary-container opacity-80">/mês</span>
+</div>
+<p class="opacity-90 mb-8 flex-grow">Gestão colaborativa completa para a família nuclear.</p>
+<ul class="space-y-4 mb-8">
+<li class="flex items-center gap-3"><span class="material-symbols-outlined">check</span> Até 3 Familiares</li>
+<li class="flex items-center gap-3"><span class="material-symbols-outlined">check</span> Cuidadores ilimitados</li>
+<li class="flex items-center gap-3"><span class="material-symbols-outlined">check</span> Documentos Ilimitados</li>
+<li class="flex items-center gap-3"><span class="material-symbols-outlined">check</span> Histórico exportável</li>
+</ul>
+<button class="w-full py-4 rounded-full bg-on-primary text-primary font-bold hover:bg-primary-fixed-dim transition-all shadow-lg">Escolher este</button>
+</div>
+<!-- Expert -->
+<div class="bg-surface-container-lowest p-8 rounded-2xl border border-outline-variant soft-shadow flex flex-col">
+<h3 class="font-headline-md text-headline-md mb-2">Plus</h3>
+<div class="flex items-baseline gap-1 mb-6">
+<span class="text-3xl font-bold">8,99€</span>
+<span class="text-on-surface-variant">/mês</span>
+</div>
+<p class="text-on-surface-variant mb-8 flex-grow">Para famílias que precisam de apoio profissional e múltiplos perfis.</p>
+<ul class="space-y-4 mb-8">
+<li class="flex items-center gap-3"><span class="material-symbols-outlined text-secondary">check</span> Até 6 Familiares</li>
+<li class="flex items-center gap-3"><span class="material-symbols-outlined text-secondary">check</span> Integração com Sensores</li>
+<li class="flex items-center gap-3"><span class="material-symbols-outlined text-secondary">check</span> Suporte prioritário 24/7</li>
+</ul>
+<button class="w-full py-3 rounded-full border border-primary text-primary font-bold hover:bg-primary/5 transition-colors">Escolher este</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="py-24 bg-surface overflow-hidden relative">
+<div class="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop">
+<div class="bg-surface-container-highest p-12 md:p-20 rounded-[3rem] text-center relative z-10">
+<h2 class="font-headline-xl text-headline-xl mb-6">Comece a organizar os cuidados da sua família hoje.</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-2xl mx-auto">
+                        Junte-se a milhares de famílias portuguesas que já encontraram o equilíbrio no cuidado familiar.
+                    </p>
+<button class="bg-primary text-on-primary px-10 py-5 rounded-full font-headline-md text-xl shadow-xl hover:scale-105 active:scale-95 transition-all">
+                        Começar gratuitamente agora
+                    </button>
+<div class="mt-12 flex flex-wrap justify-center gap-8 opacity-60 grayscale hover:grayscale-0 transition-all">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined">verified_user</span>
+<span class="font-label-md">Segurança de dados bancária</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined">health_and_safety</span>
+<span class="font-label-md">Focado em Cuidados</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Decorative circle -->
+<div class="absolute -right-20 top-1/2 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
+</section>
+<!-- Trust Disclaimer -->
+<section class="pb-12 pt-0 px-container-padding-mobile">
+<div class="max-w-[800px] mx-auto text-center opacity-50">
+<p class="font-label-sm text-label-sm italic">
+                    O Cuida.pt é uma ferramenta de organização familiar e não substitui qualquer serviço médico, de enfermagem ou aconselhamento profissional de saúde. Consulte sempre o seu médico para decisões clínicas.
+                </p>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-surface-variant py-16">
+<div class="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop">
+<div class="flex flex-col md:flex-row justify-between items-start gap-12 mb-12">
+<div class="max-w-xs">
+<h2 class="font-headline-md text-headline-md font-bold text-primary mb-4">Cuida.pt</h2>
+<p class="text-on-surface-variant font-label-md">O porto de abrigo digital para a sua família. Organização, segurança e carinho em cada detalhe.</p>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-8">
+<div>
+<h4 class="font-label-md text-primary mb-4">Plataforma</h4>
+<ul class="space-y-2">
+<li><a class="text-on-surface-variant hover:text-primary transition-all text-label-md" href="#">Funcionalidades</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-all text-label-md" href="#">Preços</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-all text-label-md" href="#">Segurança</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-primary mb-4">Suporte</h4>
+<ul class="space-y-2">
+<li><a class="text-on-surface-variant hover:text-primary transition-all text-label-md" href="#">Ajuda</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-all text-label-md" href="#">Contacto</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-all text-label-md" href="#">Blog</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-primary mb-4">Legal</h4>
+<ul class="space-y-2">
+<li><a class="text-on-surface-variant hover:text-primary transition-all text-label-md" href="#">Termos</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-all text-label-md" href="#">Privacidade</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="flex flex-col md:flex-row justify-between items-center gap-6 pt-12 border-t border-surface-variant">
+<p class="text-label-md text-on-surface-variant opacity-70">© 2024 Cuida.pt. O seu porto de abrigo no cuidado familiar.</p>
+<div class="flex gap-6">
+<a class="text-on-surface-variant hover:text-primary transition-all" href="#"><span class="material-symbols-outlined">language</span></a>
+<a class="text-on-surface-variant hover:text-primary transition-all" href="#"><span class="material-symbols-outlined">share</span></a>
+</div>
+</div>
+</div>
+</footer>
+<script>
+        // Simple micro-interaction for smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Intersection Observer for fade-in effects
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('opacity-100');
+                    entry.target.classList.remove('opacity-0', 'translate-y-4');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section > div').forEach(el => {
+            el.classList.add('transition-all', 'duration-700', 'opacity-0', 'translate-y-4');
+            observer.observe(el);
+        });
+    </script>
+</body></html>

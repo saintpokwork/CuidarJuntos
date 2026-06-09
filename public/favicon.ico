@@ -1,0 +1,10 @@
+O arquivo `/CuidarJuntos/CuidarJuntos/public/favicon.ico` deve conter um ícone em formato `.ico`. Como não posso gerar um arquivo binário diretamente, você deve substituir o conteúdo do arquivo `favicon.ico` por um ícone apropriado. 
+
+Aqui está um exemplo de como você pode criar um favicon:
+
+1. Crie ou obtenha um ícone em formato `.ico`.
+2. Salve o arquivo como `favicon.ico` na pasta `public`.
+
+Se você não tiver um ícone, você pode usar um gerador de favicon online para criar um a partir de uma imagem existente.
+
+O arquivo `favicon.ico` está intencionalmente deixado em branco para que você possa adicionar o ícone desejado.

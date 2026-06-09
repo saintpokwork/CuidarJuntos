@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+        }
+        .soft-shadow {
+            box-shadow: 0 8px 24px rgba(0, 93, 172, 0.04);
+        }
+        .btn-gradient {
+            background: linear-gradient(135deg, #005dac 0%, #1976d2 100%);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#7a7569",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#dbeaf5",
+                        "on-tertiary-container": "#fffdff",
+                        "tertiary": "#615c51",
+                        "on-secondary-fixed": "#002107",
+                        "inverse-on-surface": "#e4f3fe",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed-dim": "#cdc6b8",
+                        "surface-container-low": "#e9f5ff",
+                        "surface-dim": "#cddce7",
+                        "background": "#f5faff",
+                        "on-background": "#0f1d25",
+                        "tertiary-fixed": "#e9e2d3",
+                        "on-primary-fixed-variant": "#004786",
+                        "on-tertiary-fixed-variant": "#4b463c",
+                        "surface-bright": "#f5faff",
+                        "secondary-fixed": "#abf4ac",
+                        "on-tertiary-fixed": "#1e1b13",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#1976d2",
+                        "outline": "#717783",
+                        "primary-fixed": "#d4e3ff",
+                        "on-surface": "#0f1d25",
+                        "surface-container": "#e1f0fb",
+                        "secondary-container": "#abf4ac",
+                        "surface-variant": "#d6e5ef",
+                        "surface-container-highest": "#d6e5ef",
+                        "secondary": "#286b33",
+                        "outline-variant": "#c1c6d4",
+                        "on-error-container": "#93000a",
+                        "primary": "#005dac",
+                        "inverse-surface": "#24323a",
+                        "primary-fixed-dim": "#a5c8ff",
+                        "on-primary-fixed": "#001c3a",
+                        "on-primary-container": "#fffdff",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface": "#f5faff",
+                        "secondary-fixed-dim": "#90d792",
+                        "on-secondary-fixed-variant": "#07521d",
+                        "inverse-primary": "#a5c8ff",
+                        "surface-tint": "#005faf",
+                        "on-surface-variant": "#414752",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-container": "#2e7238",
+                        "error": "#ba1a1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-lg": "2rem",
+                        "gutter": "1.5rem",
+                        "base": "8px",
+                        "container-padding-mobile": "1.25rem",
+                        "stack-sm": "0.5rem",
+                        "container-padding-desktop": "2.5rem",
+                        "stack-md": "1rem"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background min-h-screen flex">
+<!-- Sidebar (Shared Component) -->
+<aside class="h-screen w-64 hidden lg:flex flex-col sticky left-0 top-0 bg-surface shadow-sm py-stack-md px-base border-r border-outline-variant/30">
+<div class="mb-stack-lg px-4">
+<h1 class="text-headline-md font-bold text-primary">Cuida Care</h1>
+<p class="text-label-sm text-on-surface-variant">Family Lead</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary font-bold border-r-4 border-primary bg-surface-container rounded-r-none rounded-l-xl" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-label-md">Family</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined">pill</span>
+<span class="text-label-md">Medications</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="text-label-md">Appointments</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-4 py-4 flex items-center gap-3 bg-surface-container-low rounded-2xl">
+<img alt="Profile" class="w-10 h-10 rounded-full object-cover" data-alt="A high-quality portrait of a professional woman with a warm, empathetic expression, set against a soft-focus interior background with warm lighting. The aesthetic is clean and modern, matching a lifestyle wellness app with high-key lighting and soft blue accents in the environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqMrcW8Rx4Ip8eu5FViYGLzzakDKp9ERU5099lH4OGQir2RzAGR5JZ-wg-oxZBqx2_vTx7DLQQ5ggKwWtYRbTswmNicWnlfEBddMGSAXDOTDKDdsxHBURlnTr0iUcJqu7GwVpxGR9o_uT7T5tipNGC1DqlGkd-o4VCE-qZw4d50JeK1AQqlyms38LXt2469430iT8DusanoUuY4QzfDSD8KRuP7VImXvutpnJgp_0DgP7w1UNuN-rzGYRaN55RbrTpxfG2jPx2SBin"/>
+<div>
+<p class="text-label-md text-on-surface">Ana Silva</p>
+<p class="text-label-sm text-on-surface-variant">Admin</p>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 min-h-screen pb-24 lg:pb-8">
+<!-- Top App Bar (Shared Component) -->
+<header class="flex justify-between items-center w-full px-container-padding-mobile md:px-container-padding-desktop py-stack-md max-w-[1200px] mx-auto bg-background">
+<h2 class="text-headline-lg font-bold text-primary">Família e cuidadores</h2>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-all">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-all">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+</header>
+<section class="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop mt-stack-md">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Family Members List (Bento-style layout) -->
+<div class="lg:col-span-8 space-y-6">
+<div class="flex items-center justify-between">
+<h3 class="text-headline-md text-on-surface">Círculo de Cuidado</h3>
+<span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-label-sm">4 Membros Ativos</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Admin Card -->
+<div class="glass-card p-6 rounded-[24px] soft-shadow flex flex-col gap-4 border-l-4 border-primary">
+<div class="flex justify-between items-start">
+<img class="w-16 h-16 rounded-full object-cover" data-alt="Close-up portrait of a caring female family lead with a gentle smile, captured in soft, natural daylight within a modern, minimalist living room. The visual style is human-centric and optimistic, featuring a palette of soft blues and warm beige tones that evoke a sense of calm and safety." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYxHM5ONpNt7Q5z5C00C5VOYUPUt5IvgRgwAnttAPkudljbGE8NGd1mfgyORiO6nB3_EiRsqLNn9zFfHqVKFYOK8rirOwb75TDQ33cibpNMyY-J6pWPuXxlJIob1eXZyYlEigdAVDU8ZBcsqXgjHPKMaakkHUYzYaKPkInaIQjVuM3Invep3JVthphTkEYMo4nTViIJJ51Wo9xHcgFQSaBhHV-zhVvbFowRWLVtxylrUz_vib2rjf43A_DkyWoc1sgNUPS8VFglafZ"/>
+<span class="bg-primary/10 text-primary text-label-sm px-3 py-1 rounded-full">Administrador</span>
+</div>
+<div>
+<h4 class="text-body-lg font-bold">Ana Silva</h4>
+<p class="text-on-surface-variant text-label-md italic">Filha / Cuidadora Principal</p>
+</div>
+<div class="flex gap-2 mt-2">
+<button class="p-2 rounded-xl bg-surface-container-high text-primary hover:bg-primary-container hover:text-white transition-all">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 rounded-xl bg-surface-container-high text-primary hover:bg-primary-container hover:text-white transition-all">
+<span class="material-symbols-outlined text-[20px]">call</span>
+</button>
+</div>
+</div>
+<!-- Family Card -->
+<div class="glass-card p-6 rounded-[24px] soft-shadow flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<img class="w-16 h-16 rounded-full object-cover" data-alt="A friendly middle-aged man with a kind smile, representing a reliable family member. The photograph is brightly lit with a clean, lifestyle aesthetic, emphasizing clarity and human connection. The background consists of a well-organized, modern home interior in calming blue and white tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9KzPWYlnKFuluAquTz8Y19YNaoYS6ph-w5DNn-6UJUKYV4_b5MgFTT6TLUJ9Uep-IIcTYIRbUDC0mhy77R5FFZ3cV0jYCOCT-l8g_bx-N15ZiB-YifN3J4UQaorJF04w9BIscwR0UlJX3uHH_euZjGs1OT81PMywdqIYhzUQcOyOM25h7Ppt7UvBd4GJumfmMrdB3fqV3Z1fExrGxpCOgJN9twTi-CqaLB702yH12YI6TFxmTU5xG4pm_vgiUtxXscLH8RLqNVhqq"/>
+<span class="bg-secondary-container/30 text-secondary text-label-sm px-3 py-1 rounded-full">Familiar</span>
+</div>
+<div>
+<h4 class="text-body-lg font-bold">Carlos Mendes</h4>
+<p class="text-on-surface-variant text-label-md">Irmão</p>
+</div>
+<p class="text-label-sm text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                Ativo no suporte
+                            </p>
+</div>
+<!-- Caregiver Card -->
+<div class="glass-card p-6 rounded-[24px] soft-shadow flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<img class="w-16 h-16 rounded-full object-cover" data-alt="Portrait of a professional male caregiver in a soft-colored polo shirt, exuding competence and warmth. The lighting is diffused and professional, set against a minimalist architectural background that suggests a clean, high-end healthcare environment without feeling clinical." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBchUsbZeOvrl_9YNm-Y3N8sV_KgXOR_sApmitiUL9YSj4xjL_1NYYL6o6_mnue_DVhnqEg40dUmEFQTNC1KCH4dXtCYCuThDy-pBX8PGeT6qPwkTKXfFyaFd5bgEqsK1j87cq8JzBsir5oTpwoPbEHrOqh_RdD4Ik7fqp-w7SwoQRtzhXnqHkc9vYkDZVABMiOhhQ7qpuekzWmgM5Q-IB8pBi7_c5WbkjghJYfga02WV8_Yd4ymxNRqoaGS5WTXjshN83Jtg8IJVOu"/>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed-variant text-label-sm px-3 py-1 rounded-full">Cuidador</span>
+</div>
+<div>
+<h4 class="text-body-lg font-bold">Marcos Oliveira</h4>
+<p class="text-on-surface-variant text-label-md">Enfermeiro Particular</p>
+</div>
+<div class="flex items-center justify-between mt-2">
+<span class="text-label-sm text-on-surface-variant">Turno: Manhã/Tarde</span>
+<button class="text-primary text-label-md font-bold">Ver Perfil</button>
+</div>
+</div>
+<!-- Invited Card -->
+<div class="bg-surface-container-low border-2 border-dashed border-outline-variant/50 p-6 rounded-[24px] flex flex-col gap-4 opacity-70">
+<div class="flex justify-between items-start">
+<div class="w-16 h-16 rounded-full bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-outline">person_add</span>
+</div>
+<span class="bg-outline-variant/30 text-on-surface-variant text-label-sm px-3 py-1 rounded-full">Apenas leitura</span>
+</div>
+<div>
+<h4 class="text-body-lg font-bold">Mariana Silva</h4>
+<p class="text-on-surface-variant text-label-md italic">Neta / Pendente</p>
+</div>
+<button class="text-primary text-label-md font-bold text-left hover:underline">Reenviar convite</button>
+</div>
+</div>
+</div>
+<!-- Invite Form -->
+<div class="lg:col-span-4">
+<div class="sticky top-24">
+<div class="bg-white rounded-[24px] p-8 soft-shadow border border-primary/5">
+<div class="mb-6">
+<h3 class="text-headline-md text-primary mb-2">Novo Membro</h3>
+<p class="text-on-surface-variant text-label-md">Convide alguém para ajudar no cuidado da família.</p>
+</div>
+<form class="space-y-5" onsubmit="event.preventDefault(); alert('Convite enviado!');">
+<div>
+<label class="block text-label-md text-on-surface mb-2">E-mail ou Telefone</label>
+<input class="w-full h-12 px-4 rounded-xl border-none bg-tertiary-fixed/30 focus:ring-2 focus:ring-primary focus:bg-white transition-all text-body-md outline-none" placeholder="exemplo@email.com" type="text"/>
+</div>
+<div>
+<label class="block text-label-md text-on-surface mb-2">Parentesco</label>
+<select class="w-full h-12 px-4 rounded-xl border-none bg-tertiary-fixed/30 focus:ring-2 focus:ring-primary focus:bg-white transition-all text-body-md outline-none appearance-none">
+<option>Filho(a)</option>
+<option>Irmão/Irmã</option>
+<option>Cônjuge</option>
+<option>Neto(a)</option>
+<option>Cuidador Profissional</option>
+<option>Outro</option>
+</select>
+</div>
+<div>
+<label class="block text-label-md text-on-surface mb-2">Nível de Acesso (Role)</label>
+<div class="grid grid-cols-1 gap-2">
+<label class="flex items-center gap-3 p-3 rounded-xl bg-surface-container-low cursor-pointer hover:bg-surface-container-high transition-all border border-transparent has-[:checked]:border-primary/30 has-[:checked]:bg-primary/5">
+<input checked="" class="w-5 h-5 text-primary border-outline focus:ring-primary" name="role" type="radio"/>
+<div class="flex flex-col">
+<span class="text-label-md font-bold">Familiar</span>
+<span class="text-[10px] text-on-surface-variant uppercase tracking-wider">Acesso total às tarefas</span>
+</div>
+</label>
+<label class="flex items-center gap-3 p-3 rounded-xl bg-surface-container-low cursor-pointer hover:bg-surface-container-high transition-all border border-transparent has-[:checked]:border-primary/30 has-[:checked]:bg-primary/5">
+<input class="w-5 h-5 text-primary border-outline focus:ring-primary" name="role" type="radio"/>
+<div class="flex flex-col">
+<span class="text-label-md font-bold">Cuidador</span>
+<span class="text-[10px] text-on-surface-variant uppercase tracking-wider">Registros de saúde e rotina</span>
+</div>
+</label>
+<label class="flex items-center gap-3 p-3 rounded-xl bg-surface-container-low cursor-pointer hover:bg-surface-container-high transition-all border border-transparent has-[:checked]:border-primary/30 has-[:checked]:bg-primary/5">
+<input class="w-5 h-5 text-primary border-outline focus:ring-primary" name="role" type="radio"/>
+<div class="flex flex-col">
+<span class="text-label-md font-bold">Apenas leitura</span>
+<span class="text-[10px] text-on-surface-variant uppercase tracking-wider">Visualiza atualizações</span>
+</div>
+</label>
+</div>
+</div>
+<button class="w-full py-4 rounded-full text-white font-bold text-body-md btn-gradient shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all mt-4" type="submit">
+                                    Convidar familiar
+                                </button>
+</form>
+</div>
+<div class="mt-6 p-6 rounded-[24px] bg-secondary-container/20 flex gap-4 items-center border border-secondary/10">
+<span class="material-symbols-outlined text-secondary text-3xl">volunteer_activism</span>
+<p class="text-label-sm text-on-secondary-container leading-relaxed">
+<strong>Dica:</strong> Dividir as tarefas reduz o estresse do cuidador principal em até 40%.
+                            </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Nav Bar (Mobile Shared Component) -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface lg:hidden rounded-t-xl shadow-[0_-4px_24px_rgba(0,93,172,0.04)]">
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">pill</span>
+<span class="text-label-sm">Meds</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span>
+<span class="text-label-sm">Family</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="text-label-sm">Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">more_horiz</span>
+<span class="text-label-sm">More</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-4px)';
+                card.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body></html>

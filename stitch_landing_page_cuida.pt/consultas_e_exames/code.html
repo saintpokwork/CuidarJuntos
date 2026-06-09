@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Consultas e Exames | Cuida Care</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .soft-shadow {
+            box-shadow: 0 8px 24px rgba(0, 93, 172, 0.04);
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#7a7569",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#dbeaf5",
+                        "on-tertiary-container": "#fffdff",
+                        "tertiary": "#615c51",
+                        "on-secondary-fixed": "#002107",
+                        "inverse-on-surface": "#e4f3fe",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed-dim": "#cdc6b8",
+                        "surface-container-low": "#e9f5ff",
+                        "surface-dim": "#cddce7",
+                        "background": "#f5faff",
+                        "on-background": "#0f1d25",
+                        "tertiary-fixed": "#e9e2d3",
+                        "on-primary-fixed-variant": "#004786",
+                        "on-tertiary-fixed-variant": "#4b463c",
+                        "surface-bright": "#f5faff",
+                        "secondary-fixed": "#abf4ac",
+                        "on-tertiary-fixed": "#1e1b13",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#1976d2",
+                        "outline": "#717783",
+                        "primary-fixed": "#d4e3ff",
+                        "on-surface": "#0f1d25",
+                        "surface-container": "#e1f0fb",
+                        "secondary-container": "#abf4ac",
+                        "surface-variant": "#d6e5ef",
+                        "surface-container-highest": "#d6e5ef",
+                        "secondary": "#286b33",
+                        "outline-variant": "#c1c6d4",
+                        "on-error-container": "#93000a",
+                        "primary": "#005dac",
+                        "inverse-surface": "#24323a",
+                        "primary-fixed-dim": "#a5c8ff",
+                        "on-primary-fixed": "#001c3a",
+                        "on-primary-container": "#fffdff",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface": "#f5faff",
+                        "secondary-fixed-dim": "#90d792",
+                        "on-secondary-fixed-variant": "#07521d",
+                        "inverse-primary": "#a5c8ff",
+                        "surface-tint": "#005faf",
+                        "on-surface-variant": "#414752",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-container": "#2e7238",
+                        "error": "#ba1a1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-lg": "2rem",
+                        "gutter": "1.5rem",
+                        "base": "8px",
+                        "container-padding-mobile": "1.25rem",
+                        "stack-sm": "0.5rem",
+                        "container-padding-desktop": "2.5rem",
+                        "stack-md": "1rem"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<div class="flex min-h-screen">
+<!-- SideNavBar (Desktop) -->
+<aside class="h-screen w-64 hidden lg:flex flex-col sticky left-0 top-0 bg-surface-container shadow-sm py-stack-md px-base">
+<div class="mb-stack-lg px-4">
+<span class="text-headline-md font-headline-md font-bold text-primary">Cuida Care</span>
+<p class="text-label-sm text-on-surface-variant">Family Lead</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-label-md">Profile</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined">pill</span>
+<span class="text-label-md">Medications</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary font-bold border-r-4 border-primary bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="text-label-md">Appointments</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="text-label-md">Tasks</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="text-label-md">Documents</span>
+</a>
+</nav>
+<div class="mt-auto pt-stack-md border-t border-outline-variant/30">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-label-md">Settings</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 w-full max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg pb-32 lg:pb-stack-lg">
+<!-- Top Header -->
+<header class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-stack-lg">
+<div>
+<h1 class="text-headline-lg font-headline-lg text-primary">Consultas e exames</h1>
+<p class="text-body-md text-on-surface-variant">Gerencie o cronograma de saúde da sua família.</p>
+</div>
+<div class="flex gap-2">
+<button class="flex items-center justify-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-full font-label-md shadow-lg hover:opacity-90 transition-all active:scale-95" onclick="toggleModal('add-appointment-modal')">
+<span class="material-symbols-outlined">add</span>
+                        Nova Consulta
+                    </button>
+</div>
+</header>
+<!-- Layout Grid: Calendar & List -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Calendar Context & Filters (4 Cols) -->
+<div class="lg:col-span-4 flex flex-col gap-gutter">
+<!-- Calendar View Mini -->
+<section class="bg-surface-container-lowest rounded-[24px] p-6 soft-shadow">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-label-md font-bold text-on-surface">Outubro 2023</h3>
+<div class="flex gap-2">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">chevron_left</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">chevron_right</span>
+</div>
+</div>
+<!-- Simple Calendar Grid -->
+<div class="grid grid-cols-7 gap-1 text-center text-label-sm">
+<div class="text-on-surface-variant py-2">D</div>
+<div class="text-on-surface-variant py-2">S</div>
+<div class="text-on-surface-variant py-2">T</div>
+<div class="text-on-surface-variant py-2">Q</div>
+<div class="text-on-surface-variant py-2">Q</div>
+<div class="text-on-surface-variant py-2">S</div>
+<div class="text-on-surface-variant py-2">S</div>
+<!-- Placeholder dates -->
+<div class="py-3 text-outline-variant">25</div>
+<div class="py-3 text-outline-variant">26</div>
+<div class="py-3 text-outline-variant">27</div>
+<div class="py-3 text-outline-variant">28</div>
+<div class="py-3 text-outline-variant">29</div>
+<div class="py-3 text-outline-variant">30</div>
+<div class="py-3">1</div>
+<div class="py-3">2</div>
+<div class="py-3 bg-primary-container text-on-primary-container rounded-full font-bold">3</div>
+<div class="py-3">4</div>
+<div class="py-3">5</div>
+<div class="py-3 relative">6<div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-secondary rounded-full"></div></div>
+<div class="py-3">7</div>
+<div class="py-3">8</div>
+</div>
+</section>
+<!-- Family Filter Chips -->
+<section>
+<h3 class="text-label-md font-bold text-on-surface mb-3 px-1">Membros da Família</h3>
+<div class="flex flex-wrap gap-2">
+<button class="flex items-center gap-2 bg-primary-container text-on-primary-container px-4 py-2 rounded-full text-label-sm font-semibold">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="A portrait of a warm, smiling middle-aged woman with kind eyes and soft lighting, set against a blurred domestic background. The image has a calm, nurturing feel with soft pastel colors and professional lighting that emphasizes clarity and human connection." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDd8dwms-b71E7RovvdWe1xi6uAUSwTheCx7hnOQX1FGF22AhrfeESpjSISSb1EvkBeFBaPEDlNBZ5UfxpDEPAMM73L1A5xqEjiENPNb_aE_iDQgEkyr2dgV2hazUpgU38vlmCDUo90HiTpDzLSOymLHPJDYR1Gs-ZaXCxYISSHpaHWuBuRm3Ti_WTYVRAC2JK3zlya8PMaJMYESV0UnGigBjOkkhqCg-HBiRGELSUx8yFVYJUJrjXV6pJURbP-dMIIOvvKLFePzUAI"/>
+                                Todos
+                            </button>
+<button class="flex items-center gap-2 bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full text-label-sm hover:bg-surface-variant transition-colors">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="A close-up portrait of an elderly gentleman with grey hair and a gentle smile, wearing a blue sweater. The lighting is soft and natural, suggesting a peaceful home environment. The visual style is modern, bright, and empathetic, focusing on healthy aging and care." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAck206ily6Bg3QWrHFRKTj88GYUDjAnoVy06iwGyzzWupmpyHql8-m36wg34rv0Ql4kPFDTZkQfOoIYwpZgv13MC1-xjFvMx5TX_Ew6GLNx1AVjTtwBJWGzqPnv9B4e_AXODWezNu9t7yIKlIUqb0Cxdhs-M1DkRy0hV0ZkrJIkp_xqRv_cgT2-zd5cuQL2nLqv10G2J2TaBsJhQrjWaVdYZf28lk7QCkBA7PCeVSyRowMgql2TEwPd1xTWMQ4X-BzLD9rkSdWptp6"/>
+                                Carlos
+                            </button>
+<button class="flex items-center gap-2 bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full text-label-sm hover:bg-surface-variant transition-colors">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="A cheerful young woman with curly hair looking directly at the camera with a supportive expression. The background is a brightly lit, modern living space. The colors are warm and optimistic, reflecting a lifestyle of wellness and family support." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_k73aeC0dss4YoTb99aN724fYA1xJo0mmrkuNpTE4MYPQVBXUIy5wne-DlD6fEiqbGP4htg1gdmy1ur5hsO7VJhtw2aa5Dx2AOD0HLrcRHrrtWqXVENaU2PM1Ay3h_bdxbczUJywpxcwVtIrcCNCUApdsce5jbFU4h-dbPF7sbczKZu8MktLs4tdHUJrB0pJhuVam7_5G42uH6RcMWpQrcLrZCHjwsGFJWujg2h4zWrTCus6frR6du4IdiVDuX9uUfQTuDDAibLae"/>
+                                Ana
+                            </button>
+</div>
+</section>
+</div>
+<!-- Right Column: Timeline/List (8 Cols) -->
+<div class="lg:col-span-8 flex flex-col gap-stack-md">
+<!-- Upcoming Card 1 -->
+<article class="bg-surface-container-lowest rounded-[24px] p-6 soft-shadow border-l-4 border-primary relative group hover:translate-y-[-2px] transition-transform duration-300">
+<div class="absolute top-6 right-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+<button class="p-2 text-on-surface-variant hover:text-error"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+</div>
+<div class="flex flex-col md:flex-row gap-6">
+<div class="flex flex-col items-center justify-center bg-primary-fixed text-on-primary-fixed-variant rounded-2xl p-4 min-w-[100px]">
+<span class="text-label-sm font-bold uppercase tracking-wider">Out</span>
+<span class="text-headline-lg font-extrabold">03</span>
+<span class="text-label-sm">14:30</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="bg-secondary-container text-on-secondary-container text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-tighter">Consulta de Rotina</span>
+<span class="text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">group</span>
+                                        Resp: Ana Silva
+                                    </span>
+</div>
+<h2 class="text-headline-md text-on-surface mb-2">Cardiologia - Check-up Anual</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-4 mb-4">
+<div class="flex items-center gap-2 text-on-surface-variant text-body-md">
+<span class="material-symbols-outlined text-primary">medical_services</span>
+<span>Dr. Ricardo Mendes</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant text-body-md">
+<span class="material-symbols-outlined text-primary">location_on</span>
+<span>Hospital Sírio Libanês, Bloco A</span>
+</div>
+</div>
+<div class="bg-surface-container rounded-xl p-4">
+<p class="text-label-sm font-bold text-on-surface-variant mb-1 uppercase">Notas</p>
+<p class="text-body-md text-on-surface italic">"Levar os últimos exames de sangue e o eletrocardiograma feito em Agosto. Jejum de 8 horas não é necessário."</p>
+</div>
+</div>
+</div>
+</article>
+<!-- Upcoming Card 2 -->
+<article class="bg-surface-container-lowest rounded-[24px] p-6 soft-shadow border-l-4 border-tertiary-container relative group hover:translate-y-[-2px] transition-transform duration-300">
+<div class="absolute top-6 right-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+<button class="p-2 text-on-surface-variant hover:text-error"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+</div>
+<div class="flex flex-col md:flex-row gap-6">
+<div class="flex flex-col items-center justify-center bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-2xl p-4 min-w-[100px]">
+<span class="text-label-sm font-bold uppercase tracking-wider">Out</span>
+<span class="text-headline-lg font-extrabold">06</span>
+<span class="text-label-sm">08:00</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="bg-tertiary-container text-on-tertiary-container text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-tighter">Exame</span>
+<span class="text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">group</span>
+                                        Resp: Carlos Eduardo
+                                    </span>
+</div>
+<h2 class="text-headline-md text-on-surface mb-2">Ressonância Magnética</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-4 mb-4">
+<div class="flex items-center gap-2 text-on-surface-variant text-body-md">
+<span class="material-symbols-outlined text-primary">biotech</span>
+<span>Laboratório Fleury</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant text-body-md">
+<span class="material-symbols-outlined text-primary">location_on</span>
+<span>Unidade Itaim</span>
+</div>
+</div>
+<div class="bg-surface-container rounded-xl p-4">
+<p class="text-label-sm font-bold text-on-surface-variant mb-1 uppercase">Notas</p>
+<p class="text-body-md text-on-surface">Chegar com 30 minutos de antecedência. Não usar metais.</p>
+</div>
+</div>
+</div>
+</article>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="fixed bottom-0 w-full z-50 lg:hidden flex justify-around items-center px-4 py-2 bg-surface shadow-[0_-4px_24px_rgba(0,93,172,0.04)] rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2" href="#">
+<span class="material-symbols-outlined">pill</span>
+<span class="text-label-sm">Meds</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 scale-90" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="text-label-sm">Appts</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="text-label-sm">Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2" href="#">
+<span class="material-symbols-outlined">more_horiz</span>
+<span class="text-label-sm">More</span>
+</a>
+</nav>
+</div>
+<!-- Modal Form (Hidden by default) -->
+<div class="fixed inset-0 z-[100] hidden bg-on-background/40 backdrop-blur-sm flex items-center justify-center p-4" id="add-appointment-modal">
+<div class="bg-surface-container-lowest w-full max-w-2xl rounded-[32px] soft-shadow overflow-hidden flex flex-col max-h-[921px]">
+<div class="px-8 py-6 border-b border-outline-variant/30 flex justify-between items-center">
+<div>
+<h2 class="text-headline-md text-primary">Adicionar Nova Consulta</h2>
+<p class="text-label-sm text-on-surface-variant">Preencha os detalhes do próximo agendamento.</p>
+</div>
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors" onclick="toggleModal('add-appointment-modal')">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<form class="p-8 overflow-y-auto space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Title -->
+<div class="md:col-span-2">
+<label class="block text-label-md font-bold text-on-surface mb-2">Título</label>
+<input class="w-full h-12 px-4 rounded-xl border-none bg-surface-container-low focus:ring-2 focus:ring-primary focus:bg-white transition-all text-body-md" placeholder="Ex: Consulta Cardiologista" required="" type="text"/>
+</div>
+<!-- Date & Time -->
+<div>
+<label class="block text-label-md font-bold text-on-surface mb-2">Data e hora</label>
+<input class="w-full h-12 px-4 rounded-xl border-none bg-surface-container-low focus:ring-2 focus:ring-primary focus:bg-white transition-all text-body-md" required="" type="datetime-local"/>
+</div>
+<!-- Responsible -->
+<div>
+<label class="block text-label-md font-bold text-on-surface mb-2">Responsável</label>
+<select class="w-full h-12 px-4 rounded-xl border-none bg-surface-container-low focus:ring-2 focus:ring-primary focus:bg-white transition-all text-body-md">
+<option>Selecione um cuidador</option>
+<option>Ana Silva</option>
+<option>Carlos Eduardo</option>
+</select>
+</div>
+<!-- Doctor -->
+<div>
+<label class="block text-label-md font-bold text-on-surface mb-2">Médico ou serviço</label>
+<input class="w-full h-12 px-4 rounded-xl border-none bg-surface-container-low focus:ring-2 focus:ring-primary focus:bg-white transition-all text-body-md" placeholder="Nome do médico ou clínica" type="text"/>
+</div>
+<!-- Location -->
+<div>
+<label class="block text-label-md font-bold text-on-surface mb-2">Local</label>
+<input class="w-full h-12 px-4 rounded-xl border-none bg-surface-container-low focus:ring-2 focus:ring-primary focus:bg-white transition-all text-body-md" placeholder="Endereço ou hospital" type="text"/>
+</div>
+<!-- Notes -->
+<div class="md:col-span-2">
+<label class="block text-label-md font-bold text-on-surface mb-2">Notas</label>
+<textarea class="w-full p-4 rounded-xl border-none bg-surface-container-low focus:ring-2 focus:ring-primary focus:bg-white transition-all text-body-md" placeholder="Recomendações, jejum, documentos necessários..." rows="3"></textarea>
+</div>
+</div>
+<div class="flex gap-4 pt-4">
+<button class="flex-1 py-3 rounded-full text-label-md font-bold text-on-surface-variant hover:bg-surface-container-high transition-all" onclick="toggleModal('add-appointment-modal')" type="button">Cancelar</button>
+<button class="flex-1 py-3 rounded-full bg-primary text-on-primary text-label-md font-bold shadow-lg hover:shadow-xl hover:opacity-90 active:scale-95 transition-all" type="submit">Guardar consulta</button>
+</div>
+</form>
+</div>
+</div>
+<script>
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.toggle('hidden');
+            if (!modal.classList.contains('hidden')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modals = ['add-appointment-modal'];
+            modals.forEach(id => {
+                const modal = document.getElementById(id);
+                if (event.target == modal) {
+                    toggleModal(id);
+                }
+            });
+        }
+    </script>
+</body></html>

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-PT"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cuida Care - Medicamentos</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .modal-overlay {
+            background: rgba(15, 29, 37, 0.4);
+            backdrop-filter: blur(4px);
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-container": "#7a7569",
+                      "on-error": "#ffffff",
+                      "surface-container-high": "#dbeaf5",
+                      "on-tertiary-container": "#fffdff",
+                      "tertiary": "#615c51",
+                      "on-secondary-fixed": "#002107",
+                      "inverse-on-surface": "#e4f3fe",
+                      "on-primary": "#ffffff",
+                      "tertiary-fixed-dim": "#cdc6b8",
+                      "surface-container-low": "#e9f5ff",
+                      "surface-dim": "#cddce7",
+                      "background": "#f5faff",
+                      "on-background": "#0f1d25",
+                      "tertiary-fixed": "#e9e2d3",
+                      "on-primary-fixed-variant": "#004786",
+                      "on-tertiary-fixed-variant": "#4b463c",
+                      "surface-bright": "#f5faff",
+                      "secondary-fixed": "#abf4ac",
+                      "on-tertiary-fixed": "#1e1b13",
+                      "on-secondary": "#ffffff",
+                      "primary-container": "#1976d2",
+                      "outline": "#717783",
+                      "primary-fixed": "#d4e3ff",
+                      "on-surface": "#0f1d25",
+                      "surface-container": "#e1f0fb",
+                      "secondary-container": "#abf4ac",
+                      "surface-variant": "#d6e5ef",
+                      "surface-container-highest": "#d6e5ef",
+                      "secondary": "#286b33",
+                      "outline-variant": "#c1c6d4",
+                      "on-error-container": "#93000a",
+                      "primary": "#005dac",
+                      "inverse-surface": "#24323a",
+                      "primary-fixed-dim": "#a5c8ff",
+                      "on-primary-fixed": "#001c3a",
+                      "on-primary-container": "#fffdff",
+                      "on-tertiary": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "surface": "#f5faff",
+                      "secondary-fixed-dim": "#90d792",
+                      "on-secondary-fixed-variant": "#07521d",
+                      "inverse-primary": "#a5c8ff",
+                      "surface-tint": "#005faf",
+                      "on-surface-variant": "#414752",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-container": "#2e7238",
+                      "error": "#ba1a1a"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-lg": "2rem",
+                      "gutter": "1.5rem",
+                      "base": "8px",
+                      "container-padding-mobile": "1.25rem",
+                      "stack-sm": "0.5rem",
+                      "container-padding-desktop": "2.5rem",
+                      "stack-md": "1rem"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": ["Plus Jakarta Sans"],
+                      "headline-lg": ["Plus Jakarta Sans"],
+                      "label-md": ["Plus Jakarta Sans"],
+                      "headline-md": ["Plus Jakarta Sans"],
+                      "body-md": ["Plus Jakarta Sans"],
+                      "body-lg": ["Plus Jakarta Sans"],
+                      "headline-xl": ["Plus Jakarta Sans"],
+                      "label-sm": ["Plus Jakarta Sans"]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col md:flex-row">
+<!-- Desktop Side Navigation -->
+<aside class="h-screen w-64 hidden lg:flex flex-col sticky left-0 top-0 bg-surface dark:bg-inverse-surface shadow-sm bg-surface-container dark:bg-surface-container-high py-stack-md px-base z-50">
+<div class="mb-stack-lg px-4">
+<h1 class="text-headline-md font-headline-md font-bold text-primary dark:text-inverse-primary">Cuida Care</h1>
+<p class="text-label-md font-label-md text-on-surface-variant">Family Lead</p>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-label-md font-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-label-md font-label-md">Profile</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary dark:text-inverse-primary font-bold border-r-4 border-primary bg-surface-container-highest transition-colors rounded-r-none rounded-l-xl" href="#">
+<span class="material-symbols-outlined">pill</span>
+<span class="text-label-md font-label-md">Medications</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="text-label-md font-label-md">Appointments</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors rounded-xl" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="text-label-md font-label-md">Tasks</span>
+</a>
+</nav>
+<div class="mt-auto px-4 py-4 border-t border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold overflow-hidden">
+<img alt="Primary caregiver profile photo" class="w-full h-full object-cover" data-alt="A warm and friendly professional headshot of a middle-aged woman with a gentle smile, appearing as a compassionate healthcare coordinator. The background is a soft, blurred domestic interior with natural lighting, evoking a sense of home and safety. She is wearing a soft blue cardigan, matching the primary brand colors of the care app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcAKGgDVxDUwPY_HEkn9NbLQTOlxbswa3tZQCia4f9D5-KirdlxYhRuuS2Tew4V5G1Uwc1KLQ4Q-ZUEtq86Psgjm8AJ86Ry0iqFWAROTS_K15xx9ckPRnw9FVpcUWxwZUznHglFVF0HqVAFVki7c_UHrI_W-KOc50XvdYOyYOE8KnSUm7jpmMdqxTXqxpmJxooY5iw-NeR_80Zpma7Z3Z9uqPGE8jgIXFOHIk-txVCXm21Dzi3mV_zhfp3mdeHXJuJQtMT0yjmiTP4"/>
+</div>
+<div>
+<p class="text-label-md font-bold">Ana Silva</p>
+<p class="text-label-sm text-on-surface-variant">Admin</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col min-h-screen relative pb-24 md:pb-8">
+<!-- Top App Bar -->
+<header class="flex justify-between items-center w-full px-container-padding-mobile md:px-container-padding-desktop py-stack-md max-w-[1200px] mx-auto bg-background">
+<div class="flex items-center gap-4">
+<h2 class="text-headline-lg-mobile md:text-headline-lg font-headline-lg text-primary">Medicamentos</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="hidden md:flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-full hover:shadow-lg transition-all active:scale-95" onclick="toggleModal(true)">
+<span class="material-symbols-outlined">add</span>
+<span class="text-label-md">Adicionar Medicamento</span>
+</button>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined cursor-pointer hover:bg-surface-container-low p-2 rounded-full transition-all">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:bg-surface-container-low p-2 rounded-full transition-all">help</span>
+</div>
+</div>
+</header>
+<!-- Content Area -->
+<div class="flex-1 px-container-padding-mobile md:px-container-padding-desktop max-w-[1200px] mx-auto w-full py-stack-lg">
+<!-- Filter / Status Summary -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-gutter mb-stack-lg">
+<div class="glass-card p-4 rounded-2xl flex flex-col items-center justify-center text-center shadow-[0_8px_24px_rgba(0,93,172,0.04)]">
+<span class="text-headline-md font-bold text-primary">12</span>
+<span class="text-label-sm text-on-surface-variant">Ativos</span>
+</div>
+<div class="glass-card p-4 rounded-2xl flex flex-col items-center justify-center text-center shadow-[0_8px_24px_rgba(0,93,172,0.04)]">
+<span class="text-headline-md font-bold text-secondary">4</span>
+<span class="text-label-sm text-on-surface-variant">Tomados hoje</span>
+</div>
+<div class="glass-card p-4 rounded-2xl flex flex-col items-center justify-center text-center shadow-[0_8px_24px_rgba(0,93,172,0.04)]">
+<span class="text-headline-md font-bold text-error">1</span>
+<span class="text-label-sm text-on-surface-variant">Em falta</span>
+</div>
+<div class="glass-card p-4 rounded-2xl flex flex-col items-center justify-center text-center shadow-[0_8px_24px_rgba(0,93,172,0.04)]">
+<span class="text-headline-md font-bold text-tertiary">2</span>
+<span class="text-label-sm text-on-surface-variant">Próxima hora</span>
+</div>
+</div>
+<!-- Bento Medication Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Card 1: Metformina -->
+<div class="glass-card p-6 rounded-[24px] shadow-[0_8px_24px_rgba(0,93,172,0.04)] hover:shadow-[0_12px_32px_rgba(0,93,172,0.08)] transition-all flex flex-col relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4">
+<span class="material-symbols-outlined text-primary-container opacity-20 text-5xl">pill</span>
+</div>
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-headline-md font-bold text-on-surface">Metformina</h3>
+<p class="text-label-md text-on-surface-variant">500mg • Comprimido</p>
+</div>
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container text-label-sm rounded-full font-bold">Ativo</span>
+</div>
+<div class="space-y-3 mb-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">schedule</span>
+<span class="text-body-md">08:00, 20:00</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">event_repeat</span>
+<span class="text-body-md">Diariamente (2x ao dia)</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">supervisor_account</span>
+<div class="flex items-center gap-2">
+<img alt="Caregiver profile" class="w-6 h-6 rounded-full object-cover" data-alt="A close-up portrait of a kind, professional male caregiver in a clean, modern medical scrub. The lighting is soft and natural, emphasizing a trustworthy and helpful expression. The color palette is clean with soft blues and whites, consistent with a modern, high-end family health management application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3vR-z76NCMR1_wr84BJhNE7M15SymKCUHSouTx6VJySGaesF7oMcfCzwD01gbW1bO5_4KYk3MeFCR1tVGqACdsGSQu5dlb59cpNk10rnJKjR7T2O8hVSjXeH585fMdmJHzQQKDvG4mtcVUk_wbZgtkCh6JgYiEErsU0n0mea8LMeg0MA12GNzjLUQVOJ9WiCk703M_1KZ55N9p2MBZvF_RFk0UrjoDiUkMd195L0IDHpD-QEIaHg1QMndmZqj4KBiHBnB2XtUQZR4"/>
+<span class="text-body-md">Ricardo Mendes</span>
+</div>
+</div>
+</div>
+<button class="mt-auto w-full py-3 rounded-xl bg-surface-container-low text-primary font-bold hover:bg-primary hover:text-on-primary transition-all flex justify-center items-center gap-2">
+<span class="material-symbols-outlined">check_circle</span>
+                        Confirmar Toma
+                    </button>
+</div>
+<!-- Card 2: Atorvastatina -->
+<div class="glass-card p-6 rounded-[24px] shadow-[0_8px_24px_rgba(0,93,172,0.04)] hover:shadow-[0_12px_32px_rgba(0,93,172,0.08)] transition-all flex flex-col relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4">
+<span class="material-symbols-outlined text-primary-container opacity-20 text-5xl">medical_services</span>
+</div>
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-headline-md font-bold text-on-surface">Atorvastatina</h3>
+<p class="text-label-md text-on-surface-variant">20mg • Cápsula</p>
+</div>
+<span class="px-3 py-1 bg-surface-container-highest text-on-surface-variant text-label-sm rounded-full font-bold">Pendente</span>
+</div>
+<div class="space-y-3 mb-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">schedule</span>
+<span class="text-body-md">22:00</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">event_repeat</span>
+<span class="text-body-md">Diariamente</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">supervisor_account</span>
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-[10px] text-on-primary">AS</div>
+<span class="text-body-md">Ana Silva</span>
+</div>
+</div>
+</div>
+<button class="mt-auto w-full py-3 rounded-xl bg-surface-container-low text-primary font-bold hover:bg-primary hover:text-on-primary transition-all flex justify-center items-center gap-2">
+<span class="material-symbols-outlined">edit</span>
+                        Editar Detalhes
+                    </button>
+</div>
+<!-- Card 3: Vitamina D3 -->
+<div class="glass-card p-6 rounded-[24px] shadow-[0_8px_24px_rgba(0,93,172,0.04)] hover:shadow-[0_12px_32px_rgba(0,93,172,0.08)] transition-all flex flex-col relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4">
+<span class="material-symbols-outlined text-primary-container opacity-20 text-5xl">wb_sunny</span>
+</div>
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="text-headline-md font-bold text-on-surface">Vitamina D3</h3>
+<p class="text-label-md text-on-surface-variant">2000 UI • Gotas</p>
+</div>
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container text-label-sm rounded-full font-bold">Ativo</span>
+</div>
+<div class="space-y-3 mb-6">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">schedule</span>
+<span class="text-body-md">09:00</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">event_repeat</span>
+<span class="text-body-md">Segundas e Quintas</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">supervisor_account</span>
+<div class="flex items-center gap-2">
+<img alt="Profile" class="w-6 h-6 rounded-full object-cover" data-alt="Close up portrait of a professional female caregiver with a warm, caring look. She has a high-end medical professional aesthetic, softly lit by morning sun in a clean, contemporary home office. The colors are serene with light blues and warm beige tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCretlu1wX4-hB7NUAM1D-1wcIJWLqvCAMkcq8lCGyyG_WP4Qgj62EbbcRitwf6wh5Q3MjOxVKePBiNtFJSyo8NHOWjtrY_8_CQ6cLbs558U8ST0qIFR19Txdc-K2rSOGiVjQMqtIvaGCGKbVzlp-7BXZee2CxUc8HafFgOjVmgIYd5O7YUgojbHxuuB8MSLAvZsUFl-ZLeAMDFz4epYvm9-NIFckVLmiUF4t9N4GGT0rEcAak1R26AtAOM0jclWK_D1d_YvX_BqJ8F"/>
+<span class="text-body-md">Ana Silva</span>
+</div>
+</div>
+</div>
+<button class="mt-auto w-full py-3 rounded-xl bg-surface-container-low text-primary font-bold hover:bg-primary hover:text-on-primary transition-all flex justify-center items-center gap-2">
+<span class="material-symbols-outlined">history</span>
+                        Ver Histórico
+                    </button>
+</div>
+</div>
+</div>
+<!-- Floating Action Button (Mobile Only) -->
+<button class="fixed bottom-24 right-6 w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg lg:hidden flex items-center justify-center z-40 active:scale-90 transition-transform" onclick="toggleModal(true)">
+<span class="material-symbols-outlined">add</span>
+</button>
+</main>
+<!-- Navigation Shell (Bottom Bar for Mobile) -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface dark:bg-inverse-surface shadow-[0_-4px_24px_rgba(0,93,172,0.04)] lg:hidden rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high px-2 py-1 transition-all" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-label-sm font-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container dark:bg-primary-fixed-dim text-on-primary-container dark:text-on-primary-fixed-variant rounded-full px-4 py-1 scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">pill</span>
+<span class="text-label-sm font-label-sm">Meds</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high px-2 py-1 transition-all" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="text-label-sm font-label-sm">Appts</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high px-2 py-1 transition-all" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="text-label-sm font-label-sm">Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high px-2 py-1 transition-all" href="#">
+<span class="material-symbols-outlined">more_horiz</span>
+<span class="text-label-sm font-label-sm">More</span>
+</a>
+</nav>
+<!-- Modal Form: Adicionar Medicamento -->
+<div class="fixed inset-0 z-[60] flex items-center justify-center hidden" id="medicationModal">
+<div class="modal-overlay absolute inset-0" onclick="toggleModal(false)"></div>
+<div class="relative bg-surface w-full max-w-2xl max-h-[921px] overflow-y-auto rounded-[32px] p-6 md:p-8 shadow-2xl mx-4 transform transition-all scale-95 opacity-0 duration-300" id="modalContent">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-headline-md font-bold text-primary">Adicionar Medicamento</h2>
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-all" onclick="toggleModal(false)">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<form class="space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="text-label-md font-bold text-on-surface-variant">Nome do Medicamento</label>
+<input class="w-full h-12 bg-white border-outline-variant focus:bg-[#FDF5E6] focus:border-primary rounded-xl px-4 transition-all" placeholder="Ex: Paracetamol" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="text-label-md font-bold text-on-surface-variant">Dosagem</label>
+<input class="w-full h-12 bg-white border-outline-variant focus:bg-[#FDF5E6] focus:border-primary rounded-xl px-4 transition-all" placeholder="Ex: 500mg, 2 gotas" type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="text-label-md font-bold text-on-surface-variant">Frequência</label>
+<select class="w-full h-12 bg-white border-outline-variant focus:bg-[#FDF5E6] focus:border-primary rounded-xl px-4 transition-all">
+<option>Diariamente</option>
+<option>Semanalmente</option>
+<option>A cada 8 horas</option>
+<option>Se necessário (SOS)</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="text-label-md font-bold text-on-surface-variant">Horário principal</label>
+<input class="w-full h-12 bg-white border-outline-variant focus:bg-[#FDF5E6] focus:border-primary rounded-xl px-4 transition-all" type="time"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-label-md font-bold text-on-surface-variant">Instruções Especiais</label>
+<textarea class="w-full bg-white border-outline-variant focus:bg-[#FDF5E6] focus:border-primary rounded-xl px-4 py-3 transition-all" placeholder="Ex: Tomar após a refeição com água." rows="3"></textarea>
+</div>
+<div class="space-y-2">
+<label class="text-label-md font-bold text-on-surface-variant">Responsável pela administração</label>
+<select class="w-full h-12 bg-white border-outline-variant focus:bg-[#FDF5E6] focus:border-primary rounded-xl px-4 transition-all">
+<option>Ana Silva</option>
+<option>Ricardo Mendes</option>
+<option>Próprio paciente</option>
+</select>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="text-label-md font-bold text-on-surface-variant">Data de Início</label>
+<input class="w-full h-12 bg-white border-outline-variant focus:bg-[#FDF5E6] focus:border-primary rounded-xl px-4 transition-all" type="date"/>
+</div>
+<div class="space-y-2">
+<label class="text-label-md font-bold text-on-surface-variant">Data de Fim (Opcional)</label>
+<input class="w-full h-12 bg-white border-outline-variant focus:bg-[#FDF5E6] focus:border-primary rounded-xl px-4 transition-all" type="date"/>
+</div>
+</div>
+<div class="flex gap-4 pt-4">
+<button class="flex-1 h-12 text-on-surface-variant font-bold hover:bg-surface-container-high rounded-xl transition-all" onclick="toggleModal(false)" type="button">Cancelar</button>
+<button class="flex-[2] h-12 bg-primary text-on-primary font-bold rounded-xl shadow-lg hover:shadow-xl transition-all active:scale-95" type="submit">Guardar medicamento</button>
+</div>
+</form>
+</div>
+</div>
+<script>
+        function toggleModal(show) {
+            const modal = document.getElementById('medicationModal');
+            const content = document.getElementById('modalContent');
+            
+            if (show) {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    content.classList.remove('scale-95', 'opacity-0');
+                    content.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            } else {
+                content.classList.remove('scale-100', 'opacity-100');
+                content.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+        }
+
+        // Close on Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') toggleModal(false);
+        });
+    </script>
+</body></html>

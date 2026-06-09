@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tarefas da família - Cuida Care</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#7a7569",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#dbeaf5",
+                        "on-tertiary-container": "#fffdff",
+                        "tertiary": "#615c51",
+                        "on-secondary-fixed": "#002107",
+                        "inverse-on-surface": "#e4f3fe",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed-dim": "#cdc6b8",
+                        "surface-container-low": "#e9f5ff",
+                        "surface-dim": "#cddce7",
+                        "background": "#f5faff",
+                        "on-background": "#0f1d25",
+                        "tertiary-fixed": "#e9e2d3",
+                        "on-primary-fixed-variant": "#004786",
+                        "on-tertiary-fixed-variant": "#4b463c",
+                        "surface-bright": "#f5faff",
+                        "secondary-fixed": "#abf4ac",
+                        "on-tertiary-fixed": "#1e1b13",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#1976d2",
+                        "outline": "#717783",
+                        "primary-fixed": "#d4e3ff",
+                        "on-surface": "#0f1d25",
+                        "surface-container": "#e1f0fb",
+                        "secondary-container": "#abf4ac",
+                        "surface-variant": "#d6e5ef",
+                        "surface-container-highest": "#d6e5ef",
+                        "secondary": "#286b33",
+                        "outline-variant": "#c1c6d4",
+                        "on-error-container": "#93000a",
+                        "primary": "#005dac",
+                        "inverse-surface": "#24323a",
+                        "primary-fixed-dim": "#a5c8ff",
+                        "on-primary-fixed": "#001c3a",
+                        "on-primary-container": "#fffdff",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface": "#f5faff",
+                        "secondary-fixed-dim": "#90d792",
+                        "on-secondary-fixed-variant": "#07521d",
+                        "inverse-primary": "#a5c8ff",
+                        "surface-tint": "#005faf",
+                        "on-surface-variant": "#414752",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-container": "#2e7238",
+                        "error": "#ba1a1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-lg": "2rem",
+                        "gutter": "1.5rem",
+                        "base": "8px",
+                        "container-padding-mobile": "1.25rem",
+                        "stack-sm": "0.5rem",
+                        "container-padding-desktop": "2.5rem",
+                        "stack-md": "1rem"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .task-card-shadow {
+            box-shadow: 0 8px 24px rgba(0, 93, 172, 0.04);
+        }
+        .glass-header {
+            backdrop-filter: blur(8px);
+            background: rgba(245, 250, 255, 0.8);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex">
+<!-- SideNavBar (Desktop) -->
+<aside class="h-screen w-64 hidden lg:flex flex-col sticky left-0 top-0 bg-surface shadow-sm py-stack-md px-base border-r border-surface-container">
+<div class="mb-stack-lg px-4">
+<h1 class="text-headline-md font-headline-md font-bold text-primary">Cuida Care</h1>
+<p class="text-label-sm text-on-surface-variant">Family Lead</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-label-md font-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined">pill</span>
+<span class="text-label-md font-label-md">Medications</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="text-label-md font-label-md">Appointments</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-primary font-bold border-r-4 border-primary bg-surface-container-low transition-colors" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="text-label-md font-label-md">Tasks</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-label-md font-label-md">Family</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-4 py-4 bg-surface-container rounded-2xl flex items-center gap-3">
+<img alt="Primary caregiver profile photo" class="w-10 h-10 rounded-full bg-primary-container" data-alt="A warm, professional portrait of a woman in her 40s smiling, set against a soft, sunlit home office background. The lighting is gentle and natural, emphasizing a mood of reliability and care. The overall aesthetic is clean and modern, using the primary blue and soft white tones of the Cuida Care brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAZEun87fGEy_yxQHeFdJ2vQJt3SjKycN06wTsvMKBW_ohgaalUnv_P1wt9cbLvu809vIW6eWfuWKI_g4JVe6fDmPLqDwGiFiXwP7BoDER6mlu03-DpJShCOUXtBFkE7rk907T2cDAWpfnz1bAR9njrtL05vvt61sFliiQfYFtmqrth572OsEkNVcPFI2oei_TLHGMA1JNjjVkZQPriDy4WxJY_Ymk5kTnOPq_IwiLFUeSXid-PsijPqxxI34XwEkrgIurzd2dDpn5"/>
+<div>
+<p class="text-label-md font-bold">Ana Silva</p>
+<p class="text-label-sm text-on-surface-variant">Lead Caregiver</p>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col min-h-screen pb-24 lg:pb-0 overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="glass-header sticky top-0 z-40">
+<div class="flex justify-between items-center w-full px-container-padding-mobile md:px-container-padding-desktop py-stack-md max-w-[1200px] mx-auto">
+<div class="flex items-center gap-4">
+<button class="lg:hidden p-2 rounded-full hover:bg-surface-container-low">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h2 class="text-headline-md font-headline-md font-bold text-primary lg:hidden">Cuida Care</h2>
+</div>
+<div class="hidden md:flex flex-1 max-w-md mx-8">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-xl focus:ring-2 focus:ring-primary text-body-md" placeholder="Search tasks..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-on-surface-variant">help</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center ml-2">
+<span class="text-on-secondary-container font-bold text-label-sm">AS</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="max-w-[1200px] mx-auto w-full px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
+<!-- Page Title & CTA -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-gutter mb-stack-lg">
+<div>
+<h1 class="text-headline-lg-mobile md:text-headline-lg font-headline-lg text-on-background">Tarefas da família</h1>
+<p class="text-body-lg text-on-surface-variant mt-2">Gerencie as responsabilidades diárias com calma e clareza.</p>
+</div>
+<button class="bg-primary text-on-primary px-8 py-4 rounded-full font-bold flex items-center justify-center gap-2 shadow-lg hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined">add</span>
+                    Criar tarefa
+                </button>
+</div>
+<!-- Task Board (Bento Grid Style) -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Column: Por fazer -->
+<section class="space-y-stack-md">
+<div class="flex items-center justify-between px-2 mb-4">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-error"></span>
+<h3 class="text-headline-md font-headline-md">Por fazer</h3>
+</div>
+<span class="bg-surface-container-highest px-3 py-1 rounded-full text-label-sm font-bold">2</span>
+</div>
+<!-- Task Card 1 -->
+<div class="bg-surface p-6 rounded-[24px] task-card-shadow border border-surface-container-low hover:border-primary-container transition-all cursor-pointer group">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-error-container text-on-error-container text-label-sm px-3 py-1 rounded-full font-bold">Alta Prioridade</span>
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">more_vert</span>
+</div>
+<h4 class="text-label-md font-headline-md mb-2 text-on-surface">Comprar medicação (Cardio)</h4>
+<p class="text-body-md text-on-surface-variant mb-6">Pegar a nova receita na gaveta e ir à farmácia central para o desconto.</p>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-primary-container flex items-center justify-center text-[10px] text-white font-bold" title="Ana">AS</div>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+<span class="text-label-sm">Hoje, 18:00</span>
+</div>
+</div>
+</div>
+<!-- Task Card 2 -->
+<div class="bg-surface p-6 rounded-[24px] task-card-shadow border border-surface-container-low hover:border-primary-container transition-all cursor-pointer group">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-surface-container-highest text-on-surface-variant text-label-sm px-3 py-1 rounded-full font-bold">Média</span>
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">more_vert</span>
+</div>
+<h4 class="text-label-md font-headline-md mb-2 text-on-surface">Organizar prontuário</h4>
+<p class="text-body-md text-on-surface-variant mb-6">Digitalizar os últimos exames de sangue da Vovó.</p>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-secondary-container flex items-center justify-center text-[10px] text-on-secondary-container font-bold" title="Lucas">LM</div>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+<span class="text-label-sm">Amanhã</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Column: Em progresso -->
+<section class="space-y-stack-md">
+<div class="flex items-center justify-between px-2 mb-4">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<h3 class="text-headline-md font-headline-md">Em progresso</h3>
+</div>
+<span class="bg-surface-container-highest px-3 py-1 rounded-full text-label-sm font-bold">1</span>
+</div>
+<div class="bg-surface p-6 rounded-[24px] task-card-shadow border-l-4 border-l-primary border-y border-r border-surface-container-low transition-all cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-primary-container text-on-primary-container text-label-sm px-3 py-1 rounded-full font-bold">Em andamento</span>
+<span class="material-symbols-outlined text-on-surface-variant">sync</span>
+</div>
+<h4 class="text-label-md font-headline-md mb-2 text-on-surface">Pesquisar Fisioterapeuta</h4>
+<p class="text-body-md text-on-surface-variant mb-6">Comparar preços e disponibilidades para visitas domiciliares.</p>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-tertiary-fixed flex items-center justify-center text-[10px] text-on-tertiary-fixed font-bold" title="Carla">CR</div>
+</div>
+<div class="flex items-center gap-1 text-primary font-bold">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+<span class="text-label-sm">Iniciado 2h atrás</span>
+</div>
+</div>
+</div>
+<!-- Decorative placeholder for collaborative feel -->
+<div class="border-2 border-dashed border-outline-variant rounded-[24px] p-8 flex flex-col items-center justify-center text-center opacity-50">
+<span class="material-symbols-outlined text-4xl mb-2">person_add</span>
+<p class="text-label-sm">Arraste aqui para delegar</p>
+</div>
+</section>
+<!-- Column: Concluído -->
+<section class="space-y-stack-md">
+<div class="flex items-center justify-between px-2 mb-4">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-secondary"></span>
+<h3 class="text-headline-md font-headline-md">Concluído</h3>
+</div>
+<span class="bg-surface-container-highest px-3 py-1 rounded-full text-label-sm font-bold">4</span>
+</div>
+<div class="bg-surface-container-low p-6 rounded-[24px] task-card-shadow border border-surface-container-low transition-all opacity-75">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-secondary-container text-on-secondary-container text-label-sm px-3 py-1 rounded-full font-bold">Finalizado</span>
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<h4 class="text-label-md font-headline-md mb-2 text-on-surface line-through opacity-60">Marcar Consulta Geriatra</h4>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-primary-container flex items-center justify-center text-[10px] text-white font-bold">AS</div>
+<span class="text-label-sm text-on-surface-variant">Concluído por Ana</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-[24px] task-card-shadow border border-surface-container-low transition-all opacity-75">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-secondary-container text-on-secondary-container text-label-sm px-3 py-1 rounded-full font-bold">Finalizado</span>
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<h4 class="text-label-md font-headline-md mb-2 text-on-surface line-through opacity-60">Renovação do Plano de Saúde</h4>
+<div class="flex items-center justify-between mt-auto">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-secondary-container flex items-center justify-center text-[10px] text-on-secondary-container font-bold">LM</div>
+<span class="text-label-sm text-on-surface-variant">Concluído por Lucas</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Family Collaboration Section -->
+<section class="mt-stack-lg bg-surface-container-low rounded-[32px] p-container-padding-desktop">
+<div class="flex flex-col md:flex-row items-center gap-8">
+<div class="flex-1">
+<h3 class="text-headline-md font-headline-md text-on-surface mb-4">Equipe de Cuidado</h3>
+<div class="flex flex-wrap gap-4">
+<div class="flex items-center gap-3 bg-surface px-4 py-2 rounded-full shadow-sm">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-white font-bold">AS</div>
+<div>
+<p class="text-label-md">Ana Silva</p>
+<p class="text-label-sm text-on-surface-variant">Coordenadora</p>
+</div>
+</div>
+<div class="flex items-center gap-3 bg-surface px-4 py-2 rounded-full shadow-sm">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold">LM</div>
+<div>
+<p class="text-label-md">Lucas Mendes</p>
+<p class="text-label-sm text-on-surface-variant">Logística</p>
+</div>
+</div>
+<div class="flex items-center gap-3 bg-surface px-4 py-2 rounded-full shadow-sm">
+<div class="w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed font-bold">CR</div>
+<div>
+<p class="text-label-md">Carla Rocha</p>
+<p class="text-label-sm text-on-surface-variant">Apoio</p>
+</div>
+</div>
+<button class="w-10 h-10 rounded-full border-2 border-dashed border-outline flex items-center justify-center text-outline hover:border-primary hover:text-primary transition-all">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+<div class="hidden md:block w-48 h-48 relative">
+<img alt="Collaborative care illustration" class="w-full h-full object-contain" data-alt="A stylized, warm illustration showing diverse hands reaching together to support a growing seedling. The colors are muted greens and primary blues, following the Cuida Care palette. The lighting is soft and optimistic, representing the warmth of a supportive family hearth and the collective effort of family caregiving." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjYV6mcXMncZjLo-eMxs9YJRakhr-1Yyj1BIFKFYAgJoWsMaD57Mxp3kgDtcl7YPV2DKOXd0ra99Ui0iKMKlwy8rG9AGAojSNXGosXCOZwM4C-2KafU_Q0vQA3WsA-b2pTZbfE40WsJaj1gZIYqNohmpjI-5KWrThAlYPo-LyLRHKNI0H64A2HXNBHqUEg-JIWyE8fj30nWY5UswMO-xl7mJc6MLFm_GS1GGPgZgQKwq9JaluivVayU5feCW3USXCXGPPap40qLH16"/>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface shadow-lg lg:hidden rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-label-sm font-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">pill</span>
+<span class="text-label-sm font-label-sm">Meds</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="text-label-sm font-label-sm">Appts</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 scale-90 duration-150" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="text-label-sm font-label-sm">Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">more_horiz</span>
+<span class="text-label-sm font-label-sm">More</span>
+</a>
+</nav>
+<!-- Micro-interactions Script -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const taskCards = document.querySelectorAll('.task-card-shadow');
+            taskCards.forEach(card => {
+                card.addEventListener('mousedown', () => {
+                    card.style.transform = 'scale(0.98)';
+                });
+                card.addEventListener('mouseup', () => {
+                    card.style.transform = 'scale(1)';
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
+</body></html>

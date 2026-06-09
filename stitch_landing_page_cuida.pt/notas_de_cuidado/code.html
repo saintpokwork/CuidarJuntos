@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Notas de cuidado - Cuida Care</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .care-note-card {
+            box-shadow: 0 8px 24px rgba(0, 93, 172, 0.04);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .care-note-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0, 93, 172, 0.08);
+        }
+        body {
+            background-color: #f5faff;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-container": "#7a7569",
+                      "on-error": "#ffffff",
+                      "surface-container-high": "#dbeaf5",
+                      "on-tertiary-container": "#fffdff",
+                      "tertiary": "#615c51",
+                      "on-secondary-fixed": "#002107",
+                      "inverse-on-surface": "#e4f3fe",
+                      "on-primary": "#ffffff",
+                      "tertiary-fixed-dim": "#cdc6b8",
+                      "surface-container-low": "#e9f5ff",
+                      "surface-dim": "#cddce7",
+                      "background": "#f5faff",
+                      "on-background": "#0f1d25",
+                      "tertiary-fixed": "#e9e2d3",
+                      "on-primary-fixed-variant": "#004786",
+                      "on-tertiary-fixed-variant": "#4b463c",
+                      "surface-bright": "#f5faff",
+                      "secondary-fixed": "#abf4ac",
+                      "on-tertiary-fixed": "#1e1b13",
+                      "on-secondary": "#ffffff",
+                      "primary-container": "#1976d2",
+                      "outline": "#717783",
+                      "primary-fixed": "#d4e3ff",
+                      "on-surface": "#0f1d25",
+                      "surface-container": "#e1f0fb",
+                      "secondary-container": "#abf4ac",
+                      "surface-variant": "#d6e5ef",
+                      "surface-container-highest": "#d6e5ef",
+                      "secondary": "#286b33",
+                      "outline-variant": "#c1c6d4",
+                      "on-error-container": "#93000a",
+                      "primary": "#005dac",
+                      "inverse-surface": "#24323a",
+                      "primary-fixed-dim": "#a5c8ff",
+                      "on-primary-fixed": "#001c3a",
+                      "on-primary-container": "#fffdff",
+                      "on-tertiary": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "surface": "#f5faff",
+                      "secondary-fixed-dim": "#90d792",
+                      "on-secondary-fixed-variant": "#07521d",
+                      "inverse-primary": "#a5c8ff",
+                      "surface-tint": "#005faf",
+                      "on-surface-variant": "#414752",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-container": "#2e7238",
+                      "error": "#ba1a1a"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-lg": "2rem",
+                      "gutter": "1.5rem",
+                      "base": "8px",
+                      "container-padding-mobile": "1.25rem",
+                      "stack-sm": "0.5rem",
+                      "container-padding-desktop": "2.5rem",
+                      "stack-md": "1rem"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": ["Plus Jakarta Sans"],
+                      "headline-lg": ["Plus Jakarta Sans"],
+                      "label-md": ["Plus Jakarta Sans"],
+                      "headline-md": ["Plus Jakarta Sans"],
+                      "body-md": ["Plus Jakarta Sans"],
+                      "body-lg": ["Plus Jakarta Sans"],
+                      "headline-xl": ["Plus Jakarta Sans"],
+                      "label-sm": ["Plus Jakarta Sans"]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<div class="flex">
+<!-- Side Navigation (Shared Component Identity) -->
+<aside class="h-screen w-64 hidden lg:flex flex-col sticky left-0 top-0 bg-surface dark:bg-inverse-surface shadow-sm py-stack-md px-base border-r border-surface-variant">
+<div class="px-4 mb-8">
+<h1 class="text-headline-md font-headline-md font-bold text-primary dark:text-inverse-primary">Cuida Care</h1>
+<p class="text-label-sm text-on-surface-variant">Family Lead</p>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span>
+<span class="text-label-md font-label-md">Dashboard</span>
+</a>
+<a class="flex items-center px-4 py-3 rounded-lg text-primary dark:text-inverse-primary font-bold border-r-4 border-primary bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="event_note" style="font-variation-settings: 'FILL' 1;">event_note</span>
+<span class="text-label-md font-label-md">Notes</span>
+</a>
+<a class="flex items-center px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="pill">pill</span>
+<span class="text-label-md font-label-md">Medications</span>
+</a>
+<a class="flex items-center px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="calendar_today">calendar_today</span>
+<span class="text-label-md font-label-md">Appointments</span>
+</a>
+<a class="flex items-center px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="person">person</span>
+<span class="text-label-md font-label-md">Profile</span>
+</a>
+<a class="flex items-center px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="settings">settings</span>
+<span class="text-label-md font-label-md">Settings</span>
+</a>
+</nav>
+<div class="px-4 py-4 mt-auto">
+<div class="flex items-center gap-3 p-2 rounded-xl bg-surface-container-low">
+<img alt="Primary caregiver profile photo" class="w-10 h-10 rounded-full" data-alt="A warm, professional portrait of a woman in her late 40s with a kind and reassuring smile, captured in soft, natural morning light. She is wearing a soft blue cardigan, reflecting the supportive hearth brand aesthetic. The background is a gently blurred home environment that feels calm, organized, and welcoming." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8kib2KBg8LFe8uZWzaRgYrB0BLsLYamXrQ2WCZmeY4VeqHFi6k0WNJgDvWMe-FdgIgUCOShgtS_rVNMQ6XXrfxkjEBEn1HNEfXfZQcT_epV3YgxYLUaV_jWlo4nlvTQVd2HORiuWgtfFpO9Qb6Y8tDRZB-kbJyoOaGUrWH2x6UfO_1yRZtOUeICbJv21Qcd5y4h4VtyxFc-HaA1RYrjezBWJZZfnFg7LWkSzF-BxOaKVLaJy328G8WFlWQbc6hhF5r9BvR0yZ45lB"/>
+<div>
+<p class="text-label-md font-bold text-on-surface">Maria Silva</p>
+<p class="text-label-sm text-on-surface-variant">Líder da Família</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 min-w-0">
+<!-- Top App Bar (Shared Component Identity) -->
+<header class="sticky top-0 z-40 bg-background/80 backdrop-blur-md">
+<div class="flex justify-between items-center w-full px-container-padding-mobile md:px-container-padding-desktop py-stack-md max-w-[1200px] mx-auto">
+<h2 class="text-headline-lg-mobile md:text-headline-lg font-headline-lg text-primary">Notas de cuidado</h2>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-all">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low rounded-full transition-all">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+</div>
+</div>
+</header>
+<div class="max-w-[800px] mx-auto px-container-padding-mobile md:px-container-padding-desktop pb-32">
+<!-- Journal Feel Introduction -->
+<div class="mb-stack-lg flex items-center justify-between">
+<div>
+<p class="text-body-lg text-on-surface-variant italic">"A pequena atenção de hoje é o conforto de amanhã."</p>
+<p class="text-label-md text-primary mt-1">Hoje: 24 de Outubro, 2023</p>
+</div>
+<div class="flex -space-x-2">
+<img alt="Family member" class="w-8 h-8 rounded-full border-2 border-background" data-alt="A close-up photograph of a professional caregiver wearing a clean, light-green scrub top, smiling warmly at the camera. The lighting is bright and cheerful, evoking a sense of reliability and expert care. The setting is a modern, light-filled living room that feels cozy and therapeutic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCV7H3m41PMFRjB9zRRtpFh7QCSLxfIZYdxaDaSaNLVcAMOjla6W-OWPh1r4aBddIo-ijBqCD4CYISq1GPC7Xizt7Qg57i29Zbk623U_cbpKfFoCRVXFvANRQ100BWD2GMeRfMhlDGyXXCBITFVfgHwaGGEYAGy0AUYofocG29DI4y2i0nO13_ojE-_Gh4e7biLyD5dIkrUA3-AWe76_Lq5wYTdfDkzMNsvkS3wSg5UD75uQUx0mgkFK7mj8Q_llrx9G8KzFjShdXuf"/>
+<img alt="Family member" class="w-8 h-8 rounded-full border-2 border-background" data-alt="A portrait of a senior man in his 70s with silver hair, looking content and peaceful while sitting in a sun-drenched garden. He is wearing a comfortable linen shirt in a warm beige tone. The atmosphere is serene and optimistic, highlighting the lifestyle wellness aspect of the brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9pZHlsTuXuC7pVYekMP1QEi6wnnGMCAuQ7mPFZc8DXlKmMl5ad0X0wmBmyuqlUKekYGCecp_T8QgGdOW65hz7kxP47xm0pM7klE6utkiVedU1jkGTzjSb7NHo1K_JbqBJFVOUgjlA5MGBquyyp2SPHAVgEWrT3Xufdzp7V7NQoTYoxWiB_XYn-ffgeZCF1QsdyM9lUbw-fHfxMTCRfKzuUq-Z6ag5nG4fGZXK2LEaPOfi-8txGjRHPulOZdlAs4NrXcG2u2Mi90gD"/>
+<div class="w-8 h-8 rounded-full border-2 border-background bg-secondary-container flex items-center justify-center text-[10px] font-bold text-on-secondary-container">+3</div>
+</div>
+</div>
+<!-- Timeline Feed -->
+<div class="space-y-gutter relative">
+<!-- Vertical Timeline Line -->
+<div class="absolute left-6 top-0 bottom-0 w-0.5 bg-surface-variant/50 lg:left-8"></div>
+<!-- Note Entry 1 -->
+<div class="relative pl-12 lg:pl-16">
+<div class="absolute left-4 lg:left-6 w-4 h-4 bg-primary rounded-full border-4 border-background z-10"></div>
+<div class="care-note-card bg-surface-container-lowest rounded-[24px] p-6">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<img alt="Author" class="w-10 h-10 rounded-full" data-alt="Portrait of a young adult male nurse with a friendly and capable expression, wearing a navy blue medical uniform. The lighting is soft and professional, emphasizing a modern healthcare aesthetic. The background is a clean, minimalist interior with soft blue and white tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBF0HXs__ZCNLVQfLi5oN7ui0WmALZgaf0y9gBTYf4-BT0XpKQN-txhcuW9aopDUlZGCYo_b9zMYeK3zZxI1AKBGRTX_QAyebuhMzAE8pvyrteAwPo3ivJwW-9pQwu9ahvykYmlveCo6gOnu2DHf0BbDQJ0-jBwwQiJNFO2ladMqkTUPXL0rDnogMAM3tTOKRXF5FicQwAejjUiCG_4lM9CyjtFacmmXdwNy4mGBCElY8oinjW_pnGr3P48O6zeK7JUTgwYHRZsnhRZ"/>
+<div>
+<h4 class="text-label-md font-bold text-on-surface">Dr. Marcos Oliveira</h4>
+<p class="text-label-sm text-on-surface-variant">Há 2 horas • Fisioterapeuta</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="more_horiz">more_horiz</span>
+</div>
+<p class="text-body-md text-on-surface leading-relaxed">
+                                Sessão de fisioterapia concluída com sucesso. João apresentou excelente mobilidade hoje e conseguiu realizar 3 séries de exercícios para as pernas sem fadiga excessiva. Recomendado descanso nas próximas 4 horas.
+                            </p>
+<div class="mt-4 flex gap-2">
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container text-label-sm rounded-full">Exercícios</span>
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant text-label-sm rounded-full">Mobilidade</span>
+</div>
+</div>
+</div>
+<!-- Note Entry 2 -->
+<div class="relative pl-12 lg:pl-16">
+<div class="absolute left-4 lg:left-6 w-4 h-4 bg-tertiary rounded-full border-4 border-background z-10"></div>
+<div class="care-note-card bg-surface-container-lowest rounded-[24px] p-6 border-l-4 border-tertiary">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<img alt="Author" class="w-10 h-10 rounded-full" data-alt="A portrait of a middle-aged woman with glasses, expressing focus and care. She is dressed in home-casual attire, sitting in a kitchen bathed in warm, soft beige light. The visual style is human-centric and comforting, representing a family caregiver's daily environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBULhynMStEGMsbPpy_JoRuJyzR937FWFhLnvac4QV7O-F4rYdhOYq5xEbGWCd5KTdY0mVWez378gsHVqro00vOC9SHHSppkJcGvz8FdnkhbxikyA-xdI-QgBcGrkTLXXwJWwa92HxK3q6W0ftUIww0LXhUBYTxQfmkwex_X5o6kj5ca-fglxuzLceG7rzvKIUMqJXkTfOUPLrEBPHUWS4rLBHM6h0zEw0qHvXqoGC14jX6MF6_X3F-xIN2sOLEqnnFNUNBqWRp_TOp"/>
+<div>
+<h4 class="text-label-md font-bold text-on-surface">Ana Luiza (Filha)</h4>
+<p class="text-label-sm text-on-surface-variant">Hoje, 09:15 • Família</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary" data-icon="push_pin" style="font-variation-settings: 'FILL' 1;">push_pin</span>
+</div>
+<p class="text-body-md text-on-surface leading-relaxed">
+                                O pai tomou os remédios da manhã sem problemas. Ele pareceu um pouco mais disposto hoje e pediu para ler o jornal no jardim. A pressão estava 12/8.
+                            </p>
+<div class="mt-4 p-3 bg-surface-container-low rounded-xl flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="pill">pill</span>
+<span class="text-label-sm font-medium">Medicação da Manhã: Concluída</span>
+</div>
+</div>
+</div>
+<!-- Note Entry 3 -->
+<div class="relative pl-12 lg:pl-16">
+<div class="absolute left-4 lg:left-6 w-4 h-4 bg-surface-variant rounded-full border-4 border-background z-10"></div>
+<div class="care-note-card bg-surface-container-lowest rounded-[24px] p-6 opacity-80">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary font-bold">CC</div>
+<div>
+<h4 class="text-label-md font-bold text-on-surface">Cuida Care Bot</h4>
+<p class="text-label-sm text-on-surface-variant">Ontem, 20:00 • Sistema</p>
+</div>
+</div>
+</div>
+<p class="text-body-md text-on-surface italic">
+                                Lembrete: O estoque de Losartana está acabando (restam 3 doses). Favor providenciar a compra.
+                            </p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Sticky Input Box (The Modern Hearth Anchor) -->
+<div class="fixed bottom-0 left-0 right-0 lg:left-64 z-50 p-4 md:p-6 glass-effect">
+<div class="max-w-[800px] mx-auto">
+<div class="bg-surface-container-lowest shadow-2xl rounded-[28px] p-2 flex flex-col md:flex-row items-center gap-2 border border-primary/5">
+<div class="flex-1 w-full px-4 py-2">
+<textarea class="w-full bg-transparent border-none focus:ring-0 text-body-md placeholder-on-surface-variant resize-none h-10 py-2" id="note-input" placeholder="Escreva uma atualização sobre o cuidado de hoje..." rows="1"></textarea>
+</div>
+<div class="flex items-center gap-2 w-full md:w-auto p-2">
+<button class="p-2 text-primary hover:bg-primary-container/10 rounded-full transition-all">
+<span class="material-symbols-outlined" data-icon="image">image</span>
+</button>
+<button class="p-2 text-primary hover:bg-primary-container/10 rounded-full transition-all">
+<span class="material-symbols-outlined" data-icon="mic">mic</span>
+</button>
+<button class="bg-primary hover:bg-primary-container text-on-primary px-8 py-3 rounded-full font-bold text-label-md transition-all active:scale-95 flex items-center gap-2 shadow-lg shadow-primary/20">
+<span>Adicionar nota</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="send">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Mobile Bottom Navigation (Shared Component Identity) -->
+<nav class="lg:hidden fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface dark:bg-inverse-surface shadow-[0_-4px_24px_rgba(0,93,172,0.04)] rounded-t-xl" id="mobile-nav-block" style="display: none;">
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="text-label-sm font-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="pill">pill</span>
+<span class="text-label-sm font-label-sm">Meds</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="event_note" style="font-variation-settings: 'FILL' 1;">event_note</span>
+<span class="text-label-sm font-label-sm">Notes</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+<span class="text-label-sm font-label-sm">Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+<span class="text-label-sm font-label-sm">More</span>
+</a>
+</nav>
+<script>
+        // Adjust navigation visibility and sticky bar based on window size
+        function handleResponsive() {
+            const mobileNav = document.getElementById('mobile-nav-block');
+            const stickyInput = document.querySelector('.glass-effect');
+            
+            if (window.innerWidth < 1024) {
+                mobileNav.style.display = 'flex';
+                // Adjust sticky input height to be above mobile nav
+                stickyInput.style.bottom = '64px'; 
+            } else {
+                mobileNav.style.display = 'none';
+                stickyInput.style.bottom = '0';
+            }
+        }
+
+        window.addEventListener('resize', handleResponsive);
+        window.addEventListener('DOMContentLoaded', handleResponsive);
+
+        // Micro-interaction for the textarea
+        const textarea = document.getElementById('note-input');
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+            if (this.scrollHeight > 150) {
+                this.style.overflowY = 'scroll';
+                this.style.height = '150px';
+            } else {
+                this.style.overflowY = 'hidden';
+            }
+        });
+
+        // Toggle active state for nav items (demo logic)
+        document.querySelectorAll('aside nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                document.querySelectorAll('aside nav a').forEach(l => {
+                    l.classList.remove('text-primary', 'font-bold', 'border-r-4', 'border-primary', 'bg-surface-container-high');
+                    l.classList.add('text-on-surface-variant');
+                });
+                this.classList.add('text-primary', 'font-bold', 'border-r-4', 'border-primary', 'bg-surface-container-high');
+                this.classList.remove('text-on-surface-variant');
+            });
+        });
+    </script>
+</body></html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-PT"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cuida Care | Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .soft-shadow {
+            box-shadow: 0 8px 24px rgba(0, 93, 172, 0.04);
+        }
+        .soft-shadow-hover:hover {
+            box-shadow: 0 12px 32px rgba(0, 93, 172, 0.08);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#7a7569",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#dbeaf5",
+                        "on-tertiary-container": "#fffdff",
+                        "tertiary": "#615c51",
+                        "on-secondary-fixed": "#002107",
+                        "inverse-on-surface": "#e4f3fe",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed-dim": "#cdc6b8",
+                        "surface-container-low": "#e9f5ff",
+                        "surface-dim": "#cddce7",
+                        "background": "#f5faff",
+                        "on-background": "#0f1d25",
+                        "tertiary-fixed": "#e9e2d3",
+                        "on-primary-fixed-variant": "#004786",
+                        "on-tertiary-fixed-variant": "#4b463c",
+                        "surface-bright": "#f5faff",
+                        "secondary-fixed": "#abf4ac",
+                        "on-tertiary-fixed": "#1e1b13",
+                        "on-secondary": "#ffffff",
+                        "primary-container": "#1976d2",
+                        "outline": "#717783",
+                        "primary-fixed": "#d4e3ff",
+                        "on-surface": "#0f1d25",
+                        "surface-container": "#e1f0fb",
+                        "secondary-container": "#abf4ac",
+                        "surface-variant": "#d6e5ef",
+                        "surface-container-highest": "#d6e5ef",
+                        "secondary": "#286b33",
+                        "outline-variant": "#c1c6d4",
+                        "on-error-container": "#93000a",
+                        "primary": "#005dac",
+                        "inverse-surface": "#24323a",
+                        "primary-fixed-dim": "#a5c8ff",
+                        "on-primary-fixed": "#001c3a",
+                        "on-primary-container": "#fffdff",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface": "#f5faff",
+                        "secondary-fixed-dim": "#90d792",
+                        "on-secondary-fixed-variant": "#07521d",
+                        "inverse-primary": "#a5c8ff",
+                        "surface-tint": "#005faf",
+                        "on-surface-variant": "#414752",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-container": "#2e7238",
+                        "error": "#ba1a1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-lg": "2rem",
+                        "gutter": "1.5rem",
+                        "base": "8px",
+                        "container-padding-mobile": "1.25rem",
+                        "stack-sm": "0.5rem",
+                        "container-padding-desktop": "2.5rem",
+                        "stack-md": "1rem"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen">
+<div class="flex">
+<!-- Side Navigation Bar (Hidden on Mobile) -->
+<aside class="h-screen w-64 hidden lg:flex flex-col sticky left-0 top-0 bg-surface-container shadow-sm py-stack-md px-base">
+<div class="px-4 mb-stack-lg">
+<span class="text-headline-md font-headline-md font-bold text-primary">Cuida Care</span>
+<p class="text-on-surface-variant text-label-sm">Family Lead</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center px-4 py-3 text-primary font-bold border-r-4 border-primary transition-colors" href="#">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+<span class="text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined mr-3">person</span>
+<span class="text-label-md">Profile</span>
+</a>
+<a class="flex items-center px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined mr-3">pill</span>
+<span class="text-label-md">Medications</span>
+</a>
+<a class="flex items-center px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined mr-3">calendar_today</span>
+<span class="text-label-md">Appointments</span>
+</a>
+<a class="flex items-center px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined mr-3">assignment</span>
+<span class="text-label-md">Tasks</span>
+</a>
+<a class="flex items-center px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined mr-3">description</span>
+<span class="text-label-md">Documents</span>
+</a>
+<a class="flex items-center px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined mr-3">emergency</span>
+<span class="text-label-md">Emergency</span>
+</a>
+<a class="flex items-center px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined mr-3">group</span>
+<span class="text-label-md">Family</span>
+</a>
+<a class="flex items-center px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined mr-3">event_note</span>
+<span class="text-label-md">Notes</span>
+</a>
+<a class="flex items-center px-4 py-3 text-on-surface-variant hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined mr-3">settings</span>
+<span class="text-label-md">Settings</span>
+</a>
+</nav>
+<div class="px-4 mt-auto">
+<div class="flex items-center gap-3 p-2 rounded-xl bg-surface-container-high">
+<img alt="Ana's Profile" class="w-10 h-10 rounded-full object-cover" data-alt="A warm and friendly close-up portrait of a primary caregiver woman in her 40s, with a gentle and professional smile. She is in a softly lit, modern home office setting with warm wood tones and blurred indoor plants in the background. The lighting is soft and natural, emphasizing a calm and supportive lifestyle brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrPXztbyOYTTQCl760tVuMOIgwXU_Ea-JCTvkNgmleAvT1--BeaWO8k0vsTXLp55H0GT-vTKPWV-3UjDypVHRHCKrKcBEkf290KL7xHl8eRIU6viBI0fXvEHd1uY4wGmYbvILh2kW5BNytoETMzHRsxgNQNAqEaB8B_SjHRmAnFdnulJEce6ql7Ag8eaAXm6QauRVuLwMCr49ax72MqarTFft8T7eeNcVy51Rrz85bacw5syFK3MTcQQckKMhkgyJS9jRPBZZXTZxx"/>
+<div>
+<p class="text-label-md font-bold text-on-surface">Ana Silva</p>
+<p class="text-[10px] text-on-surface-variant uppercase">Family Lead</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 w-full relative pb-24 lg:pb-8">
+<!-- Top App Bar -->
+<header class="flex justify-between items-center w-full px-container-padding-mobile md:px-container-padding-desktop py-stack-md max-w-[1200px] mx-auto bg-background">
+<div class="lg:hidden">
+<span class="text-headline-md font-headline-md font-bold text-primary">Cuida Care</span>
+</div>
+<div class="hidden md:flex items-center bg-surface-container-low px-4 py-2 rounded-full w-96">
+<span class="material-symbols-outlined text-on-surface-variant mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-label-md w-full placeholder-on-surface-variant" placeholder="Procurar medicamentos, tarefas..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-on-surface-variant">help</span>
+</button>
+<img alt="Ana's Profile" class="w-10 h-10 rounded-full object-cover lg:hidden" data-alt="A warm and friendly close-up portrait of a primary caregiver woman in her 40s, with a gentle and professional smile. She is in a softly lit, modern home office setting with warm wood tones and blurred indoor plants in the background. The lighting is soft and natural, emphasizing a calm and supportive lifestyle brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCDnVybTrO6mTIvJLMl6MInsemM7oWvnN3PONRYsMgSkYUxeLLx419FoiPt-R5MNSQ4jEXIZQ5qNEgKfmByUxDidDJUem8av1LlIhehwpAuAPXQuIhxq60VhCf2N-mvQqijGHSnpxR6xXowkL9sc_J7DTf5CN0MqCdn5s-wFvKeiw9u4vzq7-BVzW1y2EnMXI95h0K2GhFBkErsFE588LlbPeNWpTxDN9G3qZ2rsG4lmighZ_W_FPvyZ39YfGHFVstQIP46XmDfna1"/>
+</div>
+</header>
+<div class="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
+<!-- Welcome Section -->
+<section class="mb-stack-lg">
+<h1 class="text-headline-lg font-headline-lg text-on-surface mb-2">Bom dia, Ana</h1>
+<p class="text-body-lg text-on-surface-variant">Hoje há 2 medicamentos, 1 tarefa pendente e nenhuma consulta marcada.</p>
+</section>
+<!-- Quick Actions Grid -->
+<section class="mb-stack-lg">
+<div class="flex flex-wrap gap-4">
+<button class="flex items-center gap-2 px-6 py-4 bg-primary text-on-primary rounded-full font-bold shadow-lg hover:opacity-90 transition-all scale-100 active:scale-95">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="text-label-md">Adicionar medicamento</span>
+</button>
+<button class="flex items-center gap-2 px-6 py-4 bg-secondary text-on-secondary rounded-full font-bold shadow-lg hover:opacity-90 transition-all scale-100 active:scale-95">
+<span class="material-symbols-outlined">event</span>
+<span class="text-label-md">Marcar consulta</span>
+</button>
+<button class="flex items-center gap-2 px-6 py-4 bg-surface-container-high text-primary rounded-full font-bold hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined">playlist_add</span>
+<span class="text-label-md">Criar tarefa</span>
+</button>
+<button class="flex items-center gap-2 px-6 py-4 bg-surface-container-high text-primary rounded-full font-bold hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined">upload_file</span>
+<span class="text-label-md">Enviar documento</span>
+</button>
+<button class="flex items-center gap-2 px-6 py-4 bg-error-container text-on-error-container rounded-full font-bold hover:opacity-90 transition-all">
+<span class="material-symbols-outlined">medical_services</span>
+<span class="text-label-md">Ficha de emergência</span>
+</button>
+</div>
+</section>
+<!-- Bento Grid Content -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Medications Card -->
+<div class="glass-card rounded-[24px] p-6 soft-shadow soft-shadow-hover transition-all border border-white/40">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h3 class="text-headline-md font-headline-md text-on-surface">Medicamentos</h3>
+<p class="text-label-sm text-on-surface-variant">Próximas tomas para hoje</p>
+</div>
+<span class="material-symbols-outlined text-primary text-3xl">pill</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center p-3 bg-primary-fixed/20 rounded-xl">
+<div class="bg-primary text-on-primary p-2 rounded-lg mr-3">
+<span class="material-symbols-outlined">alarm</span>
+</div>
+<div class="flex-1">
+<p class="text-label-md font-bold">Aspirina 100mg</p>
+<p class="text-label-sm text-on-surface-variant">09:00 • Após o pequeno-almoço</p>
+</div>
+<input class="w-6 h-6 rounded-lg text-primary border-outline-variant focus:ring-primary" type="checkbox"/>
+</div>
+<div class="flex items-center p-3 bg-surface-container rounded-xl">
+<div class="bg-outline-variant text-on-surface-variant p-2 rounded-lg mr-3">
+<span class="material-symbols-outlined">alarm</span>
+</div>
+<div class="flex-1">
+<p class="text-label-md font-bold">Multivitamínico</p>
+<p class="text-label-sm text-on-surface-variant">13:00 • Durante o almoço</p>
+</div>
+<input class="w-6 h-6 rounded-lg text-primary border-outline-variant focus:ring-primary" type="checkbox"/>
+</div>
+</div>
+<button class="mt-6 w-full text-center text-primary font-bold text-label-md py-2 hover:bg-primary-fixed/10 rounded-lg transition-colors">Ver plano completo</button>
+</div>
+<!-- Appointments Card -->
+<div class="glass-card rounded-[24px] p-6 soft-shadow soft-shadow-hover transition-all border border-white/40">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h3 class="text-headline-md font-headline-md text-on-surface">Consultas</h3>
+<p class="text-label-sm text-on-surface-variant">Agenda da semana</p>
+</div>
+<span class="material-symbols-outlined text-secondary text-3xl">calendar_today</span>
+</div>
+<div class="flex flex-col items-center justify-center py-8 text-center">
+<div class="w-16 h-16 bg-secondary-container/30 rounded-full flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-secondary text-2xl">event_busy</span>
+</div>
+<p class="text-label-md font-semibold text-on-surface">Sem consultas marcadas</p>
+<p class="text-label-sm text-on-surface-variant mt-1">Aproveite para descansar ou organizar tarefas pendentes.</p>
+</div>
+<button class="mt-6 w-full text-center text-secondary font-bold text-label-md py-2 hover:bg-secondary-fixed/10 rounded-lg transition-colors">Agendar nova consulta</button>
+</div>
+<!-- Tasks Card -->
+<div class="glass-card rounded-[24px] p-6 soft-shadow soft-shadow-hover transition-all border border-white/40">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h3 class="text-headline-md font-headline-md text-on-surface">Tarefas</h3>
+<p class="text-label-sm text-on-surface-variant">1 pendente</p>
+</div>
+<span class="material-symbols-outlined text-tertiary text-3xl">assignment</span>
+</div>
+<div class="space-y-4">
+<div class="group flex items-start p-4 border border-outline-variant rounded-xl hover:border-primary transition-colors cursor-pointer">
+<div class="bg-tertiary-container/10 text-tertiary p-2 rounded-lg mr-4">
+<span class="material-symbols-outlined">shopping_cart</span>
+</div>
+<div class="flex-1">
+<p class="text-label-md font-bold group-hover:text-primary">Comprar gaze e álcool</p>
+<p class="text-label-sm text-on-surface-variant">Farmácia Central • Urgente</p>
+</div>
+</div>
+</div>
+<button class="mt-6 w-full text-center text-on-surface-variant font-bold text-label-md py-2 hover:bg-surface-container-highest rounded-lg transition-colors">Ver todas as tarefas</button>
+</div>
+<!-- Recent Documents -->
+<div class="glass-card rounded-[24px] p-6 soft-shadow soft-shadow-hover transition-all border border-white/40 lg:col-span-1">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h3 class="text-headline-md font-headline-md text-on-surface">Documentos</h3>
+<p class="text-label-sm text-on-surface-variant">Recentes</p>
+</div>
+<span class="material-symbols-outlined text-primary text-3xl">description</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center gap-3 p-2 hover:bg-surface-container-low rounded-xl transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-primary">picture_as_pdf</span>
+<div class="flex-1 overflow-hidden">
+<p class="text-label-md font-medium truncate">Análises_Julho_2024.pdf</p>
+<p class="text-[10px] text-on-surface-variant">Adicionado há 2 dias</p>
+</div>
+</div>
+<div class="flex items-center gap-3 p-2 hover:bg-surface-container-low rounded-xl transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-primary">description</span>
+<div class="flex-1 overflow-hidden">
+<p class="text-label-md font-medium truncate">Receita_Dra_Marta.jpg</p>
+<p class="text-[10px] text-on-surface-variant">Adicionado há 1 semana</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Emergency Contacts -->
+<div class="glass-card rounded-[24px] p-6 soft-shadow soft-shadow-hover transition-all border border-white/40">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h3 class="text-headline-md font-headline-md text-on-surface">Contactos</h3>
+<p class="text-label-sm text-on-surface-variant">Emergência rápida</p>
+</div>
+<span class="material-symbols-outlined text-error text-3xl">emergency</span>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div class="p-3 bg-error-container/10 rounded-2xl flex flex-col items-center text-center">
+<img alt="Dr. Roberto" class="w-12 h-12 rounded-full mb-2 object-cover border-2 border-white" data-alt="A professional and friendly portrait of a male doctor in his 50s, wearing a white lab coat and a stethoscope around his neck. He has a confident and reassuring expression. The background is a brightly lit, clean, and modern medical clinic with soft blue and white tones, matching a professional healthcare brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzLuUldVxFr6oTpwHfCR_cVjegacX1rcjLvifvyX6Et7c2Rbb87al0JjVPLYWFXOl2EyfzCcyGitnRz4IBMTZRlH6rQ7A1DJfVZh8HAkAZVgx5jOC64U7abkiPm05ErRwzFvAS2eY2Btzu2ZL_-cJxoQRi22zEPQf6AzWc-lMIXpMg5iSk6R4n2yhssg2Gzz_Ty032HmkrUC1YBVpRFsIBtVupeWk-zhrWvx-sCA532QDre749A_tpID_x2wzpawCbdAnxUmp6MAIO"/>
+<p class="text-label-sm font-bold truncate w-full">Dr. Roberto</p>
+<p class="text-[10px] text-on-surface-variant">Cardiologista</p>
+</div>
+<div class="p-3 bg-secondary-container/10 rounded-2xl flex flex-col items-center text-center">
+<img alt="Enf. Maria" class="w-12 h-12 rounded-full mb-2 object-cover border-2 border-white" data-alt="A professional and caring portrait of a female nurse in her late 30s, wearing clean blue scrubs. She is smiling warmly at the camera in a modern hospital hallway with soft, high-key lighting. The overall mood is reliable, calm, and professional, utilizing a palette of soft whites and muted blues for a human-centric wellness app feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUyZABvFDj4v2v_L2kF80wk7dfsTqaSxi7fGRONoUqMKf7tYECWk22U2YE19y18YwtOXu0G47n7ys9iYMOeS1WMqZ8Ay1ZM17gUvC087UqCVZKCDFAmE12c3VLA9HS7lTKVSktfSL3cnbKXQLvbkhe0XR6VSR--BhEUCP-hPR_z5vpfcUfSwrvA8WlCD8_AmHeTmIn-EM5mimVypWa6aWQIyzDxUY-xehaKvrAEcEIEBrGyQG2HwsGXn8u5n2d8V2BBnVfWAZYgReL"/>
+<p class="text-label-sm font-bold truncate w-full">Enf. Maria</p>
+<p class="text-[10px] text-on-surface-variant">Cuidados 24h</p>
+</div>
+</div>
+</div>
+<!-- Care Notes -->
+<div class="glass-card rounded-[24px] p-6 soft-shadow soft-shadow-hover transition-all border border-white/40">
+<div class="flex justify-between items-start mb-6">
+<div>
+<h3 class="text-headline-md font-headline-md text-on-surface">Notas</h3>
+<p class="text-label-sm text-on-surface-variant">Lembretes de cuidado</p>
+</div>
+<span class="material-symbols-outlined text-tertiary text-3xl">event_note</span>
+</div>
+<div class="bg-tertiary-fixed/30 p-4 rounded-xl rotate-1">
+<p class="text-body-md italic text-on-tertiary-fixed-variant">"Lembrar de medir a tensão arterial amanhã de manhã antes da medicação. O paciente sentiu-se um pouco tonto hoje à tarde."</p>
+</div>
+<div class="mt-4 flex justify-end">
+<button class="text-primary font-bold text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">edit</span> Editar nota
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Bottom Navigation Bar (Visible on Mobile) -->
+<nav class="lg:hidden fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-2 bg-surface shadow-[0_-4px_24px_rgba(0,93,172,0.04)] rounded-t-xl">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">pill</span>
+<span class="text-label-sm">Meds</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span class="text-label-sm">Appts</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="text-label-sm">Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">more_horiz</span>
+<span class="text-label-sm">More</span>
+</a>
+</nav>
+<script>
+        // Simple Micro-interaction for Checklist
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const parent = this.closest('.flex');
+                if (this.checked) {
+                    parent.style.opacity = '0.5';
+                    parent.style.textDecoration = 'line-through';
+                } else {
+                    parent.style.opacity = '1';
+                    parent.style.textDecoration = 'none';
+                }
+            });
+        });
+
+        // Hover animations for cards handled by CSS (soft-shadow-hover)
+    </script>
+</body></html>
