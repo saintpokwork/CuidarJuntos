@@ -38,6 +38,10 @@ import {
   deleteCareDocumentFile,
   getCareDocumentSignedUrl,
   validateFileForUpload,
+  getCareProfileMembers as sbGetMembers,
+  addCareProfileMember as sbAddMember,
+  removeCareProfileMember as sbRemoveMember,
+  getCurrentUserRole as sbGetCurrentUserRole,
 } from '../lib/data/supabaseDataAdapter';
 import { isSupabaseConfigured } from '../lib/supabaseClient';
 
@@ -128,6 +132,9 @@ export type StorageMode = 'demo' | 'cloud';
 export type SyncStatus = 'idle' | 'loading' | 'saving' | 'error' | 'synced';
 
 interface CareDataContextValue {
+  currentUserRole: string | null;
+  isCurrentUserAdmin: boolean;
+  canManageMembers: boolean;
   data: CareData;
   feedback: string | null;
   storageMode: StorageMode;
@@ -908,9 +915,36 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [data.medications, data.tasks, data.appointments, data.emergencyContacts, data.careProfile]);
 
   // ---------------------------------------------------------------------------
+  // Current user role within the care profile
+  // ---------------------------------------------------------------------------
+  const currentUserRoleRef = useRef<string | null>(null);
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
+  const [isCurrentUserAdmin, setIsCurrentUserAdmin] = useState(false);
+
+  useEffect(() => {
+    if (storageMode === 'cloud' && user && careProfileId) {
+      sbGetCurrentUserRole(careProfileId, user.id).then((result) => {
+        if (result) {
+          setCurrentUserRole(result.role);
+          setIsCurrentUserAdmin(result.isAdmin);
+          currentUserRoleRef.current = result.role;
+        }
+      });
+    } else {
+      setCurrentUserRole(null);
+      setIsCurrentUserAdmin(false);
+    }
+  }, [storageMode, user, careProfileId]);
+
+  const canManageMembers = storageMode !== 'cloud' || isCurrentUserAdmin;
+
+  // ---------------------------------------------------------------------------
   // Context value
   // ---------------------------------------------------------------------------
   const value: CareDataContextValue = {
+    currentUserRole,
+    isCurrentUserAdmin,
+    canManageMembers,
     data,
     feedback,
     storageMode,

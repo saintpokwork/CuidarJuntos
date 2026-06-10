@@ -14,6 +14,9 @@ import type {
   Document,
   CareNote,
   EmergencyContact,
+  FamilyMember,
+  FamilyRole,
+  MemberStatus,
 } from './types';
 
 // ---------------------------------------------------------------------------
@@ -109,6 +112,28 @@ interface DbEmergencyContact {
   updated_at: string;
 }
 
+interface DbCareProfileMember {
+  id: string;
+  care_profile_id: string;
+  user_id: string;
+  role: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Member joined with profile for display name
+interface DbMemberWithProfile {
+  id: string;
+  care_profile_id: string;
+  user_id: string;
+  role: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  profiles: { full_name: string; email: string } | null;
+}
+
 // ---------------------------------------------------------------------------
 // Mapping helpers
 // ---------------------------------------------------------------------------
@@ -140,6 +165,37 @@ const priorityFromDb: Record<string, string> = {
 // Medication estado ↔ active flag
 const estadoFromActive = (active: boolean): 'Ativo' | 'Em falta' =>
   active ? 'Ativo' : 'Em falta';
+
+// Member role: DB → app (Portuguese display)
+const roleFromDb: Record<string, FamilyRole> = {
+  admin: 'Administrador',
+  family: 'Familiar',
+  caregiver: 'Cuidador',
+  viewer: 'Apenas leitura',
+};
+
+// Member role: app → DB
+const roleToDb: Record<string, string> = {
+  Administrador: 'admin',
+  Familiar: 'family',
+  Cuidador: 'caregiver',
+  'Apenas leitura': 'viewer',
+};
+
+// Member status: DB → app
+const memberStatusFromDb: Record<string, MemberStatus> = {
+  active: 'Ativo',
+  invited: 'Convite pendente',
+  removed: 'Removido',
+};
+
+// Member status: app → DB
+const memberStatusToDb: Record<string, string> = {
+  'Ativo': 'active',
+  'Convite pendente': 'invited',
+  'Convite enviado': 'invited',
+  'Removido': 'removed',
+};
 
 // ---------------------------------------------------------------------------
 // Row → App mappers
@@ -249,6 +305,16 @@ const mapCareProfile = (row: DbCareProfile): CareProfile => {
     atualizadoEm: row.updated_at || row.created_at,
   };
 };
+
+const mapFamilyMember = (row: DbMemberWithProfile): FamilyMember => ({
+  id: row.id,
+  nome: row.profiles?.full_name || row.user_id.slice(0, 8),
+  relacao: '',
+  funcao: roleFromDb[row.role] || 'Familiar',
+  estado: memberStatusFromDb[row.status] || 'Convite pendente',
+  avatar: '',
+  contacto: row.profiles?.email || '',
+});
 
 // ---------------------------------------------------------------------------
 // App → DB mappers
@@ -541,7 +607,7 @@ const seedStarterData = async (careProfileId: string) => {
 export const loadCareDataFromSupabase = async (
   careProfileId: string,
 ): Promise<CareData | null> => {
-  const [medsRes, aptsRes, tasksRes, docsRes, notesRes, ecRes, cpRes] =
+  const [medsRes, aptsRes, tasksRes, docsRes, notesRes, ecRes, cpRes, membersRes] =
     await Promise.all([
       supabase.from('medications').select('*').eq('care_profile_id', careProfileId),
       supabase.from('appointments').select('*').eq('care_profile_id', careProfileId).order('appointment_at', { ascending: true }),
@@ -550,6 +616,7 @@ export const loadCareDataFromSupabase = async (
       supabase.from('care_notes').select('*').eq('care_profile_id', careProfileId).order('created_at', { ascending: false }),
       supabase.from('emergency_contacts').select('*').eq('care_profile_id', careProfileId).order('priority', { ascending: true }),
       supabase.from('care_profiles').select('*').eq('id', careProfileId).single(),
+      supabase.from('care_profile_members').select('*, profiles:user_id(full_name, email)').eq('care_profile_id', careProfileId),
     ]);
 
   // Log errors but don't crash
@@ -560,6 +627,7 @@ export const loadCareDataFromSupabase = async (
   if (notesRes.error) console.error('[load] care_notes error:', notesRes.error);
   if (ecRes.error) console.error('[load] emergency_contacts error:', ecRes.error);
   if (cpRes.error) console.error('[load] care_profiles error:', cpRes.error);
+  if (membersRes.error) console.error('[load] care_profile_members error:', membersRes.error);
 
   if (cpRes.error || !cpRes.data) return null;
 
@@ -571,7 +639,7 @@ export const loadCareDataFromSupabase = async (
     careNotes: (notesRes.data || []).map(mapCareNote),
     emergencyContacts: (ecRes.data || []).map(mapEmergencyContact),
     careProfile: mapCareProfile(cpRes.data),
-    familyMembers: [], // Family members not synced in v1
+    familyMembers: (membersRes.data || []).map(mapFamilyMember),
   };
 };
 
@@ -896,6 +964,123 @@ export const deleteEmergencyContact = async (id: string): Promise<boolean> => {
     return false;
   }
   return true;
+};
+
+// ---------------------------------------------------------------------------
+// CRUD: Care Profile Members (Stage 1)
+// ---------------------------------------------------------------------------
+
+/**
+ * Get all members of a care profile, joined with user profile data.
+ */
+export const getCareProfileMembers = async (
+  careProfileId: string,
+): Promise<FamilyMember[]> => {
+  const { data, error } = await supabase
+    .from('care_profile_members')
+    .select('*, profiles:user_id(full_name, email)')
+    .eq('care_profile_id', careProfileId);
+
+  if (error) {
+    console.error('[supabaseDataAdapter] getCareProfileMembers error:', error);
+    return [];
+  }
+
+  return (data || []).map(mapFamilyMember);
+};
+
+/**
+ * Add a member to a care profile.
+ * NOTE: This requires a valid user_id. Email-only invites require a future
+ * `care_profile_invites` table and are not yet supported.
+ */
+export const addCareProfileMember = async (
+  careProfileId: string,
+  userId: string,
+  role: string,
+): Promise<FamilyMember | null> => {
+  const dbRole = roleToDb[role] || 'family';
+  const { data, error } = await supabase
+    .from('care_profile_members')
+    .insert({
+      care_profile_id: careProfileId,
+      user_id: userId,
+      role: dbRole,
+      status: 'active',
+    })
+    .select('*, profiles:user_id(full_name, email)')
+    .single();
+
+  if (error) {
+    console.error('[supabaseDataAdapter] addCareProfileMember error:', error);
+    return null;
+  }
+
+  return mapFamilyMember(data as unknown as DbMemberWithProfile);
+};
+
+/**
+ * Update a member's role or status.
+ */
+export const updateCareProfileMember = async (
+  memberId: string,
+  updates: { role?: string; status?: string },
+): Promise<boolean> => {
+  const dbUpdates: Record<string, unknown> = {};
+  if (updates.role !== undefined) dbUpdates.role = roleToDb[updates.role] || updates.role;
+  if (updates.status !== undefined) dbUpdates.status = memberStatusToDb[updates.status] || updates.status;
+
+  const { error } = await supabase
+    .from('care_profile_members')
+    .update(dbUpdates)
+    .eq('id', memberId);
+
+  if (error) {
+    console.error('[supabaseDataAdapter] updateCareProfileMember error:', error);
+    return false;
+  }
+  return true;
+};
+
+/**
+ * Remove a member from a care profile (delete their membership).
+ */
+export const removeCareProfileMember = async (memberId: string): Promise<boolean> => {
+  const { error } = await supabase
+    .from('care_profile_members')
+    .delete()
+    .eq('id', memberId);
+
+  if (error) {
+    console.error('[supabaseDataAdapter] removeCareProfileMember error:', error);
+    return false;
+  }
+  return true;
+};
+
+/**
+ * Get the current user's role for a care profile.
+ */
+export const getCurrentUserRole = async (
+  careProfileId: string,
+  userId: string,
+): Promise<{ role: string; isAdmin: boolean } | null> => {
+  const { data, error } = await supabase
+    .from('care_profile_members')
+    .select('role')
+    .eq('care_profile_id', careProfileId)
+    .eq('user_id', userId)
+    .single();
+
+  if (error || !data) {
+    console.error('[supabaseDataAdapter] getCurrentUserRole error:', error);
+    return null;
+  }
+
+  return {
+    role: roleFromDb[data.role] || 'Familiar',
+    isAdmin: data.role === 'admin',
+  };
 };
 
 // ---------------------------------------------------------------------------

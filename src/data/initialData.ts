@@ -21,7 +21,7 @@ export type DocumentCategory =
   | 'Faturas'
   | 'Outros';
 export type FamilyRole = 'Administrador' | 'Familiar' | 'Cuidador' | 'Apenas leitura';
-export type MemberStatus = 'Ativo' | 'Convite pendente' | 'Convite enviado';
+export type MemberStatus = 'Ativo' | 'Convite pendente' | 'Convite enviado' | 'Removido';
 
 export interface Medication {
   id: string;
