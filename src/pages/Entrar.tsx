@@ -54,7 +54,7 @@ const Entrar: React.FC = () => {
           <Link to="/">
             <CuidarJuntosLogo variant="default" size="sm" />
           </Link>
-          <LanguageToggle />
+          <LanguageToggle variant="light" />
           <Link to="/dashboard" className="text-label-md font-bold text-primary hover:underline">
             {t('auth.continueDemo')}
           </Link>

@@ -39,6 +39,10 @@ import {
   getCareDocumentSignedUrl,
   validateFileForUpload,
   getCurrentUserRole as sbGetCurrentUserRole,
+  getCareProfileInvites as sbGetInvites,
+  createCareProfileInvite as sbCreateInvite,
+  cancelCareProfileInvite as sbCancelInvite,
+  type PendingInvite,
 } from '../lib/data/supabaseDataAdapter';
 import { isSupabaseConfigured } from '../lib/supabaseClient';
 
@@ -132,6 +136,10 @@ interface CareDataContextValue {
   currentUserRole: string | null;
   isCurrentUserAdmin: boolean;
   canManageMembers: boolean;
+  pendingInvites: PendingInvite[];
+  createPendingInvite: (input: { invitedEmail: string; invitedName?: string; role: string; relationship?: string }) => Promise<{ success: boolean; error?: string }>;
+  cancelPendingInvite: (inviteId: string) => Promise<boolean>;
+  reloadInvites: () => Promise<void>;
   data: CareData;
   feedback: string | null;
   storageMode: StorageMode;
@@ -936,12 +944,82 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const canManageMembers = storageMode !== 'cloud' || isCurrentUserAdmin;
 
   // ---------------------------------------------------------------------------
+  // Pending invites state (cloud mode only)
+  // ---------------------------------------------------------------------------
+  const [pendingInvites, setPendingInvites] = useState<PendingInvite[]>([]);
+
+  const reloadInvites: CareDataContextValue['reloadInvites'] = useCallback(async () => {
+    if (storageMode !== 'cloud' || !careProfileId) {
+      setPendingInvites([]);
+      return;
+    }
+    const invites = await sbGetInvites(careProfileId);
+    setPendingInvites(invites);
+  }, [storageMode, careProfileId]);
+
+  const createPendingInvite: CareDataContextValue['createPendingInvite'] = useCallback(
+    async (input) => {
+      if (!input.invitedEmail.trim()) {
+        return { success: false, error: tt('pages.family.emailRequired') };
+      }
+      if (storageMode !== 'cloud' || !careProfileId || !user) {
+        return { success: false, error: tt('pages.family.onlyAdminsCanManage') };
+      }
+      if (!isCurrentUserAdmin) {
+        return { success: false, error: tt('pages.family.onlyAdminsCanManage') };
+      }
+      const created = await sbCreateInvite(careProfileId, {
+        invitedEmail: input.invitedEmail.trim(),
+        invitedName: input.invitedName?.trim(),
+        role: input.role,
+        relationship: input.relationship?.trim(),
+        invitedBy: user.id,
+      });
+      if (!created) {
+        return { success: false, error: tt('pages.family.failedCreateInvite') };
+      }
+      setPendingInvites((prev) => [created, ...prev]);
+      showFeedback('pages.family.inviteSavedPending');
+      return { success: true };
+    },
+    [storageMode, careProfileId, user, isCurrentUserAdmin, showFeedback],
+  );
+
+  const cancelPendingInvite: CareDataContextValue['cancelPendingInvite'] = useCallback(
+    async (inviteId) => {
+      if (storageMode !== 'cloud') return false;
+      const ok = await sbCancelInvite(inviteId);
+      if (ok) {
+        setPendingInvites((prev) => prev.filter((i) => i.id !== inviteId));
+        showFeedback('pages.family.inviteCancelled');
+      } else {
+        showFeedback('pages.family.failedCancelInvite');
+      }
+      return ok;
+    },
+    [storageMode, showFeedback],
+  );
+
+  // Load invites on cloud mode
+  useEffect(() => {
+    if (storageMode === 'cloud' && careProfileId) {
+      reloadInvites();
+    } else {
+      setPendingInvites([]);
+    }
+  }, [storageMode, careProfileId, reloadInvites]);
+
+  // ---------------------------------------------------------------------------
   // Context value
   // ---------------------------------------------------------------------------
   const value: CareDataContextValue = {
     currentUserRole,
     isCurrentUserAdmin,
     canManageMembers,
+    pendingInvites,
+    createPendingInvite,
+    cancelPendingInvite,
+    reloadInvites,
     data,
     feedback,
     storageMode,

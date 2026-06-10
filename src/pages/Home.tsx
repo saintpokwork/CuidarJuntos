@@ -46,7 +46,7 @@ const Home: React.FC = () => {
             </a>
           </div>
           <div className="flex items-center gap-4">
-            <LanguageToggle />
+            <LanguageToggle variant="light" />
             <Link className="hidden md:block text-primary font-bold hover:text-primary-container transition-colors font-label-md text-label-md" to="/entrar">
               {t('global.signIn')}
             </Link>

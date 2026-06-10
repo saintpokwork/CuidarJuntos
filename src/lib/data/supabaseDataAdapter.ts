@@ -1074,6 +1074,141 @@ export const getCurrentUserRole = async (
 };
 
 // ---------------------------------------------------------------------------
+// CRUD: Care Profile Invites
+// ---------------------------------------------------------------------------
+
+export interface DbInvite {
+  id: string;
+  care_profile_id: string;
+  invited_email: string;
+  invited_name: string | null;
+  invited_by: string | null;
+  role: string;
+  relationship: string | null;
+  token: string;
+  status: string;
+  expires_at: string;
+  accepted_at: string | null;
+  accepted_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PendingInvite {
+  id: string;
+  invitedEmail: string;
+  invitedName: string;
+  role: string;
+  relationship: string;
+  token: string;
+  status: string;
+  expiresAt: string;
+}
+
+/**
+ * Generate a secure random invite token using crypto API.
+ */
+export const generateInviteToken = (): string => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
+const mapInvite = (row: DbInvite): PendingInvite => ({
+  id: row.id,
+  invitedEmail: row.invited_email,
+  invitedName: row.invited_name || '',
+  role: roleFromDb[row.role] || 'Familiar',
+  relationship: row.relationship || '',
+  token: row.token,
+  status: row.status,
+  expiresAt: row.expires_at,
+});
+
+/**
+ * Get all pending invites for a care profile.
+ */
+export const getCareProfileInvites = async (
+  careProfileId: string,
+): Promise<PendingInvite[]> => {
+  const { data, error } = await supabase
+    .from('care_profile_invites')
+    .select('*')
+    .eq('care_profile_id', careProfileId)
+    .eq('status', 'pending')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('[supabaseDataAdapter] getCareProfileInvites error:', error);
+    return [];
+  }
+
+  return (data || []).map(mapInvite);
+};
+
+/**
+ * Create a pending invite record.
+ */
+export const createCareProfileInvite = async (
+  careProfileId: string,
+  input: {
+    invitedEmail: string;
+    invitedName?: string;
+    role: string;
+    relationship?: string;
+    invitedBy: string;
+  },
+): Promise<PendingInvite | null> => {
+  const token = generateInviteToken();
+  const dbRole = roleToDb[input.role] || 'family';
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+
+  const { data, error } = await supabase
+    .from('care_profile_invites')
+    .insert({
+      care_profile_id: careProfileId,
+      invited_email: input.invitedEmail,
+      invited_name: input.invitedName || null,
+      role: dbRole,
+      relationship: input.relationship || null,
+      invited_by: input.invitedBy,
+      token,
+      status: 'pending',
+      expires_at: expiresAt,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('[supabaseDataAdapter] createCareProfileInvite error:', error);
+    return null;
+  }
+
+  return mapInvite(data as DbInvite);
+};
+
+/**
+ * Cancel (delete) a pending invite.
+ */
+export const cancelCareProfileInvite = async (inviteId: string): Promise<boolean> => {
+  const { error } = await supabase
+    .from('care_profile_invites')
+    .delete()
+    .eq('id', inviteId);
+
+  if (error) {
+    console.error('[supabaseDataAdapter] cancelCareProfileInvite error:', error);
+    return false;
+  }
+  return true;
+};
+
+// ---------------------------------------------------------------------------
 // Storage helper functions
 // ---------------------------------------------------------------------------
 

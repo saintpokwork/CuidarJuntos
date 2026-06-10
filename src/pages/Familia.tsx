@@ -21,7 +21,17 @@ const statusStyles: Record<string, string> = {
 };
 
 const Familia: React.FC = () => {
-  const { data, storageMode, canManageMembers, addFamilyMember, removeFamilyMember } = useCareData();
+  const {
+    data,
+    storageMode,
+    canManageMembers,
+    addFamilyMember,
+    removeFamilyMember,
+    pendingInvites,
+    createPendingInvite,
+    cancelPendingInvite,
+    reloadInvites,
+  } = useCareData();
   const { t } = useLanguage();
   const { familyMembers } = data;
   const [nome, setNome] = useState('');
@@ -29,8 +39,9 @@ const Familia: React.FC = () => {
   const [relacao, setRelacao] = useState('');
   const [funcao, setFuncao] = useState<FamilyRole>('Familiar');
   const [erro, setErro] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSimulatedInvite = (e: React.FormEvent) => {
     e.preventDefault();
     if (!nome.trim() || !contacto.trim() || !relacao.trim()) {
       setErro(t('pages.family.emailRequired') || 'Preencha nome/contacto e relação.');
@@ -48,12 +59,51 @@ const Familia: React.FC = () => {
     setFuncao('Familiar');
   };
 
+  const handleCloudInvite = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (submitting) return;
+    if (!contacto.trim()) {
+      setErro(t('pages.family.emailRequired'));
+      return;
+    }
+    setSubmitting(true);
+    setErro('');
+    const result = await createPendingInvite({
+      invitedEmail: contacto.trim(),
+      invitedName: nome.trim() || undefined,
+      role: funcao,
+      relationship: relacao.trim() || undefined,
+    });
+    if (result.success) {
+      setNome('');
+      setContacto('');
+      setRelacao('');
+      setFuncao('Familiar');
+    } else {
+      setErro(result.error || t('global.error'));
+    }
+    setSubmitting(false);
+  };
+
   const handleRemove = (memberId: string) => {
     if (!canManageMembers) {
       setErro(t('pages.family.onlyAdminsCanManage'));
       return;
     }
     removeFamilyMember(memberId);
+  };
+
+  const handleCopyLink = (token: string) => {
+    const link = `${window.location.origin}/aceitar-convite?token=${token}`;
+    navigator.clipboard.writeText(link).then(
+      () => setErro(t('pages.family.inviteLinkCopied')),
+      () => setErro(t('global.error')),
+    );
+    setTimeout(() => setErro(''), 3000);
+  };
+
+  const handleCancelInvite = async (inviteId: string) => {
+    await cancelPendingInvite(inviteId);
   };
 
   return (
@@ -80,6 +130,8 @@ const Familia: React.FC = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-4">
+
+              {/* Members section */}
               <h3 className="text-headline-md font-headline-md text-on-surface mb-2">{t('pages.family.members')}</h3>
               {familyMembers.length === 0 ? (
                 <EmptyState message={t('pages.family.empty')} icon="group" />
@@ -91,11 +143,7 @@ const Familia: React.FC = () => {
                   >
                     <div className="flex items-center gap-4">
                       {member.avatar ? (
-                        <img
-                          alt={member.nome}
-                          className="w-14 h-14 rounded-full object-cover"
-                          src={member.avatar}
-                        />
+                        <img alt={member.nome} className="w-14 h-14 rounded-full object-cover" src={member.avatar} />
                       ) : (
                         <div className="w-14 h-14 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold text-lg">
                           {member.nome.charAt(0)}
@@ -104,22 +152,12 @@ const Familia: React.FC = () => {
                       <div>
                         <p className="text-headline-md font-headline-md text-on-surface">{member.nome}</p>
                         <p className="text-label-md text-on-surface-variant italic">{member.relacao}</p>
-                        {member.contacto && (
-                          <p className="text-label-sm text-primary">{member.contacto}</p>
-                        )}
+                        {member.contacto && <p className="text-label-sm text-primary">{member.contacto}</p>}
                         <div className="flex flex-wrap gap-2 mt-1">
-                          <span
-                            className={`inline-block px-3 py-1 rounded-full text-label-sm font-bold ${
-                              roleStyles[member.funcao] || roleStyles.Familiar
-                            }`}
-                          >
+                          <span className={`inline-block px-3 py-1 rounded-full text-label-sm font-bold ${roleStyles[member.funcao] || roleStyles.Familiar}`}>
                             {member.funcao}
                           </span>
-                          <span
-                            className={`inline-block px-3 py-1 rounded-full text-label-sm font-bold ${
-                              statusStyles[member.estado] || statusStyles['Convite pendente']
-                            }`}
-                          >
+                          <span className={`inline-block px-3 py-1 rounded-full text-label-sm font-bold ${statusStyles[member.estado] || statusStyles['Convite pendente']}`}>
                             {member.estado}
                           </span>
                         </div>
@@ -141,6 +179,57 @@ const Familia: React.FC = () => {
                 ))
               )}
 
+              {/* Pending Invites section (cloud only) */}
+              {storageMode === 'cloud' && pendingInvites.length > 0 && (
+                <>
+                  <h3 className="text-headline-md font-headline-md text-on-surface mb-2 mt-8">{t('pages.family.pendingInvites')}</h3>
+                  {pendingInvites.map((invite) => (
+                    <div
+                      key={invite.id}
+                      className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                    >
+                      <div>
+                        <p className="text-headline-md font-headline-md text-on-surface">{invite.invitedName || invite.invitedEmail}</p>
+                        <p className="text-label-sm text-primary">{invite.invitedEmail}</p>
+                        <div className="flex flex-wrap gap-2 mt-1">
+                          <span className={`inline-block px-3 py-1 rounded-full text-label-sm font-bold ${roleStyles[invite.role] || roleStyles.Familiar}`}>
+                            {invite.role}
+                          </span>
+                          <span className="inline-block px-3 py-1 rounded-full text-label-sm font-bold bg-cj-terra/15 text-cj-terra">
+                            {t('pages.family.invitePending')}
+                          </span>
+                        </div>
+                        {invite.relationship && (
+                          <p className="text-label-sm text-on-surface-variant mt-1">{invite.relationship}</p>
+                        )}
+                        <p className="text-label-sm text-on-surface-variant mt-1">
+                          {t('pages.family.inviteExpiresAt')}: {new Date(invite.expiresAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleCopyLink(invite.token)}
+                          className="px-4 py-2 bg-primary text-on-primary text-label-sm font-bold rounded-full hover:opacity-90 transition-all"
+                        >
+                          {t('pages.family.copyInviteLink')}
+                        </button>
+                        {canManageMembers && (
+                          <button
+                            type="button"
+                            onClick={() => handleCancelInvite(invite.id)}
+                            className="p-2 rounded-full hover:bg-error-container/30 text-error transition-colors"
+                            aria-label={t('pages.family.cancelInvite')}
+                          >
+                            <span className="material-symbols-outlined">close</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+
               <div className="p-4 bg-primary-fixed/20 rounded-2xl flex items-start gap-3">
                 <span className="material-symbols-outlined text-primary">lightbulb</span>
                 <p className="text-label-md text-on-surface-variant">
@@ -149,15 +238,18 @@ const Familia: React.FC = () => {
               </div>
             </div>
 
+            {/* Invite form */}
             <div className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40 h-fit">
               <h3 className="text-headline-md font-headline-md text-on-surface mb-2">{t('pages.family.title')}</h3>
               <p className="text-label-md text-on-surface-variant mb-6">{t('pages.family.inviteDescription')}</p>
               {erro && (
-                <p className="text-label-sm text-error mb-4 p-3 bg-error-container/20 rounded-xl">{erro}</p>
+                <p className={`text-label-sm mb-4 p-3 rounded-xl ${erro.includes('copiado') || erro.includes('copied') ? 'bg-secondary-container/30 text-on-secondary-container' : 'bg-error-container/20 text-error'}`}>
+                  {erro}
+                </p>
               )}
-              <form className="space-y-4" onSubmit={handleSubmit}>
+              <form className="space-y-4" onSubmit={storageMode === 'cloud' ? handleCloudInvite : handleSimulatedInvite}>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.family.name')} *</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.family.name')}</label>
                   <input
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
@@ -176,7 +268,7 @@ const Familia: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.family.relationship')} *</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.family.relationship')}</label>
                   <input
                     value={relacao}
                     onChange={(e) => setRelacao(e.target.value)}
@@ -199,7 +291,8 @@ const Familia: React.FC = () => {
                 </div>
                 <button
                   type="submit"
-                  className="w-full py-4 bg-primary text-on-primary font-bold rounded-full shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2"
+                  disabled={submitting}
+                  className={`w-full py-4 bg-primary text-on-primary font-bold rounded-full shadow-lg transition-all flex items-center justify-center gap-2 ${submitting ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'}`}
                 >
                   <span className="material-symbols-outlined">send</span>
                   {storageMode === 'cloud'
