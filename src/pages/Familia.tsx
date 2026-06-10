@@ -30,7 +30,6 @@ const Familia: React.FC = () => {
     pendingInvites,
     createPendingInvite,
     cancelPendingInvite,
-    reloadInvites,
   } = useCareData();
   const { t } = useLanguage();
   const { familyMembers } = data;
