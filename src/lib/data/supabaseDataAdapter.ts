@@ -112,16 +112,6 @@ interface DbEmergencyContact {
   updated_at: string;
 }
 
-interface DbCareProfileMember {
-  id: string;
-  care_profile_id: string;
-  user_id: string;
-  role: string;
-  status: string;
-  created_at: string;
-  updated_at: string;
-}
-
 // Member joined with profile for display name
 interface DbMemberWithProfile {
   id: string;

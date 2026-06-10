@@ -21,7 +21,7 @@ const statusStyles: Record<string, string> = {
 };
 
 const Familia: React.FC = () => {
-  const { data, storageMode, currentUserRole, isCurrentUserAdmin, canManageMembers, addFamilyMember, removeFamilyMember } = useCareData();
+  const { data, storageMode, canManageMembers, addFamilyMember, removeFamilyMember } = useCareData();
   const { t } = useLanguage();
   const { familyMembers } = data;
   const [nome, setNome] = useState('');

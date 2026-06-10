@@ -38,9 +38,6 @@ import {
   deleteCareDocumentFile,
   getCareDocumentSignedUrl,
   validateFileForUpload,
-  getCareProfileMembers as sbGetMembers,
-  addCareProfileMember as sbAddMember,
-  removeCareProfileMember as sbRemoveMember,
   getCurrentUserRole as sbGetCurrentUserRole,
 } from '../lib/data/supabaseDataAdapter';
 import { isSupabaseConfigured } from '../lib/supabaseClient';
