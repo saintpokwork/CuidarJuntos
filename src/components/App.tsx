@@ -21,6 +21,8 @@ import Entrar from '../pages/Entrar';
 import CriarConta from '../pages/CriarConta';
 import RecuperarPassword from '../pages/RecuperarPassword';
 import AceitarConvite from '../pages/AceitarConvite';
+import Blog from '../pages/Blog';
+import BlogPost from '../pages/BlogPost';
 import FeedbackMessage from './FeedbackMessage';
 import ScrollToTop from './ScrollToTop';
 import { useCareData } from '../context/CareDataContext';
@@ -38,6 +40,8 @@ const AppRoutes: React.FC = () => {
         <Route path="/criar-conta" element={<CriarConta />} />
         <Route path="/recuperar-password" element={<RecuperarPassword />} />
         <Route path="/aceitar-convite" element={<AceitarConvite />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/privacidade" element={<Privacidade />} />
         <Route path="/termos" element={<Termos />} />
         <Route path="/dashboard" element={<Dashboard />} />
