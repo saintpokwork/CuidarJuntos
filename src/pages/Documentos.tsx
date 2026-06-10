@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
 import EmptyState from '../components/EmptyState';
+import { useLanguage } from '../i18n/LanguageContext';
 import { useCareData, DocumentCategory } from '../context/CareDataContext';
 import { documentCategories } from '../data/initialData';
 import HelpTip from '../components/HelpTip';
 
 const Documentos: React.FC = () => {
   const { data, addDocument, removeDocument } = useCareData();
+  const { t } = useLanguage();
   const { documents } = data;
   const [filtro, setFiltro] = useState<DocumentCategory | 'Todos'>('Todos');
   const [busca, setBusca] = useState('');
@@ -70,10 +72,10 @@ const Documentos: React.FC = () => {
   return (
     <DashboardLayout>
       <main className="flex-1 w-full relative ">
-        <DashboardPageHeader title="Documentos" showSearch={false} />
+        <DashboardPageHeader title={t('pages.documents.title')} showSearch={false} />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
-          <HelpTip text="nesta demo o upload é simulado. Na versão futura poderá guardar ficheiros reais com segurança." />
+          <HelpTip text={t('pages.documents.help') || 'nesta demo o upload é simulado. Na versão futura poderá guardar ficheiros reais com segurança.'} />
           <div className="grid gap-4 mb-stack-lg md:grid-cols-[2fr_1fr]">
             <div>
               <label className="text-label-sm text-on-surface-variant mb-2 inline-block">Pesquisar documentos</label>
@@ -117,7 +119,7 @@ const Documentos: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
               {filtrados.length === 0 ? (
-                <EmptyState message="Ainda não há documentos." icon="folder_open" />
+                <EmptyState message={t('pages.documents.empty')} icon="folder_open" />
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {filtrados.map((doc) => (

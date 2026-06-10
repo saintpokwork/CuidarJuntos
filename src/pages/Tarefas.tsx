@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
 import EmptyState from '../components/EmptyState';
+import { useLanguage } from '../i18n/LanguageContext';
 import { useCareData, TaskStatus } from '../context/CareDataContext';
 import { caregiver } from '../data/initialData';
 import HelpTip from '../components/HelpTip';
@@ -26,6 +27,7 @@ const prioridadeStyles: Record<string, string> = {
 
 const Tarefas: React.FC = () => {
   const { data, addTask, removeTask, updateTaskStatus } = useCareData();
+  const { t } = useLanguage();
   const { tasks } = data;
   const [titulo, setTitulo] = useState('');
   const [responsavel, setResponsavel] = useState(caregiver.nome);
@@ -53,7 +55,7 @@ const Tarefas: React.FC = () => {
     <DashboardLayout>
       <main className="flex-1 w-full relative ">
         <DashboardPageHeader
-          title="Tarefas da família"
+          title={t('pages.tasks.title')}
           showSearch={false}
           action={
             <button
@@ -62,20 +64,20 @@ const Tarefas: React.FC = () => {
               className="hidden md:flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-full font-bold shadow-lg hover:opacity-90 active:scale-95 transition-all"
             >
               <span className="material-symbols-outlined">add</span>
-              <span className="text-label-md">Criar tarefa</span>
+              <span className="text-label-md">{t('pages.tasks.add')}</span>
             </button>
           }
         />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
-          <HelpTip text="use tarefas para dividir responsabilidades entre irmãos, familiares ou cuidadores." />
+          <HelpTip text={t('pages.tasks.help') || 'use tarefas para dividir responsabilidades entre irmãos, familiares ou cuidadores.'} />
           <p className="text-body-lg text-on-surface-variant mb-stack-lg">
             Gerir as responsabilidades diárias com calma e clareza.
           </p>
 
           {(showForm || tasks.length === 0) && (
             <div className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40 mb-8">
-              <h3 className="text-headline-md font-headline-md text-on-surface mb-4">Criar tarefa</h3>
+              <h3 className="text-headline-md font-headline-md text-on-surface mb-4">{t('pages.tasks.add')}</h3>
               {erro && (
                 <p className="text-label-sm text-error mb-4 p-3 bg-error-container/20 rounded-xl">{erro}</p>
               )}
@@ -86,7 +88,7 @@ const Tarefas: React.FC = () => {
                     value={titulo}
                     onChange={(e) => setTitulo(e.target.value)}
                     className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
-                    placeholder="Ex: Comprar medicamentos"
+                    placeholder={t('pages.tasks.placeholder') || 'Ex: Comprar medicamentos'}
                   />
                 </div>
                 <div>
@@ -135,7 +137,7 @@ const Tarefas: React.FC = () => {
                     type="submit"
                     className="w-full py-4 bg-primary text-on-primary font-bold rounded-full shadow-lg hover:opacity-90 transition-all"
                   >
-                    Guardar tarefa
+                    {t('global.save')}
                   </button>
                 </div>
               </form>
@@ -143,7 +145,7 @@ const Tarefas: React.FC = () => {
           )}
 
           {tasks.length === 0 ? (
-            <EmptyState message="Ainda não há tarefas." icon="assignment" />
+            <EmptyState message={t('pages.tasks.empty')} icon="assignment" />
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {columns.map((col) => {

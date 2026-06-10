@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
 import EmptyState from '../components/EmptyState';
+import { useLanguage } from '../i18n/LanguageContext';
 import { useCareData } from '../context/CareDataContext';
 
 const Notas: React.FC = () => {
   const { data, addCareNote, removeCareNote } = useCareData();
+  const { t } = useLanguage();
   const { careNotes } = data;
   const [texto, setTexto] = useState('');
   const [erro, setErro] = useState('');
@@ -24,7 +26,7 @@ const Notas: React.FC = () => {
   return (
     <DashboardLayout>
       <main className="flex-1 w-full relative ">
-        <DashboardPageHeader title="Notas de cuidado" showSearch={false} />
+        <DashboardPageHeader title={t('pages.notes.title')} showSearch={false} />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
           <p className="text-body-lg text-on-surface-variant mb-stack-lg">
@@ -41,7 +43,7 @@ const Notas: React.FC = () => {
                   value={texto}
                   onChange={(e) => setTexto(e.target.value)}
                   className="w-full bg-transparent border-none focus:ring-0 text-body-md placeholder-on-surface-variant resize-none min-h-[48px]"
-                  placeholder="Escreva uma atualização sobre o cuidado de hoje..."
+                    placeholder={t('pages.notes.placeholder') || 'Escreva uma atualização sobre o cuidado de hoje...'}
                   rows={2}
                 />
               </div>
@@ -55,9 +57,9 @@ const Notas: React.FC = () => {
             {erro && <p className="text-label-sm text-error px-2">{erro}</p>}
           </form>
 
-          {careNotes.length === 0 ? (
-            <EmptyState message="Ainda não há notas de cuidado." icon="event_note" />
-          ) : (
+                {careNotes.length === 0 ? (
+                  <EmptyState message={t('pages.notes.empty')} icon="event_note" />
+                ) : (
             <div className="space-y-4">
               {careNotes.map((note, index) => (
                 <div

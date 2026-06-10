@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
 import EmptyState from '../components/EmptyState';
+import { useLanguage } from '../i18n/LanguageContext';
 import { useCareData } from '../context/CareDataContext';
 import { caregiver } from '../data/initialData';
 import HelpTip from '../components/HelpTip';
 
 const Medicamentos: React.FC = () => {
   const { data, addMedication, removeMedication, updateMedicationTaken } = useCareData();
+  const { t } = useLanguage();
   const { medications } = data;
   const [nome, setNome] = useState('');
   const [dosagem, setDosagem] = useState('');
@@ -43,16 +45,16 @@ const Medicamentos: React.FC = () => {
   return (
     <DashboardLayout>
       <main className="flex-1 w-full relative ">
-        <DashboardPageHeader title="Medicamentos" showSearch={false} />
+        <DashboardPageHeader title={t('pages.medications.title')} showSearch={false} />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
-          <HelpTip text="Registe as tomas de hoje e confirme sempre a medicação com a receita ou profissional de saúde." />
+          <HelpTip text={t('pages.medications.help') || 'Registe as tomas de hoje e confirme sempre a medicação com a receita ou profissional de saúde.'} />
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-gutter mb-stack-lg">
             {[
-              { valor: medsAtivos.length, label: 'Medicamentos hoje', cor: 'text-primary' },
-              { valor: takenHoje, label: 'Tomados hoje', cor: 'text-secondary' },
-              { valor: emFalta, label: 'Em falta', cor: 'text-error' },
-              { valor: nextMedicationTime, label: 'Próxima hora', cor: 'text-tertiary' },
+              { valor: medsAtivos.length, label: t('dashboard.medsToday'), cor: 'text-primary' },
+              { valor: takenHoje, label: t('dashboard.takenToday') || t('dashboard.medsToday'), cor: 'text-secondary' },
+              { valor: emFalta, label: t('dashboard.outOfStock') || t('dashboard.noTasks'), cor: 'text-error' },
+              { valor: nextMedicationTime, label: t('dashboard.nextMedicationTime') || t('dashboard.nextAppointment'), cor: 'text-tertiary' },
             ].map((stat) => (
               <div
                 key={stat.label}
@@ -67,7 +69,7 @@ const Medicamentos: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
               {medications.length === 0 ? (
-                <EmptyState message="Ainda não há medicamentos registados." icon="medication" />
+                <EmptyState message={t('pages.medications.empty')} icon="medication" />
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {medications.map((med) => (

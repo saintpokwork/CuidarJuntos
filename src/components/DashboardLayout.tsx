@@ -141,7 +141,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
               </div>
               <div className="flex flex-wrap gap-3 items-center">
                 <span className="text-label-sm text-on-surface-variant">
-                  {t('demo.notice')}
+                  {t('demo.signedInNotice')}
                 </span>
                 <button
                   type="button"

@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
 import EmptyState from '../components/EmptyState';
+import { useLanguage } from '../i18n/LanguageContext';
 import { useCareData } from '../context/CareDataContext';
 import { caregiver } from '../data/initialData';
 import HelpTip from '../components/HelpTip';
 
 const Consultas: React.FC = () => {
   const { data, addAppointment, removeAppointment } = useCareData();
+  const { t } = useLanguage();
   const { appointments } = data;
   const [tipo, setTipo] = useState('');
   const [dataHora, setDataHora] = useState('');
@@ -35,10 +37,10 @@ const Consultas: React.FC = () => {
   return (
     <DashboardLayout>
       <main className="flex-1 w-full relative ">
-        <DashboardPageHeader title="Consultas e exames" showSearch={false} />
+        <DashboardPageHeader title={t('pages.appointments.title')} showSearch={false} />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
-          <HelpTip text="adicione também exames, deslocações e quem acompanha o familiar." />
+          <HelpTip text={t('pages.appointments.help') || 'adicione também exames, deslocações e quem acompanha o familiar.'} />
           <p className="text-body-lg text-on-surface-variant mb-stack-lg">
             Agenda partilhada para toda a família cuidadora.
           </p>
@@ -46,7 +48,7 @@ const Consultas: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-4">
               {appointments.length === 0 ? (
-                <EmptyState message="Ainda não há consultas marcadas." icon="event_busy" />
+                <EmptyState message={t('pages.appointments.empty')} icon="event_busy" />
               ) : (
                 appointments.map((apt) => (
                   <div

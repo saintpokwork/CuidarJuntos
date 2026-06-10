@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import CuidarJuntosLogo from '../components/brand/CuidarJuntosLogo';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const Termos: React.FC = () => {
+  const { isEnglish, t } = useLanguage();
+
   return (
     <div className="bg-background text-on-surface min-h-screen">
       <header className="border-b border-cj-border bg-cj-branco/90 backdrop-blur-md">
@@ -24,6 +27,12 @@ const Termos: React.FC = () => {
         <p className="text-label-sm text-on-surface-variant mb-8">Última atualização: junho de 2024</p>
 
         <div className="space-y-6 text-body-md text-on-surface-variant leading-relaxed">
+          {isEnglish() && (
+            <div className="p-4 bg-surface-container-low rounded-lg">
+              <strong className="block mb-2">English summary</strong>
+              <p className="text-label-sm text-on-surface-variant">{t('legal.terms.summary_en')}</p>
+            </div>
+          )}
           <p>
             Ao utilizar o <strong className="text-on-surface">CuidarJuntos</strong>, aceita estes
             termos. A plataforma encontra-se em fase de demonstração (MVP).

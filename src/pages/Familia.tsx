@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
 import EmptyState from '../components/EmptyState';
+import { useLanguage } from '../i18n/LanguageContext';
 import { useCareData, FamilyRole } from '../context/CareDataContext';
 import HelpTip from '../components/HelpTip';
 
@@ -14,6 +15,7 @@ const roleStyles: Record<string, string> = {
 
 const Familia: React.FC = () => {
   const { data, addFamilyMember, removeFamilyMember } = useCareData();
+  const { t } = useLanguage();
   const { familyMembers } = data;
   const [nome, setNome] = useState('');
   const [contacto, setContacto] = useState('');
@@ -38,19 +40,17 @@ const Familia: React.FC = () => {
   return (
     <DashboardLayout>
       <main className="flex-1 w-full relative ">
-        <DashboardPageHeader title="Família e cuidadores" showSearch={false} />
+        <DashboardPageHeader title={t('pages.family.title')} showSearch={false} />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
-          <HelpTip text="convide apenas pessoas de confiança para aceder aos dados do familiar." />
-          <p className="text-body-lg text-on-surface-variant mb-stack-lg">
-            Círculo de cuidado — todos os membros com acesso à informação partilhada.
-          </p>
+          <HelpTip text={t('home.whoFor.item2')} />
+          <p className="text-body-lg text-on-surface-variant mb-stack-lg">{t('home.whoFor.item1')}</p>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-4">
               <h3 className="text-headline-md font-headline-md text-on-surface mb-2">Membros convidados</h3>
               {familyMembers.length === 0 ? (
-                <EmptyState message="Ainda não há membros na família." icon="group" />
+                <EmptyState message={t('pages.family.empty')} icon="group" />
               ) : (
                 familyMembers.map((member) => (
                   <div
@@ -117,10 +117,8 @@ const Familia: React.FC = () => {
             </div>
 
             <div className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40 h-fit">
-              <h3 className="text-headline-md font-headline-md text-on-surface mb-2">Convidar membro</h3>
-              <p className="text-label-md text-on-surface-variant mb-6">
-                Convide alguém para ajudar no cuidado da família.
-              </p>
+              <h3 className="text-headline-md font-headline-md text-on-surface mb-2">{t('pages.family.title')}</h3>
+              <p className="text-label-md text-on-surface-variant mb-6">{t('home.whoFor.item2')}</p>
               {erro && (
                 <p className="text-label-sm text-error mb-4 p-3 bg-error-container/20 rounded-xl">{erro}</p>
               )}
@@ -166,12 +164,9 @@ const Familia: React.FC = () => {
                     <option>Apenas leitura</option>
                   </select>
                 </div>
-                <button
-                  type="submit"
-                  className="w-full py-4 bg-primary text-on-primary font-bold rounded-full shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2"
-                >
+                <button type="submit" className="w-full py-4 bg-primary text-on-primary font-bold rounded-full shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2">
                   <span className="material-symbols-outlined">send</span>
-                  Enviar convite
+                  {t('global.continue')}
                 </button>
               </form>
             </div>

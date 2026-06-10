@@ -5,6 +5,7 @@ import { useLanguage } from '../i18n/LanguageContext';
 import LanguageToggle from '../components/LanguageToggle';
 
 const Home: React.FC = () => {
+  const { t } = useLanguage();
   return (
     <div className="bg-background text-on-surface font-body-md selection:bg-primary/20">
       <header className="fixed top-0 w-full z-50 bg-cj-branco/90 backdrop-blur-md shadow-cj-sm border-b border-cj-border">
@@ -14,7 +15,7 @@ const Home: React.FC = () => {
           </Link>
           <div className="hidden md:flex items-center gap-8">
             <Link className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-md text-label-md" to="/como-funciona">
-              {useLanguage().t('nav.howItWorks')}
+              {t('nav.howItWorks')}
             </Link>
             <a className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-md text-label-md" href="#funcionalidades">
               Funcionalidades
@@ -26,13 +27,13 @@ const Home: React.FC = () => {
           <div className="flex items-center gap-4">
             <LanguageToggle />
             <Link className="hidden md:block text-primary font-bold hover:text-primary-container transition-colors font-label-md text-label-md" to="/entrar">
-              {useLanguage().t('global.signIn')}
+              {t('global.signIn')}
             </Link>
             <Link className="bg-primary text-on-primary px-6 py-2.5 rounded-full font-label-md text-label-md shadow-sm hover:scale-105 active:scale-95 transition-all" to="/dashboard">
-              {useLanguage().t('global.continue') || 'Começar'}
+              {t('global.continue') || 'Começar'}
             </Link>
             <Link className="hidden md:inline-block text-primary font-bold hover:underline font-label-md text-label-md" to="/criar-conta">
-              {useLanguage().t('global.createAccount')}
+              {t('global.createAccount')}
             </Link>
           </div>
         </nav>

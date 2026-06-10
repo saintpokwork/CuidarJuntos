@@ -4,9 +4,11 @@ import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
 import { useCareData } from '../context/CareDataContext';
 import OnboardingChecklist from '../components/OnboardingChecklist';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const Dashboard: React.FC = () => {
   const { data, dashboardSummary } = useCareData();
+  const { t } = useLanguage();
   const { medications, appointments, tasks, documents, emergencyContacts, careNotes } = data;
 
   const medicationsToday = medications
@@ -30,36 +32,24 @@ const Dashboard: React.FC = () => {
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
           <div className="mb-stack-lg rounded-[24px] border border-cj-verde-pale bg-cj-verde-pale/10 p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-label-md font-bold text-cj-terra">Criar conta em breve</p>
-              <p className="text-body-md text-on-surface-variant max-w-2xl">
-                Contas reais estão planeadas para a próxima versão. Por agora, continue a usar a demo local e veja como a sincronização com familiares funcionará mais tarde.
-              </p>
+              <p className="text-label-md font-bold text-cj-terra">{t('dashboard.bannerTitle')}</p>
+              <p className="text-body-md text-on-surface-variant max-w-2xl">{t('dashboard.bannerSubtitle')}</p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Link
-                to="/criar-conta"
-                className="px-5 py-3 rounded-full bg-primary text-on-primary font-bold hover:opacity-90 transition-all"
-              >
-                Criar conta em breve
+                <Link to="/criar-conta" className="px-5 py-3 rounded-full bg-primary text-on-primary font-bold hover:opacity-90 transition-all">
+                {t('global.createAccount')}
               </Link>
-              <Link
-                to="/entrar"
-                className="px-5 py-3 rounded-full border border-primary text-primary font-bold hover:bg-primary/5 transition-all"
-              >
-                Entrar
+              <Link to="/entrar" className="px-5 py-3 rounded-full border border-primary text-primary font-bold hover:bg-primary/5 transition-all">
+                {t('global.signIn')}
               </Link>
             </div>
           </div>
-          <p className="text-label-sm text-on-surface-variant mb-4 p-3 bg-surface-container-low rounded-xl">
-            Os dados apresentados são exemplos para demonstrar como a plataforma funciona.
-          </p>
+          <p className="text-label-sm text-on-surface-variant mb-4 p-3 bg-surface-container-low rounded-xl">{t('dashboard.exampleDataNote')}</p>
 
           <OnboardingChecklist />
 
           <section className="mb-stack-lg">
-            <h1 className="text-headline-lg font-headline-lg text-on-surface mb-2">
-              {dashboardSummary.saudacao}
-            </h1>
+            <h1 className="text-headline-lg font-headline-lg text-on-surface mb-2">{dashboardSummary.saudacao}</h1>
             <p className="text-body-lg text-on-surface-variant">{dashboardSummary.resumo}</p>
           </section>
 
@@ -68,7 +58,7 @@ const Dashboard: React.FC = () => {
               <div className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <p className="text-label-sm text-on-surface-variant">Medicamentos hoje</p>
+                    <p className="text-label-sm text-on-surface-variant">{t('dashboard.medsToday')}</p>
                     <p className="text-headline-md font-headline-md text-on-surface">
                       {dashboardSummary.medicamentosTomadosHoje}/{dashboardSummary.totalMedicamentosHoje}
                     </p>
@@ -80,7 +70,7 @@ const Dashboard: React.FC = () => {
               <div className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <p className="text-label-sm text-on-surface-variant">Próxima consulta</p>
+                    <p className="text-label-sm text-on-surface-variant">{t('dashboard.nextAppointment')}</p>
                     <p className="text-headline-md font-headline-md text-on-surface">
                       {appointments[0]?.tipo || 'Nenhuma consulta'}
                     </p>
@@ -94,7 +84,7 @@ const Dashboard: React.FC = () => {
               <div className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <p className="text-label-sm text-on-surface-variant">Tarefas em atraso</p>
+                    <p className="text-label-sm text-on-surface-variant">{t('dashboard.tasksOverdue')}</p>
                     <p className="text-headline-md font-headline-md text-on-surface">
                       {dashboardSummary.tarefasAtraso}
                     </p>
@@ -106,7 +96,7 @@ const Dashboard: React.FC = () => {
               <div className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <p className="text-label-sm text-on-surface-variant">Perfil completo</p>
+                    <p className="text-label-sm text-on-surface-variant">{t('dashboard.profileCompletion')}</p>
                     <p className="text-headline-md font-headline-md text-on-surface">
                       {dashboardSummary.perfilCompletude}%
                     </p>
@@ -122,8 +112,8 @@ const Dashboard: React.FC = () => {
             <div className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-headline-md font-headline-md text-on-surface">Próximos passos</h3>
-                  <p className="text-label-sm text-on-surface-variant">Sugestões para manter a organização da família.</p>
+                    <h3 className="text-headline-md font-headline-md text-on-surface">{t('dashboard.nextStepsTitle')}</h3>
+                  <p className="text-label-sm text-on-surface-variant">{t('dashboard.nextStepsSubtitle')}</p>
                 </div>
                 <span className="material-symbols-outlined text-primary text-3xl">lightbulb</span>
               </div>
@@ -140,41 +130,26 @@ const Dashboard: React.FC = () => {
 
           <section className="mb-stack-lg">
             <div className="flex flex-wrap gap-4">
-              <Link
-                to="/dashboard/medicamentos"
-                className="flex items-center gap-2 px-6 py-4 bg-primary text-on-primary rounded-full font-bold shadow-lg hover:opacity-90 transition-all scale-100 active:scale-95"
-              >
-                <span className="material-symbols-outlined">add_circle</span>
-                <span className="text-label-md">Adicionar medicamento</span>
-              </Link>
-              <Link
-                to="/dashboard/consultas"
-                className="flex items-center gap-2 px-6 py-4 bg-secondary text-on-secondary rounded-full font-bold shadow-lg hover:opacity-90 transition-all scale-100 active:scale-95"
-              >
-                <span className="material-symbols-outlined">event</span>
-                <span className="text-label-md">Marcar consulta</span>
-              </Link>
-              <Link
-                to="/dashboard/tarefas"
-                className="flex items-center gap-2 px-6 py-4 bg-surface-container-high text-primary rounded-full font-bold hover:bg-surface-container-highest transition-all"
-              >
-                <span className="material-symbols-outlined">playlist_add</span>
-                <span className="text-label-md">Criar tarefa</span>
-              </Link>
-              <Link
-                to="/dashboard/documentos"
-                className="flex items-center gap-2 px-6 py-4 bg-surface-container-high text-primary rounded-full font-bold hover:bg-surface-container-highest transition-all"
-              >
-                <span className="material-symbols-outlined">upload_file</span>
-                <span className="text-label-md">Enviar documento</span>
-              </Link>
-              <Link
-                to="/dashboard/emergencia"
-                className="flex items-center gap-2 px-6 py-4 bg-error-container text-on-error-container rounded-full font-bold hover:opacity-90 transition-all"
-              >
-                <span className="material-symbols-outlined">medical_services</span>
-                <span className="text-label-md">Criar ficha de emergência</span>
-              </Link>
+                <Link to="/dashboard/medicamentos" className="flex items-center gap-2 px-6 py-4 bg-primary text-on-primary rounded-full font-bold shadow-lg hover:opacity-90 transition-all scale-100 active:scale-95">
+                  <span className="material-symbols-outlined">add_circle</span>
+                  <span className="text-label-md">{t('dashboard.addMedication')}</span>
+                </Link>
+                <Link to="/dashboard/consultas" className="flex items-center gap-2 px-6 py-4 bg-secondary text-on-secondary rounded-full font-bold shadow-lg hover:opacity-90 transition-all scale-100 active:scale-95">
+                  <span className="material-symbols-outlined">event</span>
+                  <span className="text-label-md">{t('dashboard.scheduleAppointment')}</span>
+                </Link>
+                <Link to="/dashboard/tarefas" className="flex items-center gap-2 px-6 py-4 bg-surface-container-high text-primary rounded-full font-bold hover:bg-surface-container-highest transition-all">
+                  <span className="material-symbols-outlined">playlist_add</span>
+                  <span className="text-label-md">{t('dashboard.createTask')}</span>
+                </Link>
+                <Link to="/dashboard/documentos" className="flex items-center gap-2 px-6 py-4 bg-surface-container-high text-primary rounded-full font-bold hover:bg-surface-container-highest transition-all">
+                  <span className="material-symbols-outlined">upload_file</span>
+                  <span className="text-label-md">{t('dashboard.uploadDocument')}</span>
+                </Link>
+                <Link to="/dashboard/emergencia" className="flex items-center gap-2 px-6 py-4 bg-error-container text-on-error-container rounded-full font-bold hover:opacity-90 transition-all">
+                  <span className="material-symbols-outlined">medical_services</span>
+                  <span className="text-label-md">{t('dashboard.createEmergencyCard')}</span>
+                </Link>
             </div>
           </section>
 
@@ -188,7 +163,7 @@ const Dashboard: React.FC = () => {
                 <span className="material-symbols-outlined text-primary text-3xl">pill</span>
               </div>
               {medicationsToday.length === 0 ? (
-                <p className="text-label-md text-on-surface-variant py-4">Ainda não há medicamentos registados.</p>
+                <p className="text-label-md text-on-surface-variant py-4">{t('dashboard.noMedications')}</p>
               ) : (
                 <div className="space-y-4">
                   {medicationsToday.map((med, i) => (
@@ -242,7 +217,7 @@ const Dashboard: React.FC = () => {
                   <div className="w-16 h-16 bg-secondary-container/30 rounded-full flex items-center justify-center mb-4">
                     <span className="material-symbols-outlined text-secondary text-2xl">event_busy</span>
                   </div>
-                  <p className="text-label-md font-semibold text-on-surface">Ainda não há consultas marcadas.</p>
+                  <p className="text-label-md font-semibold text-on-surface">{t('dashboard.noAppointments')}</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -273,7 +248,7 @@ const Dashboard: React.FC = () => {
                 <span className="material-symbols-outlined text-tertiary text-3xl">assignment</span>
               </div>
               {pendingTasks.length === 0 ? (
-                <p className="text-label-md text-on-surface-variant py-4">Ainda não há tarefas.</p>
+                  <p className="text-label-md text-on-surface-variant py-4">{t('dashboard.noTasks')}</p>
               ) : (
                 <div className="space-y-4">
                   {pendingTasks.slice(0, 2).map((task) => (
@@ -311,7 +286,7 @@ const Dashboard: React.FC = () => {
                 <span className="material-symbols-outlined text-primary text-3xl">description</span>
               </div>
               {documents.length === 0 ? (
-                <p className="text-label-md text-on-surface-variant py-4">Ainda não há documentos.</p>
+                <p className="text-label-md text-on-surface-variant py-4">{t('dashboard.noDocuments')}</p>
               ) : (
                 <div className="space-y-3">
                   {documents.slice(0, 2).map((doc) => (
@@ -393,7 +368,7 @@ const Dashboard: React.FC = () => {
                   </p>
                 </div>
               ) : (
-                <p className="text-label-md text-on-surface-variant py-4">Ainda não há notas de cuidado.</p>
+                <p className="text-label-md text-on-surface-variant py-4">{t('dashboard.noNotes')}</p>
               )}
               <Link
                 to="/dashboard/notas"
