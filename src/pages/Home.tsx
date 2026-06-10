@@ -197,6 +197,7 @@ const Home: React.FC = () => {
                 {t('home.pricing.title')}
               </h2>
               <p className="text-on-surface-variant font-body-lg">{t('home.pricing.subtitle')}</p>
+              <p className="text-label-md text-primary mt-2">{t('home.pricing.earlyNote')}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {pricingPlans.map((plan) => {

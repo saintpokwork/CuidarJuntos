@@ -50,6 +50,18 @@ const Dashboard: React.FC = () => {
             </>
           )}
 
+          {storageMode === 'cloud' && (
+            <div className="mb-stack-lg rounded-[24px] border border-cj-verde/20 bg-cj-verde-pale/20 p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-outlined text-cj-verde text-2xl">cloud_done</span>
+                <div>
+                  <p className="text-label-md font-bold text-cj-verde">{t('demo.cloudSyncActive')}</p>
+                  <p className="text-body-sm text-on-surface-variant">{t('dashboard.exampleDataNote')}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <OnboardingChecklist />
 
           <section className="mb-stack-lg">

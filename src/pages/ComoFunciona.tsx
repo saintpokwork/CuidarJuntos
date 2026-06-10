@@ -32,27 +32,33 @@ const ComoFunciona: React.FC = () => {
         </section>
 
         <div className="space-y-4 mb-12">
-          {[0,1,2,3,4,5,6].map((i) => (
-            <div
-              key={i}
-              className="glass-card p-6 rounded-[24px] soft-shadow border border-white/40 flex gap-4"
-            >
-              <div className="w-12 h-12 rounded-2xl bg-primary-container text-on-primary-container flex items-center justify-center shrink-0 font-bold text-headline-md">
-                {i + 1}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="material-symbols-outlined text-primary">{t(`howItWorks.steps.${i}.icon`)}</span>
-                  <h2 className="text-headline-md font-headline-md text-on-surface">{t(`howItWorks.steps.${i}.title`)}</h2>
+          {[0,1,2,3,4,5,6].map((i) => {
+            const stepTitle = t(`howItWorks.steps.${i}.title`);
+            const stepDesc = t(`howItWorks.steps.${i}.desc`);
+            const stepIcon = t(`howItWorks.steps.${i}.icon`);
+            if (!stepTitle && !stepDesc) return null;
+            return (
+              <div
+                key={i}
+                className="glass-card p-6 rounded-[24px] soft-shadow border border-white/40 flex gap-4"
+              >
+                <div className="w-12 h-12 rounded-2xl bg-primary-container text-on-primary-container flex items-center justify-center shrink-0 font-bold text-headline-md">
+                  {i + 1}
                 </div>
-                <p className="text-body-md text-on-surface-variant">{t(`howItWorks.steps.${i}.desc`)}</p>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-2">
+                    {stepIcon && <span className="material-symbols-outlined text-primary">{stepIcon}</span>}
+                    <h2 className="text-headline-md font-headline-md text-on-surface">{stepTitle}</h2>
+                  </div>
+                  <p className="text-body-md text-on-surface-variant">{stepDesc}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        <div className="p-4 bg-cj-verde-pale border-l-4 border-cj-verde rounded-r-xl mb-8">
-          <p className="text-body-md text-on-surface-variant">
+        <div className="p-4 bg-cj-verde-pale/30 border-l-4 border-cj-verde rounded-r-xl mb-8">
+          <p className="text-body-md text-on-surface">
             {t('howItWorks.disclaimer')}
           </p>
         </div>
