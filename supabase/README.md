@@ -10,6 +10,35 @@
 
 > **Run the script once only.** It uses `create table if not exists`, `create or replace function`, and `do $$` blocks to avoid errors on re-run, but you should not need to re-run it unless you drop and recreate everything.
 
+## How to run the storage setup
+
+After running `schema.sql`, set up Supabase Storage:
+
+1. Open your Supabase project dashboard → **SQL Editor**.
+2. Create a **New query**.
+3. Copy the entire contents of `supabase/storage.sql` and paste it into the editor.
+4. Click **Run**.
+5. Confirm the output shows no errors.
+
+> This creates the `care-documents` private bucket, the `storage_care_profile_id()` helper function, and all storage RLS policies. Safe to re-run.
+
+### Verify the storage setup
+
+```sql
+-- Check bucket exists
+SELECT * FROM storage.buckets WHERE id = 'care-documents';
+
+-- Check storage policies
+SELECT policyname, cmd
+FROM storage.policies
+WHERE bucket_id = 'care-documents';
+
+-- Check helper function exists
+SELECT proname FROM pg_proc WHERE proname = 'storage_care_profile_id';
+```
+
+Expected: 1 row for the bucket, 4 rows for policies (SELECT, INSERT, UPDATE, DELETE), 1 row for the helper function.
+
 ## Verify the setup
 
 After running the schema, verify everything is in place:
@@ -48,8 +77,8 @@ Expected tables: `profiles`, `care_profiles`, `care_profile_members`, `medicatio
     after insert on auth.users
     for each row execute function public.handle_new_user();
   ```
-- **Frontend data sync is NOT yet connected.** This schema is database-only preparation. The dashboard still uses `localStorage`. Connecting the frontend to Supabase data is the next phase.
-- **Storage for real document uploads is NOT yet configured.** That will be added in a later phase.
+- **Frontend data sync is connected.** Logged-in users sync data to Supabase via `CareDataContext` + `supabaseDataAdapter.ts`. Logged-out users use localStorage demo mode.
+- **Supabase Storage is prepared** — `supabase/storage.sql` creates the bucket and policies. Frontend upload UI is the next phase. See `docs/STORAGE_PLAN.md`.
 - **Payments are NOT implemented.** Pricing cards on the landing page are purely cosmetic.
 
 ## Environment variables
@@ -65,7 +94,7 @@ The `.env.example` file at the project root already documents these variables.
 
 ## Next phase
 
-1. Connect logged-in dashboard to Supabase data while keeping demo mode for anonymous users.
-2. Add Supabase Storage for real document uploads.
-3. Implement invitation flow for family members.
-4. Add real-time sync with Supabase Realtime.
+1. ✅ Connect logged-in dashboard to Supabase data (done).
+2. ✅ Supabase Storage SQL prepared (`supabase/storage.sql`). Frontend upload integration is next.
+3. ⏳ Implement invitation flow for family members.
+4. ⏳ Add real-time sync with Supabase Realtime.

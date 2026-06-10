@@ -7,15 +7,16 @@
 ✅ **Auth trigger** para criar perfil automaticamente
 ✅ **Helper functions** para verificar permissões
 ✅ **Índices** e triggers de `updated_at`
-❌ Frontend ainda usa `localStorage` (demo mode)
-❌ Frontend ainda **não** está ligado ao Supabase para dados
-❌ Supabase Storage ainda não configurado
+✅ **Cloud sync** — frontend ligado ao Supabase para utilizadores autenticados
+✅ **Supabase Storage SQL preparado** em `supabase/storage.sql`
+⏳ Frontend upload de documentos — não implementado ainda
 
 ## Serviços planeados
 
 - ✅ Auth (já ligado no frontend via `@supabase/supabase-js`)
 - ✅ Base de dados Postgres (schema pronto, RLS ativo)
-- ⏳ Storage (ficheiros privados) — fase posterior
+- ✅ Storage SQL preparado (bucket privado `care-documents`, RLS policies) — ver `supabase/storage.sql`
+- ⏳ Frontend upload integration — fase seguinte
 - ✅ Row Level Security (RLS) — implementado
 - ⏳ Edge Functions — fase posterior
 
@@ -54,9 +55,12 @@
 
 ## Plano de armazenamento
 
-- ⏳ Documentos serão guardados em buckets privados do Supabase Storage (fase posterior).
-- Os ficheiros serão organizados por `care_profile_id`.
-- O acesso será controlado por RLS ou URLs assinados.
+- ✅ **Bucket privado `care-documents`** — criado via SQL (`supabase/storage.sql`).
+- ✅ **Políticas RLS** — ficheiros acessíveis apenas a membros ativos do care profile.
+- ✅ **Helper function** `storage_care_profile_id()` — extrai o `care_profile_id` do path do ficheiro.
+- ✅ **Restrições** — 5MB por ficheiro, apenas PDF/JPG/PNG.
+- ⏳ **Frontend upload** — integração do frontend com Storage é a fase seguinte.
+- Ver `docs/STORAGE_PLAN.md` para detalhes completos.
 
 ## Fluxo de autenticação
 
@@ -65,14 +69,14 @@
 - ⏳ Login Google (fase posterior).
 - ✅ Recuperação de palavra-passe (já implementada).
 
-## Plano de migração (próxima fase)
+## Plano de migração (progresso)
 
-1. **Ligar dashboard autenticado ao Supabase** — quando o utilizador faz login, os dados vêm do Postgres em vez de `localStorage`.
-2. **Manter demo mode** — utilizadores não autenticados continuam a usar `localStorage`.
-3. **Importar dados da demo** — permitir que o utilizador migre os seus dados locais para a conta.
-4. **Supabase Storage** — upload real de documentos.
-5. **Convites** — fluxo de convite para membros da família.
-6. **Tempo real** — Supabase Realtime para sincronização entre cuidadores.
+1. ✅ **Ligar dashboard autenticado ao Supabase** — implementado via `CareDataContext` + `supabaseDataAdapter.ts`.
+2. ✅ **Manter demo mode** — utilizadores não autenticados continuam a usar `localStorage`.
+3. ⏳ **Importar dados da demo** — permitir que o utilizador migre os seus dados locais para a conta.
+4. ✅ **Supabase Storage SQL preparado** — bucket, policies e helper function criados. Frontend upload é a fase seguinte.
+5. ⏳ **Convites** — fluxo de convite para membros da família.
+6. ⏳ **Tempo real** — Supabase Realtime para sincronização entre cuidadores.
 
 ## Notas de segurança
 
