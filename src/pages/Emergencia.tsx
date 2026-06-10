@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
 import { useCareData } from '../context/CareDataContext';
+import { useLanguage } from '../i18n/LanguageContext';
 import HelpTip from '../components/HelpTip';
 import CuidarJuntosLogo from '../components/brand/CuidarJuntosLogo';
 
 const Emergencia: React.FC = () => {
   const { data, getEmergencySummary, showFeedback } = useCareData();
+  const { t } = useLanguage();
   const { medications, emergencyContacts, careProfile } = data;
   const [partilhaMsg, setPartilhaMsg] = useState('');
 
@@ -23,7 +25,7 @@ const Emergencia: React.FC = () => {
     .map((m) => `${m.nome} ${m.dosagem}`);
 
   const handleExportPdf = () => {
-    showFeedback('Na janela de impressão, escolha "Guardar como PDF".');
+    showFeedback(t('pages.emergency.printTip'));
     setTimeout(() => window.print(), 500);
   };
 
@@ -32,21 +34,21 @@ const Emergencia: React.FC = () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `Ficha de emergência — ${careProfile.nome}`,
+          title: `${t('pages.emergency.title')} — ${careProfile.nome}`,
           text: summary,
         });
-        showFeedback('Ficha partilhada com sucesso.');
+        showFeedback(t('pages.emergency.shared'));
       } catch {
         /* utilizador cancelou */
       }
     } else {
       try {
         await navigator.clipboard.writeText(summary);
-        setPartilhaMsg('Resumo copiado para a área de transferência.');
-        showFeedback('Resumo copiado para a área de transferência.');
+        setPartilhaMsg(t('pages.emergency.copied'));
+        showFeedback(t('pages.emergency.copied'));
         setTimeout(() => setPartilhaMsg(''), 4000);
       } catch {
-        setPartilhaMsg('Não foi possível copiar. Tente imprimir a ficha.');
+        setPartilhaMsg(t('pages.emergency.cannotCopy'));
       }
     }
   };
@@ -54,10 +56,10 @@ const Emergencia: React.FC = () => {
   return (
     <DashboardLayout>
       <main className="flex-1 w-full relative">
-        <DashboardPageHeader title="Ficha de emergência" showSearch={false} />
+        <DashboardPageHeader title={t('pages.emergency.title')} showSearch={false} />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
-          <HelpTip text="Em caso de emergência, ligue 112. O CuidarJuntos é uma ferramenta de organização familiar e não substitui profissionais de saúde." />
+          <HelpTip text={t('pages.emergency.help')} />
 
           <section className="flex flex-wrap gap-3 mb-stack-lg print:hidden">
             <button
@@ -65,21 +67,21 @@ const Emergencia: React.FC = () => {
               onClick={() => window.print()}
               className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-primary text-on-primary px-6 py-4 rounded-full font-label-md shadow-lg hover:opacity-90 active:scale-95 transition-all"
             >
-              <span className="material-symbols-outlined">print</span> Imprimir
+              <span className="material-symbols-outlined">print</span> {t('pages.emergency.print')}
             </button>
             <button
               type="button"
               onClick={handleExportPdf}
               className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-cj-verde-pale text-primary px-6 py-4 rounded-full font-label-md shadow-md hover:bg-surface-container-high active:scale-95 transition-all border border-cj-border"
             >
-              <span className="material-symbols-outlined">picture_as_pdf</span> Guardar como PDF
+              <span className="material-symbols-outlined">picture_as_pdf</span> {t('pages.emergency.saveAsPdf')}
             </button>
             <button
               type="button"
               onClick={handlePartilhar}
               className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-cj-terracota text-white px-6 py-4 rounded-full font-label-md shadow-md hover:opacity-90 active:scale-95 transition-all"
             >
-              <span className="material-symbols-outlined">share</span> Partilhar resumo
+              <span className="material-symbols-outlined">share</span> {t('pages.emergency.shareResume')}
             </button>
           </section>
 
@@ -95,11 +97,11 @@ const Emergencia: React.FC = () => {
                 <CuidarJuntosLogo variant="icon" size="sm" />
                 <div>
                   <p className="text-label-sm font-bold text-cj-terra uppercase tracking-wide">CuidarJuntos</p>
-                  <p className="text-label-sm text-cj-cinza">Cartão de Emergência</p>
+                  <p className="text-label-sm text-cj-cinza">{t('pages.emergency.emergencyCard')}</p>
                 </div>
               </div>
               <div className="flex flex-col text-right text-label-sm text-cj-cinza print:text-on-surface">
-                <span>Em caso de emergência, ligue 112.</span>
+                <span>{t('pages.emergency.inEmergency')}</span>
                 <span>{careProfile.atualizadoEm || new Date().toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
               </div>
             </div>
@@ -107,17 +109,17 @@ const Emergencia: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-12 gap-gutter">
               <div className="md:col-span-8 space-y-5">
                 <div>
-                  <p className="text-label-sm text-cj-cinza uppercase tracking-wide mb-1">Nome</p>
+                  <p className="text-label-sm text-cj-cinza uppercase tracking-wide mb-1">{t('pages.profile.name')}</p>
                   <p className="text-headline-md font-headline-md text-cj-terra">{careProfile.nome}</p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <p className="text-label-sm text-cj-cinza uppercase tracking-wide mb-1">Data de nascimento</p>
+                    <p className="text-label-sm text-cj-cinza uppercase tracking-wide mb-1">{t('pages.profile.birthDate')}</p>
                     <p className="text-body-lg font-medium text-cj-terra">{careProfile.dataNascimento}</p>
                   </div>
                   <div>
-                    <p className="text-label-sm text-cj-cinza uppercase tracking-wide mb-1">Número SNS</p>
+                    <p className="text-label-sm text-cj-cinza uppercase tracking-wide mb-1">{t('pages.profile.snsNumber')}</p>
                     <p className="text-body-lg font-medium text-cj-terra">{careProfile.numeroSNS}</p>
                   </div>
                 </div>
@@ -125,7 +127,7 @@ const Emergencia: React.FC = () => {
                 <div>
                   <p className="text-label-sm text-cj-cinza uppercase tracking-wide mb-2 flex items-center gap-2">
                     <span className="material-symbols-outlined text-cj-terracota text-base">warning</span>
-                    Alergias
+                    {t('pages.profile.allergies')}
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {careProfile.alergias.map((a) => (
@@ -142,10 +144,10 @@ const Emergencia: React.FC = () => {
                 <div>
                   <p className="text-label-sm text-cj-cinza uppercase tracking-wide mb-2 flex items-center gap-2">
                     <span className="material-symbols-outlined text-primary text-base">pill</span>
-                    Medicamentos atuais
+                    {t('pages.emergency.currentMedications')}
                   </p>
                   {medicamentosAtuais.length === 0 ? (
-                    <p className="text-body-md text-cj-cinza">Nenhum medicamento ativo registado.</p>
+                    <p className="text-body-md text-cj-cinza">{t('pages.emergency.noMedicationsActive')}</p>
                   ) : (
                     <ul className="space-y-2">
                       {medicamentosAtuais.map((med) => (
@@ -159,22 +161,22 @@ const Emergencia: React.FC = () => {
                 </div>
 
                 <div>
-                  <p className="text-label-sm text-cj-cinza uppercase tracking-wide mb-2">Notas importantes</p>
+                  <p className="text-label-sm text-cj-cinza uppercase tracking-wide mb-2">{t('pages.profile.importantNotes')}</p>
                   <p className="text-body-md text-cj-cinza leading-relaxed">{careProfile.notasImportantes}</p>
                 </div>
               </div>
 
               <div className="md:col-span-4 space-y-5">
                 <div>
-                  <p className="text-label-sm text-cj-cinza uppercase tracking-wide mb-1">Médico de família</p>
+                  <p className="text-label-sm text-cj-cinza uppercase tracking-wide mb-1">{t('pages.profile.familyDoctor')}</p>
                   <p className="text-label-md font-bold text-cj-terra">{careProfile.medicoFamilia}</p>
                 </div>
                 <div>
-                  <p className="text-label-sm text-cj-cinza uppercase tracking-wide mb-1">Farmácia habitual</p>
+                  <p className="text-label-sm text-cj-cinza uppercase tracking-wide mb-1">{t('pages.profile.pharmacy')}</p>
                   <p className="text-label-md font-bold text-cj-terra">{careProfile.farmaciaHabitual}</p>
                 </div>
                 <div>
-                  <p className="text-label-sm text-cj-cinza uppercase tracking-wide mb-1">Morada</p>
+                  <p className="text-label-sm text-cj-cinza uppercase tracking-wide mb-1">{t('pages.profile.address')}</p>
                   <p className="text-label-md font-bold text-cj-terra">{careProfile.morada}</p>
                 </div>
 
