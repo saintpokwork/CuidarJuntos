@@ -63,6 +63,8 @@ export interface Document {
   dataAdicao: string;
   dataValidade: string;
   notas: string;
+  filePath?: string;
+  fileName?: string;
 }
 
 export interface CareNote {

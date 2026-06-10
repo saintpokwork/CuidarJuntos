@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
 import EmptyState from '../components/EmptyState';
@@ -7,8 +7,11 @@ import { useCareData, DocumentCategory } from '../context/CareDataContext';
 import { documentCategories } from '../data/initialData';
 import HelpTip from '../components/HelpTip';
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
+
 const Documentos: React.FC = () => {
-  const { data, addDocument, removeDocument } = useCareData();
+  const { data, removeDocument, addDocumentWithFile, getDocumentDownloadUrl, storageMode } = useCareData();
   const { t } = useLanguage();
   const { documents } = data;
   const [filtro, setFiltro] = useState<DocumentCategory | 'Todos'>('Todos');
@@ -18,6 +21,9 @@ const Documentos: React.FC = () => {
   const [dataValidade, setDataValidade] = useState('');
   const [notas, setNotas] = useState('');
   const [erro, setErro] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const parseDateValue = (value: string) => {
     if (!value) return null;
@@ -31,17 +37,17 @@ const Documentos: React.FC = () => {
 
   const getValidity = (value: string) => {
     const date = parseDateValue(value);
-    if (!date) return { label: 'Sem validade definida', color: 'bg-surface-container-high text-on-surface-variant' };
+    if (!date) return { label: t('pages.documents.validityNone'), color: 'bg-surface-container-high text-on-surface-variant' };
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const diffDays = Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
     if (diffDays < 0) {
-      return { label: 'Expirado', color: 'bg-error-container text-on-error-container' };
+      return { label: t('pages.documents.validityExpired'), color: 'bg-error-container text-on-error-container' };
     }
     if (diffDays <= 30) {
-      return { label: 'A expirar', color: 'bg-cj-terra/15 text-cj-terra' };
+      return { label: t('pages.documents.validityExpiring'), color: 'bg-cj-terra/15 text-cj-terra' };
     }
-    return { label: 'Válido', color: 'bg-secondary-container text-on-secondary-container' };
+    return { label: t('pages.documents.validityValid'), color: 'bg-secondary-container text-on-secondary-container' };
   };
 
   const filtrados = documents
@@ -50,23 +56,98 @@ const Documentos: React.FC = () => {
       [d.titulo, d.notas].some((field) => field.toLowerCase().includes(busca.toLowerCase()))
     );
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const nomeFicheiro = titulo.trim() || 'documento_novo.pdf';
-    const ok = addDocument({
-      titulo: nomeFicheiro.endsWith('.pdf') || nomeFicheiro.endsWith('.jpg') ? nomeFicheiro : `${nomeFicheiro}.pdf`,
-      categoria,
-      dataValidade,
-      notas,
-    });
-    if (!ok) {
-      setErro('Preencha o nome do ficheiro.');
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setErro('');
+
+    if (!file) {
+      setSelectedFile(null);
       return;
     }
+
+    // Validate file type
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setErro(t('pages.documents.unsupportedType'));
+      setSelectedFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    // Validate file size
+    if (file.size > MAX_FILE_SIZE) {
+      setErro(t('pages.documents.fileTooLarge'));
+      setSelectedFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    setSelectedFile(file);
+  };
+
+  const removeSelectedFile = () => {
+    setSelectedFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const handleOpenDocument = async (docId: string) => {
+    const url = await getDocumentDownloadUrl(docId);
+    if (url) {
+      window.open(url, '_blank');
+    } else {
+      setErro(t('pages.documents.demoOnlyExample'));
+    }
+  };
+
+  const handleDeleteDocument = (docId: string) => {
+    removeDocument(docId);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (uploading) return; // Prevent double submit
+
+    const nomeFicheiro = titulo.trim() || selectedFile?.name || 'documento_novo';
+
+    // Validate required fields
+    if (!nomeFicheiro) {
+      setErro(t('pages.documents.titleRequired'));
+      return;
+    }
+
+    setUploading(true);
     setErro('');
-    setTitulo('');
-    setDataValidade('');
-    setNotas('');
+
+    try {
+      const result = await addDocumentWithFile(
+        {
+          titulo: nomeFicheiro,
+          categoria,
+          dataValidade,
+          notas,
+        },
+        selectedFile,
+      );
+
+      if (result.success) {
+        setTitulo('');
+        setDataValidade('');
+        setNotas('');
+        setSelectedFile(null);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+      } else {
+        setErro(result.error || t('global.error'));
+      }
+    } catch {
+      setErro(t('global.error'));
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -75,15 +156,15 @@ const Documentos: React.FC = () => {
         <DashboardPageHeader title={t('pages.documents.title')} showSearch={false} />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
-          <HelpTip text={t('pages.documents.help') || 'nesta demo o upload é simulado. Na versão futura poderá guardar ficheiros reais com segurança.'} />
+          <HelpTip text={t('pages.documents.help') || 'Gestão de documentos com upload seguro.'} />
           <div className="grid gap-4 mb-stack-lg md:grid-cols-[2fr_1fr]">
             <div>
-              <label className="text-label-sm text-on-surface-variant mb-2 inline-block">Pesquisar documentos</label>
+              <label className="text-label-sm text-on-surface-variant mb-2 inline-block">{t('pages.documents.search')}</label>
               <input
                 type="search"
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
-                placeholder="Procure por nome ou notas"
+                placeholder={t('pages.documents.searchPlaceholder')}
                 className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
               />
             </div>
@@ -97,7 +178,7 @@ const Documentos: React.FC = () => {
                     : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'
                 }`}
               >
-                Todos
+                {t('pages.documents.all')}
               </button>
               {documentCategories.map((cat) => (
                 <button
@@ -139,17 +220,29 @@ const Documentos: React.FC = () => {
                                 {doc.categoria}
                               </span>
                             </div>
-                            <button
-                              type="button"
-                              onClick={() => removeDocument(doc.id)}
-                              className="p-1 rounded-full hover:bg-error-container/30 text-error transition-colors shrink-0"
-                              aria-label="Remover documento"
-                            >
-                              <span className="material-symbols-outlined text-lg">delete</span>
-                            </button>
+                            <div className="flex gap-1 shrink-0">
+                              {(doc.filePath || storageMode === 'cloud') && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleOpenDocument(doc.id)}
+                                  className="p-1 rounded-full hover:bg-primary-container/30 text-primary transition-colors"
+                                  aria-label={t('pages.documents.openDocument')}
+                                >
+                                  <span className="material-symbols-outlined text-lg">open_in_new</span>
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteDocument(doc.id)}
+                                className="p-1 rounded-full hover:bg-error-container/30 text-error transition-colors"
+                                aria-label={t('pages.documents.delete')}
+                              >
+                                <span className="material-symbols-outlined text-lg">delete</span>
+                              </button>
+                            </div>
                           </div>
                           <p className="text-label-sm text-on-surface-variant mt-2">
-                            Adicionado {doc.dataAdicao.toLowerCase()}
+                            {t('pages.documents.addedOn')} {doc.dataAdicao.toLowerCase()}
                           </p>
                           <div className="mt-2">
                             <span
@@ -160,7 +253,7 @@ const Documentos: React.FC = () => {
                           </div>
                           {doc.dataValidade && (
                             <p className="text-label-sm text-on-surface-variant">
-                              Validade: {doc.dataValidade}
+                              {t('pages.documents.expiryDate')}: {doc.dataValidade}
                             </p>
                           )}
                           {doc.notas && (
@@ -175,27 +268,78 @@ const Documentos: React.FC = () => {
             </div>
 
             <div className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40 h-fit">
-              <div className="border-2 border-dashed border-primary/30 rounded-2xl p-6 text-center mb-6">
-                <span className="material-symbols-outlined text-primary text-4xl mb-2">cloud_upload</span>
-                <p className="text-label-md font-bold text-on-surface">Envio simulado</p>
-                <p className="text-label-sm text-on-surface-variant">PDF, JPG ou PNG até 10 MB</p>
+              {/* File upload area */}
+              <div
+                className={`border-2 border-dashed rounded-2xl p-6 text-center mb-4 transition-colors ${
+                  selectedFile ? 'border-primary bg-primary-fixed/10' : 'border-primary/30'
+                }`}
+              >
+                <span className="material-symbols-outlined text-primary text-4xl mb-2">
+                  {selectedFile ? 'description' : 'cloud_upload'}
+                </span>
+
+                {selectedFile ? (
+                  <div>
+                    <p className="text-label-md font-bold text-on-surface truncate">{selectedFile.name}</p>
+                    <p className="text-label-sm text-on-surface-variant">{formatFileSize(selectedFile.size)}</p>
+                    <button
+                      type="button"
+                      onClick={removeSelectedFile}
+                      className="mt-2 px-3 py-1 text-label-sm text-error hover:bg-error-container/20 rounded-full transition-colors"
+                    >
+                      {t('pages.documents.removeSelectedFile')}
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-label-md font-bold text-on-surface">{t('pages.documents.uploadDocument')}</p>
+                    <p className="text-label-sm text-on-surface-variant">{t('pages.documents.acceptedFileTypes')}</p>
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="mt-3 px-4 py-2 bg-primary text-on-primary text-label-sm font-bold rounded-full hover:opacity-90 transition-all"
+                    >
+                      {t('pages.documents.selectFile')}
+                    </button>
+                  </div>
+                )}
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
               </div>
-              <h3 className="text-headline-md font-headline-md text-on-surface mb-4">Adicionar documento</h3>
+
+              {/* Storage mode note */}
+              {storageMode === 'cloud' ? (
+                <p className="text-label-sm text-on-surface-variant mb-4 text-center">
+                  {t('pages.documents.filesStoredPrivately')}
+                </p>
+              ) : (
+                <p className="text-label-sm text-cj-terra mb-4 text-center">
+                  {t('pages.documents.uploadSimulated')}
+                </p>
+              )}
+
+              <h3 className="text-headline-md font-headline-md text-on-surface mb-4">{t('pages.documents.addDocument')}</h3>
               {erro && (
                 <p className="text-label-sm text-error mb-4 p-3 bg-error-container/20 rounded-xl">{erro}</p>
               )}
               <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">Nome do ficheiro *</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.documents.fileName')}</label>
                   <input
                     value={titulo}
                     onChange={(e) => setTitulo(e.target.value)}
                     className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
-                    placeholder="Ex: Análises_Julho_2024.pdf"
+                    placeholder={t('pages.documents.fileNamePlaceholder')}
                   />
                 </div>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">Categoria</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.documents.category')}</label>
                   <select
                     value={categoria}
                     onChange={(e) => setCategoria(e.target.value as DocumentCategory)}
@@ -207,7 +351,7 @@ const Documentos: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">Data de validade</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.documents.expiryDate')}</label>
                   <input
                     value={dataValidade}
                     onChange={(e) => setDataValidade(e.target.value)}
@@ -216,20 +360,23 @@ const Documentos: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">Notas</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.documents.notes')}</label>
                   <textarea
                     value={notas}
                     onChange={(e) => setNotas(e.target.value)}
                     className="w-full px-4 py-3 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none resize-none"
-                    placeholder="Descrição opcional..."
+                    placeholder={t('pages.documents.notesPlaceholder')}
                     rows={2}
                   />
                 </div>
                 <button
                   type="submit"
-                  className="w-full py-4 bg-primary text-on-primary font-bold rounded-full shadow-lg hover:opacity-90 transition-all"
+                  disabled={uploading}
+                  className={`w-full py-4 bg-primary text-on-primary font-bold rounded-full shadow-lg transition-all ${
+                    uploading ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
+                  }`}
                 >
-                  Guardar documento
+                  {uploading ? t('pages.documents.uploading') : t('pages.documents.saveDocument')}
                 </button>
               </form>
             </div>

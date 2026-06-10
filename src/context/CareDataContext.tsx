@@ -29,10 +29,15 @@ import {
   updateTask as sbUpdateTask,
   deleteTask as sbDeleteTask,
   createDocumentRecord as sbCreateDocument,
+  updateDocumentRecord as sbUpdateDocument,
   deleteDocumentRecord as sbDeleteDocument,
   createCareNote as sbCreateCareNote,
   deleteCareNote as sbDeleteCareNote,
   updateCareProfile as sbUpdateCareProfile,
+  uploadCareDocumentFile,
+  deleteCareDocumentFile,
+  getCareDocumentSignedUrl,
+  validateFileForUpload,
 } from '../lib/data/supabaseDataAdapter';
 import { isSupabaseConfigured } from '../lib/supabaseClient';
 
@@ -140,6 +145,8 @@ interface CareDataContextValue {
   updateTaskStatus: (id: string, status: TaskStatus) => void;
   addDocument: (doc: Omit<Document, 'id' | 'dataAdicao'>) => boolean;
   removeDocument: (id: string) => void;
+  addDocumentWithFile: (doc: Omit<Document, 'id' | 'dataAdicao'>, file: File | null) => Promise<{ success: boolean; error?: string }>;
+  getDocumentDownloadUrl: (docId: string) => Promise<string | null>;
   addCareNote: (texto: string) => boolean;
   removeCareNote: (id: string) => void;
   addFamilyMember: (member: { nome: string; contacto: string; relacao: string; funcao: FamilyRole }) => boolean;
@@ -523,16 +530,137 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       showFeedback('feedback.documentRemoved');
       return;
     }
-    sbDeleteDocument(id).then((ok) => {
-      if (ok) {
-        setData((prev) => ({ ...prev, documents: prev.documents.filter((d) => d.id !== id) }));
-        showFeedback('feedback.documentRemoved');
-        setSyncStatus('synced');
-      } else {
-        setSyncStatus('error');
-      }
+    // In cloud mode, first delete storage file if it exists, then delete metadata
+    const doc = data.documents.find((d) => d.id === id);
+    const deleteFilePromise = doc?.filePath
+      ? deleteCareDocumentFile(doc.filePath).catch((err) => {
+          console.error('[CareDataContext] Failed to delete storage file:', err);
+        })
+      : Promise.resolve();
+
+    deleteFilePromise.then(() => {
+      sbDeleteDocument(id).then((ok) => {
+        if (ok) {
+          setData((prev) => ({ ...prev, documents: prev.documents.filter((d) => d.id !== id) }));
+          showFeedback('feedback.documentRemoved');
+          setSyncStatus('synced');
+        } else {
+          setSyncStatus('error');
+        }
+      });
     });
-  }, [storageMode, showFeedback]);
+  }, [storageMode, showFeedback, data.documents]);
+
+  /**
+   * Add a document with an optional file upload.
+   * In demo mode, stores metadata only (no actual upload).
+   * In cloud mode, creates metadata row, uploads file, then updates row with file info.
+   */
+  const addDocumentWithFile: CareDataContextValue['addDocumentWithFile'] = useCallback(
+    async (doc, file) => {
+      if (!doc.titulo.trim()) return { success: false, error: 'Title is required' };
+
+      // Demo mode — no actual upload, just simulate metadata
+      if (storageMode === 'demo') {
+        const novo: Document = {
+          id: generateId(),
+          titulo: doc.titulo.trim(),
+          categoria: doc.categoria,
+          dataAdicao: 'Agora',
+          dataValidade: doc.dataValidade?.trim() || '',
+          notas: doc.notas?.trim() || '',
+          fileName: file?.name || undefined,
+        };
+        setData((prev) => ({ ...prev, documents: [...prev.documents, novo] }));
+        showFeedback('feedback.documentAdded');
+        return { success: true };
+      }
+
+      // Cloud mode
+      if (!careProfileId) return { success: false, error: 'No care profile' };
+
+      // Validate file if provided
+      if (file) {
+        const validationError = validateFileForUpload(file);
+        if (validationError) return { success: false, error: validationError };
+      }
+
+      try {
+        // Step 1: Create metadata row
+        const created = await sbCreateDocument(careProfileId, {
+          titulo: doc.titulo.trim(),
+          categoria: doc.categoria,
+          dataValidade: doc.dataValidade?.trim() || '',
+          notas: doc.notas?.trim() || '',
+        });
+
+        if (!created) return { success: false, error: 'Failed to create document metadata' };
+
+        // Step 2: Upload file if provided
+        if (file) {
+          const filePath = await uploadCareDocumentFile(careProfileId, created.id, file);
+          if (!filePath) {
+            // Upload failed — clean up the metadata row we just created
+            await sbDeleteDocument(created.id).catch(() => {});
+            return { success: false, error: 'Failed to upload file' };
+          }
+
+          // Step 3: Update metadata row with file info
+          const updated = await sbUpdateDocument(created.id, {
+            filePath,
+            fileName: file.name,
+          });
+
+          if (updated) {
+            setData((prev) => ({ ...prev, documents: [...prev.documents, updated] }));
+          } else {
+            // Update failed — clean up storage and metadata
+            await deleteCareDocumentFile(filePath).catch(() => {});
+            await sbDeleteDocument(created.id).catch(() => {});
+            return { success: false, error: 'Failed to update document with file info' };
+          }
+        } else {
+          // No file — just add the metadata to local state
+          setData((prev) => ({ ...prev, documents: [...prev.documents, created] }));
+        }
+
+        showFeedback('feedback.documentAdded');
+        setSyncStatus('synced');
+        return { success: true };
+      } catch (err) {
+        console.error('[CareDataContext] addDocumentWithFile error:', err);
+        return { success: false, error: 'Unexpected error' };
+      }
+    },
+    [storageMode, careProfileId, showFeedback],
+  );
+
+  /**
+   * Get a download/opening URL for a document.
+   * In demo mode, returns a translated message placeholder.
+   * In cloud mode, creates a signed URL from Supabase Storage.
+   */
+  const getDocumentDownloadUrl: CareDataContextValue['getDocumentDownloadUrl'] = useCallback(
+    async (docId: string) => {
+      const doc = data.documents.find((d) => d.id === docId);
+      if (!doc) return null;
+
+      // Demo mode — no actual file stored
+      if (storageMode === 'demo' || !doc.filePath) {
+        return null;
+      }
+
+      // Cloud mode — get signed URL
+      try {
+        const signedUrl = await getCareDocumentSignedUrl(doc.filePath);
+        return signedUrl;
+      } catch (err) {
+        console.error('[CareDataContext] getDocumentDownloadUrl error:', err);
+        return null;
+      }
+    },
+    [storageMode, data.documents],
+  );
 
   // ---------------------------------------------------------------------------
   // CRUD: Care Notes
@@ -800,6 +928,8 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     updateTaskStatus,
     addDocument,
     removeDocument,
+    addDocumentWithFile,
+    getDocumentDownloadUrl,
     addCareNote,
     removeCareNote,
     addFamilyMember,

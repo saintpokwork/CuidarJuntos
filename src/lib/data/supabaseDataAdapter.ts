@@ -83,6 +83,8 @@ interface DbDocument {
   category: string | null;
   expiry_date: string | null;
   notes: string | null;
+  file_path: string | null;
+  file_name: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -196,11 +198,13 @@ const mapTask = (row: DbTask): Task => ({
 
 const mapDocument = (row: DbDocument): Document => ({
   id: row.id,
-  titulo: row.title,
+  titulo: row.file_name || row.title, // prefer stored file name if available
   categoria: (row.category as Document['categoria']) || 'Outros',
   dataAdicao: row.created_at ? new Date(row.created_at).toLocaleDateString('pt-PT') : '',
   dataValidade: row.expiry_date || '',
   notas: row.notes || '',
+  filePath: row.file_path || undefined,
+  fileName: row.file_name || undefined,
 });
 
 const mapCareNote = (row: DbCareNote): CareNote => ({
@@ -776,13 +780,15 @@ export const createDocumentRecord = async (
 
 export const updateDocumentRecord = async (
   id: string,
-  updates: Partial<Pick<Document, 'titulo' | 'categoria' | 'dataValidade' | 'notas'>>,
+  updates: Partial<Pick<Document, 'titulo' | 'categoria' | 'dataValidade' | 'notas' | 'filePath' | 'fileName'>>,
 ): Promise<Document | null> => {
   const dbUpdates: Record<string, unknown> = {};
   if (updates.titulo !== undefined) dbUpdates.title = updates.titulo;
   if (updates.categoria !== undefined) dbUpdates.category = updates.categoria;
   if (updates.dataValidade !== undefined) dbUpdates.expiry_date = updates.dataValidade || null;
   if (updates.notas !== undefined) dbUpdates.notes = updates.notas;
+  if (updates.filePath !== undefined) dbUpdates.file_path = updates.filePath;
+  if (updates.fileName !== undefined) dbUpdates.file_name = updates.fileName;
 
   const { data, error } = await supabase
     .from('documents')
@@ -889,6 +895,103 @@ export const deleteEmergencyContact = async (id: string): Promise<boolean> => {
     console.error('[supabaseDataAdapter] deleteEmergencyContact error:', error);
     return false;
   }
+  return true;
+};
+
+// ---------------------------------------------------------------------------
+// Storage helper functions
+// ---------------------------------------------------------------------------
+
+const ALLOWED_MIME_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
+const BUCKET_NAME = 'care-documents';
+
+/**
+ * Sanitise a filename for safe storage.
+ */
+export const sanitiseFileName = (name: string): string => {
+  const ext = name.split('.').pop() || '';
+  const base = name.slice(0, name.lastIndexOf('.'));
+  const safeBase = base.toLowerCase().replace(/[^a-z0-9_-]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+  const safeExt = ext.toLowerCase().replace(/[^a-z0-9]/g, '');
+  return safeExt ? `${safeBase || 'file'}.${safeExt}` : safeBase || 'file';
+};
+
+/**
+ * Validate a file before upload.
+ * Returns null if valid, or an error message string if invalid.
+ */
+export const validateFileForUpload = (file: File): string | null => {
+  if (file.size > MAX_FILE_SIZE) {
+    return `File too large (max 5MB)`;
+  }
+  if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+    return 'Unsupported file type. Accepted: PDF, JPG, PNG.';
+  }
+  return null;
+};
+
+/**
+ * Upload a document file to Supabase Storage.
+ * @returns The storage file path on success, or null on failure.
+ */
+export const uploadCareDocumentFile = async (
+  careProfileId: string,
+  documentId: string,
+  file: File,
+): Promise<string | null> => {
+  const fileName = sanitiseFileName(file.name);
+  const filePath = `care-profiles/${careProfileId}/${documentId}/${fileName}`;
+
+  const { error } = await supabase.storage
+    .from(BUCKET_NAME)
+    .upload(filePath, file, {
+      contentType: file.type,
+      upsert: false,
+    });
+
+  if (error) {
+    console.error('[supabaseDataAdapter] uploadCareDocumentFile error:', error);
+    return null;
+  }
+
+  return filePath;
+};
+
+/**
+ * Get a signed URL for a file in storage.
+ * @returns Signed URL (10 minute expiry) or null on failure.
+ */
+export const getCareDocumentSignedUrl = async (
+  filePath: string,
+): Promise<string | null> => {
+  const { data, error } = await supabase.storage
+    .from(BUCKET_NAME)
+    .createSignedUrl(filePath, 10 * 60); // 10 minutes
+
+  if (error || !data) {
+    console.error('[supabaseDataAdapter] getCareDocumentSignedUrl error:', error);
+    return null;
+  }
+
+  return data.signedUrl;
+};
+
+/**
+ * Delete a file from storage.
+ * @returns true if successful, false on failure.
+ */
+export const deleteCareDocumentFile = async (filePath: string): Promise<boolean> => {
+  const { error } = await supabase.storage
+    .from(BUCKET_NAME)
+    .remove([filePath]);
+
+  if (error) {
+    console.error('[supabaseDataAdapter] deleteCareDocumentFile error:', error);
+    return false;
+  }
+
   return true;
 };
 
