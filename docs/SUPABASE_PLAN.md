@@ -1,57 +1,78 @@
 # Plano de Integração com Supabase
 
+## Estado atual
+
+✅ **Schema SQL criado** em `supabase/schema.sql`
+✅ **RLS policies definidas** para todas as tabelas
+✅ **Auth trigger** para criar perfil automaticamente
+✅ **Helper functions** para verificar permissões
+✅ **Índices** e triggers de `updated_at`
+❌ Frontend ainda usa `localStorage` (demo mode)
+❌ Frontend ainda **não** está ligado ao Supabase para dados
+❌ Supabase Storage ainda não configurado
+
 ## Serviços planeados
 
-- Auth
-- Base de dados Postgres
-- Storage (ficheiros privados)
-- Row Level Security (RLS)
-- Edge Functions (fase posterior)
+- ✅ Auth (já ligado no frontend via `@supabase/supabase-js`)
+- ✅ Base de dados Postgres (schema pronto, RLS ativo)
+- ⏳ Storage (ficheiros privados) — fase posterior
+- ✅ Row Level Security (RLS) — implementado
+- ⏳ Edge Functions — fase posterior
 
-## Tabelas previstas
+## Tabelas (criadas no schema)
 
-- `profiles`
-- `care_profiles`
-- `care_profile_members`
-- `medications`
-- `medication_logs`
-- `appointments`
-- `tasks`
-- `documents`
-- `care_notes`
-- `emergency_contacts`
+| Tabela | Descrição |
+|--------|-----------|
+| `profiles` | Perfis de utilizador sincronizados com `auth.users` |
+| `care_profiles` | Perfis de cuidado (pai, mãe, avô, etc.) |
+| `care_profile_members` | Membros da família com role (admin/family/caregiver/viewer) |
+| `medications` | Medicamentos |
+| `medication_logs` | Registo diário de tomas |
+| `appointments` | Consultas e exames |
+| `tasks` | Tarefas da família |
+| `documents` | Documentos (sem storage ainda) |
+| `care_notes` | Notas de cuidado |
+| `emergency_contacts` | Contactos de emergência |
 
 ## Relações básicas
 
-- Um utilizador pode pertencer a vários `care_profiles`.
+- Um utilizador pode pertencer a vários `care_profiles` (através de `care_profile_members`).
 - Um `care_profile` pode ter vários membros da família.
 - Cada `care_profile` gere medicamentos, consultas, tarefas, documentos, notas e contactos de emergência.
+- Todas as child tables referenciam `care_profiles.id` com `on delete cascade`.
 
-## Plano RLS
+## Plano RLS (implementado)
 
-- Os utilizadores só podem ler e escrever `care_profiles` onde são membros.
-- Administradores podem convidar e remover membros.
-- Cuidadores têm acesso limitado a registos e podem actualizar apenas certos campos.
-- Visualizadores apenas podem ler informação relevante.
+- **Helper functions**: `is_care_profile_member()`, `is_care_profile_admin()`, `get_care_profile_role()` — todas `security definer` com `search_path = public`.
+- `profiles`: cada utilizador só vê/altera o seu próprio perfil.
+- `care_profiles`: membros ativos podem SELECT; authenticated users podem INSERT; admins podem UPDATE/DELETE.
+- `care_profile_members`: members can SELECT (com subquery para evitar recursão); creator pode inserir próprio admin; admins gerem os restantes.
+- **Child tables** (medications, appointments, tasks, documents, care_notes, emergency_contacts, medication_logs):
+  - SELECT: qualquer membro ativo do care_profile.
+  - INSERT/UPDATE: admin, family ou caregiver (não viewer).
+  - DELETE: apenas admin.
 
 ## Plano de armazenamento
 
-- Documentos são guardados em buckets privados.
-- Os ficheiros são organizados por `care_profile_id`.
-- O acesso é controlado por RLS ou URLs assinados.
+- ⏳ Documentos serão guardados em buckets privados do Supabase Storage (fase posterior).
+- Os ficheiros serão organizados por `care_profile_id`.
+- O acesso será controlado por RLS ou URLs assinados.
 
 ## Fluxo de autenticação
 
-- Email/password primeiro.
-- Magic link opcional numa fase posterior.
-- Login Google opcional numa fase posterior.
-- Recuperação de palavra-passe.
+- ✅ Email/password (já implementado no frontend via `AuthContext`).
+- ⏳ Magic link (fase posterior).
+- ⏳ Login Google (fase posterior).
+- ✅ Recuperação de palavra-passe (já implementada).
 
-## Plano de migração
+## Plano de migração (próxima fase)
 
-- Os dados do MVP local podem ser exportados/importados mais tarde.
-- Não é necessário migração automática para esta fase inicial.
-- O foco é permitir que o utilizador continue a usar a demo e, no futuro, importe os dados para a conta.
+1. **Ligar dashboard autenticado ao Supabase** — quando o utilizador faz login, os dados vêm do Postgres em vez de `localStorage`.
+2. **Manter demo mode** — utilizadores não autenticados continuam a usar `localStorage`.
+3. **Importar dados da demo** — permitir que o utilizador migre os seus dados locais para a conta.
+4. **Supabase Storage** — upload real de documentos.
+5. **Convites** — fluxo de convite para membros da família.
+6. **Tempo real** — Supabase Realtime para sincronização entre cuidadores.
 
 ## Notas de segurança
 
@@ -60,3 +81,4 @@
 - Evitar armazenar detalhes médicos desnecessários.
 - Considerar encriptação em trânsito e em repouso.
 - Solicitar consentimento claro antes de partilhar dados entre familiares.
+- **Nunca expor a service_role key no frontend.**
