@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import CuidarJuntosLogo from '../components/brand/CuidarJuntosLogo';
+import HeroDashboardPreview from '../components/brand/HeroDashboardPreview';
 import { useLanguage } from '../i18n/LanguageContext';
 import LanguageToggle from '../components/LanguageToggle';
 
@@ -50,10 +51,7 @@ const Home: React.FC = () => {
             <Link className="hidden md:block text-primary font-bold hover:text-primary-container transition-colors font-label-md text-label-md" to="/entrar">
               {t('global.signIn')}
             </Link>
-            <Link className="bg-primary text-on-primary px-6 py-2.5 rounded-full font-label-md text-label-md shadow-sm hover:scale-105 active:scale-95 transition-all" to="/dashboard">
-              {t('global.continue') || 'Começar'}
-            </Link>
-            <Link className="hidden md:inline-block text-primary font-bold hover:underline font-label-md text-label-md" to="/criar-conta">
+            <Link className="bg-primary text-on-primary px-6 py-2.5 rounded-full font-label-md text-label-md shadow-sm hover:scale-105 active:scale-95 transition-all" to="/criar-conta">
               {t('global.createAccount')}
             </Link>
           </div>
@@ -88,28 +86,13 @@ const Home: React.FC = () => {
                 >
                   {t('home.hero.ctaSecondary')}
                 </Link>
-                <Link
-                  className="bg-surface-container-high text-primary px-8 py-4 rounded-full font-headline-md text-[18px] hover:bg-surface-container-highest transition-colors text-center"
-                  to="/criar-conta"
-                >
-                  {t('home.hero.ctaCreate')}
-                </Link>
               </div>
               <p className="mt-4 text-label-sm text-on-surface-variant">
                 {t('home.hero.demoNotice')}
               </p>
             </div>
             <div className="flex-1 w-full relative">
-              <div className="relative z-10 glass-card p-6 rounded-2xl soft-shadow border border-white/40">
-                <img
-                  alt={t('home.hero.imageAlt')}
-                  className="rounded-xl w-full h-auto shadow-sm"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdx1dfUc-1E1-dYKkda1s4AwDWV7zd-DsYZJBZT1Ga2a0l-pQO1WcPbToRKFI5mPb_T5Ew92lKs5To6EsrajdzDPYPDGaJbjxK5ltreRmhaDGqgXtM6-5hsoW8lNTpJuO9zquo31d-PAv4xrtNDmvhazpcGU-SATjU9z7h-hfvRaVbJp1qGfTJLUWuO2uZXhoxmWpE-fryqH8nRz9V8Rbv9DAVHoRbexzgA6VxLcuz150OWXd1Oo8yDQR9t19Of2_f6NzzLEj0N66N"
-                />
-                <div className="absolute -top-4 -right-4 bg-secondary-container p-4 rounded-xl shadow-lg">
-                  <span className="material-symbols-outlined text-on-secondary-container">done_all</span>
-                </div>
-              </div>
+              <HeroDashboardPreview />
               <div className="absolute -top-20 -right-20 w-80 h-80 bg-cj-verde/10 rounded-full blur-3xl" />
               <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-cj-terracota/10 rounded-full blur-3xl" />
             </div>
