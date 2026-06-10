@@ -48,7 +48,7 @@ const Blog: React.FC = () => {
               <h2 className="text-headline-md font-headline-md text-on-surface mb-2 group-hover:text-primary transition-colors">
                 {post.title[lang]}
               </h2>
-              <p className="text-label-md text-on-surface-variant line-clamp-3">
+              <p className="text-label-md text-on-surface-variant" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                 {post.excerpt[lang]}
               </p>
               <span className="inline-block mt-4 text-label-sm font-bold text-primary">

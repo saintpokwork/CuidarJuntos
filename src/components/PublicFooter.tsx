@@ -57,7 +57,7 @@ const PublicFooter: React.FC = () => {
               <ul className="space-y-2">
                 <li>
                   <Link className="text-on-surface-variant hover:text-primary transition-all text-label-md" to="/blog">
-                    {t('footer.blog')}
+                    {t('footer.help')}
                   </Link>
                 </li>
                 <li>
