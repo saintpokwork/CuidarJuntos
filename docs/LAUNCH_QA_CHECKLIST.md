@@ -155,7 +155,7 @@
 
 ## Known Limitations (Before Payments/Domain/Email)
 
-- Payments (Stripe) are not integrated
+- Payments (Stripe) are not integrated — see `docs/PAYMENTS_PLAN.md` for implementation plan
 - Branded email domain (`cuidarjuntos.pt`) is not activated
 - Real family invite emails are not sent (pending Resend/SMTP)
 - Supabase default auth emails are used for confirmation/reset
