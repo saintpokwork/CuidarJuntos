@@ -27,7 +27,8 @@
 | 16 | Blog / resources | ✅ Complete | 4 PT/EN articles, branded layout |
 | 17 | Legal / trust pages | ✅ Complete | Terms, Privacy with Nebula Craft Design attribution, GDPR, 112 |
 | 18 | Security / privacy audit | ✅ Complete | No critical blockers found |
-| 19 | Payments / Stripe | ⏳ Pending | Plan created (`docs/PAYMENTS_PLAN.md`), not implemented |
+| 19 | Automated / static QA | ✅ Complete | See `docs/PRELAUNCH_AUTOMATED_QA.md` |
+| 20 | Payments / Stripe | ⏳ Pending | Plan created (`docs/PAYMENTS_PLAN.md`), not implemented |
 | 20 | Branded emails (Resend/custom SMTP) | ⏳ Later | Using Supabase default auth emails temporarily |
 | 21 | Custom domain (cuidarjuntos.pt) | ⏳ Later | Using Vercel temporary URL |
 | 22 | Final professional legal review | ⏳ Later | Noted in-page on Terms and Privacy |
