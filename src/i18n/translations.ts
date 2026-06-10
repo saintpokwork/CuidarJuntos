@@ -234,6 +234,7 @@ const translations = {
     },
     footer: {
       description: 'O porto de abrigo digital para a sua família, criado pela Nebula Craft Design. Organização, segurança e carinho em cada detalhe.',
+      brandDescription: 'CuidarJuntos é um produto da Nebula Craft Design, criado para ajudar famílias a organizar cuidados com mais clareza e tranquilidade.',
       platform: 'Plataforma',
       howItWorks: 'Como funciona',
       features: 'Funcionalidades',
@@ -872,6 +873,7 @@ const translations = {
     },
     footer: {
       description: 'The digital safe harbour for your family, built by Nebula Craft Design. Organisation, security and care in every detail.',
+      brandDescription: 'CuidarJuntos is a product by Nebula Craft Design, created to help families organise care with more clarity and peace of mind.',
       platform: 'Platform',
       howItWorks: 'How it works',
       features: 'Features',

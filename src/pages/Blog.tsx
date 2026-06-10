@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import CuidarJuntosLogo from '../components/brand/CuidarJuntosLogo';
+import PublicFooter from '../components/PublicFooter';
 import { useLanguage } from '../i18n/LanguageContext';
 import blogPosts from '../data/blogPosts';
 
@@ -56,7 +57,24 @@ const Blog: React.FC = () => {
             </Link>
           ))}
         </div>
+
+        {/* CTA section */}
+        <div className="mt-16 bg-cj-grad-card rounded-3xl p-10 text-center soft-shadow">
+          <h2 className="text-headline-lg font-display italic text-on-surface mb-4">
+            {lang === 'en'
+              ? "Want to organise your family's care in one place?"
+              : 'Quer organizar os cuidados da sua família num só lugar?'}
+          </h2>
+          <Link
+            to="/dashboard"
+            className="inline-block mt-6 px-8 py-4 bg-primary text-on-primary font-bold rounded-full shadow-lg hover:opacity-90 transition-all text-lg"
+          >
+            {lang === 'en' ? 'Start for free' : 'Começar gratuitamente'}
+          </Link>
+        </div>
       </main>
+
+      <PublicFooter />
     </div>
   );
 };

@@ -1,36 +1,29 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import CuidarJuntosLogo from '../components/brand/CuidarJuntosLogo';
+import PublicFooter from '../components/PublicFooter';
 import { useLanguage } from '../i18n/LanguageContext';
 
 const NotFound: React.FC = () => {
   const { t } = useLanguage();
+
   return (
-    <div className="bg-background text-on-surface min-h-screen flex flex-col items-center justify-center px-container-padding-mobile">
-      <div className="text-center max-w-md">
-        <div className="flex justify-center mb-8">
-          <CuidarJuntosLogo variant="default" size="lg" />
+    <div className="bg-background text-on-surface min-h-screen flex flex-col">
+      <main className="flex-1 flex items-center justify-center px-6">
+        <div className="text-center">
+          <span className="material-symbols-outlined text-6xl text-primary mb-6">error</span>
+          <h1 className="text-headline-xl font-display italic text-on-surface mb-4">{t('notFound.title')}</h1>
+          <p className="text-body-lg text-on-surface-variant mb-8">{t('notFound.message')}</p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link to="/" className="px-6 py-3 bg-primary text-on-primary font-bold rounded-full hover:opacity-90 transition-all">
+              {t('notFound.backToHome')}
+            </Link>
+            <Link to="/dashboard" className="px-6 py-3 border border-primary text-primary font-bold rounded-full hover:bg-primary/5 transition-all">
+              {t('notFound.goToDashboard')}
+            </Link>
+          </div>
         </div>
-        <span className="material-symbols-outlined text-primary text-6xl mb-6">search_off</span>
-        <h1 className="text-headline-lg font-headline-lg text-on-surface mb-4">{t('notFound.title')}</h1>
-        <p className="text-body-lg text-on-surface-variant mb-8">
-          {t('notFound.message')}
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link
-            to="/"
-            className="px-8 py-4 bg-primary text-on-primary font-bold rounded-full shadow-lg hover:opacity-90 transition-all"
-          >
-            {t('notFound.backToHome')}
-          </Link>
-          <Link
-            to="/dashboard"
-            className="px-8 py-4 bg-surface-container-low text-primary font-bold rounded-full hover:bg-surface-container-high transition-all"
-          >
-            {t('notFound.goToDashboard')}
-          </Link>
-        </div>
-      </div>
+      </main>
+      <PublicFooter />
     </div>
   );
 };

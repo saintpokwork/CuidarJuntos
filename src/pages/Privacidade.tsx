@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import CuidarJuntosLogo from '../components/brand/CuidarJuntosLogo';
+import PublicFooter from '../components/PublicFooter';
 import { useLanguage } from '../i18n/LanguageContext';
 
 const Privacidade: React.FC = () => {
@@ -109,6 +110,8 @@ const Privacidade: React.FC = () => {
           </Link>
         </div>
       </main>
+
+      <PublicFooter />
     </div>
   );
 };
