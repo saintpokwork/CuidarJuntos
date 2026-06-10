@@ -2,9 +2,7 @@
 
 Plataforma de organização familiar para cuidadores em Portugal. Ajuda famílias a gerir medicamentos, consultas, documentos, tarefas e contactos de emergência num só lugar.
 
-**Estado atual:** MVP demo com dados guardados localmente no navegador (`localStorage`).
-
-**Futuro planejado:** integração com Supabase para autenticação, base de dados na nuvem e sincronização entre familiares.
+**Estado atual:** 🚀 Em preparação para lançamento (beta). Supabase Auth, cloud sync, Storage e family invites implementados. Documentação completa de lançamento em `docs/LAUNCH_TRACKER.md`.
 
 ## Stack tecnológica
 
