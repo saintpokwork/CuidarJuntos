@@ -20,6 +20,7 @@ import Guia from '../pages/Guia';
 import Entrar from '../pages/Entrar';
 import CriarConta from '../pages/CriarConta';
 import RecuperarPassword from '../pages/RecuperarPassword';
+import AceitarConvite from '../pages/AceitarConvite';
 import FeedbackMessage from './FeedbackMessage';
 import ScrollToTop from './ScrollToTop';
 import { useCareData } from '../context/CareDataContext';
@@ -36,6 +37,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/entrar" element={<Entrar />} />
         <Route path="/criar-conta" element={<CriarConta />} />
         <Route path="/recuperar-password" element={<RecuperarPassword />} />
+        <Route path="/aceitar-convite" element={<AceitarConvite />} />
         <Route path="/privacidade" element={<Privacidade />} />
         <Route path="/termos" element={<Termos />} />
         <Route path="/dashboard" element={<Dashboard />} />

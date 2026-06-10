@@ -22,10 +22,34 @@ After running `schema.sql`, set up Supabase Storage:
 
 > This creates the `care-documents` private bucket, the `storage_care_profile_id()` helper function, and all storage RLS policies. Safe to re-run.
 
-### Verify the storage setup
+## How to run the invites setup
+
+After running `schema.sql` and `storage.sql`, set up family invitations:
+
+1. Open your Supabase project dashboard → **SQL Editor**.
+2. Create a **New query**.
+3. Copy the entire contents of `supabase/invites.sql` and paste it into the editor.
+4. Click **Run**.
+5. Confirm the output shows no errors.
+
+> This creates the `care_profile_invites` table with RLS policies, indexes, and the updated-at trigger. Safe to re-run.
+
+## Verify the setup
+
+After running the schema files in order (schema.sql → storage.sql → invites.sql), verify everything is in place:
 
 ```sql
--- Check bucket exists
+-- Check tables
+select table_name from information_schema.tables
+where table_schema = 'public'
+  and table_type = 'BASE TABLE'
+order by table_name;
+
+-- Check RLS is enabled on invites
+select tablename, rowsecurity from pg_tables
+where schemaname = 'public' and tablename = 'care_profile_invites';
+
+-- Check storage bucket
 SELECT * FROM storage.buckets WHERE id = 'care-documents';
 
 -- Check storage policies
@@ -37,11 +61,21 @@ WHERE bucket_id = 'care-documents';
 SELECT proname FROM pg_proc WHERE proname = 'storage_care_profile_id';
 ```
 
-Expected: 1 row for the bucket, 4 rows for policies (SELECT, INSERT, UPDATE, DELETE), 1 row for the helper function.
+Expected: 1 row for the bucket, 4 rows for policies (SELECT, INSERT, UPDATE, DELETE), 1 row for the helper function, RLS enabled on invites table.
 
-## Verify the setup
+### Verify invites setup
 
-After running the schema, verify everything is in place:
+```sql
+-- Check invites table exists
+select table_name from information_schema.tables
+where table_schema = 'public' and table_name = 'care_profile_invites';
+
+-- Check invites policies
+select policyname, permissive, cmd from pg_policies
+where tablename = 'care_profile_invites';
+```
+
+Expected: 1 table, 5 policies (select_members, select_self, insert_admin, update_admin, delete_admin).
 
 ```sql
 -- Check tables
