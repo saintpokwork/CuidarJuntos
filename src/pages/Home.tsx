@@ -6,6 +6,27 @@ import LanguageToggle from '../components/LanguageToggle';
 
 const Home: React.FC = () => {
   const { t } = useLanguage();
+  const features = [
+    { icon: 'calendar_today', key: '0' },
+    { icon: 'medical_services', key: '1' },
+    { icon: 'folder_off', key: '2' },
+    { icon: 'groups', key: '3' },
+    { icon: 'search_off', key: '4' },
+    { icon: 'emergency_home', key: '5' },
+  ];
+  const featureCards = [
+    { icon: 'medication', title: 'meds', desc: 'medsDesc', span: 'md:col-span-3 lg:col-span-4 row-span-2 bg-cj-grad text-white' },
+    { icon: 'event_available', title: 'appointments', desc: 'appointmentsDesc', span: 'md:col-span-3 lg:col-span-8 bg-cj-verde-pale border border-cj-border' },
+    { icon: 'description', title: 'documents', desc: 'documentsDesc', span: 'md:col-span-3 lg:col-span-4 bg-warm-beige' },
+    { icon: 'task_alt', title: 'tasks', desc: 'tasksDesc', span: 'md:col-span-3 lg:col-span-4 bg-surface-container-high' },
+    { icon: 'contact_phone', title: 'contacts', desc: 'contactsDesc', span: 'md:col-span-6 lg:col-span-4 bg-cj-terracota text-white' },
+  ];
+  const howItWorksSteps = [0, 1, 2, 3];
+  const pricingPlans = [
+    { key: 'free', highlighted: false },
+    { key: 'family', highlighted: true },
+    { key: 'plus', highlighted: false },
+  ];
   return (
     <div className="bg-background text-on-surface font-body-md selection:bg-primary/20">
       <header className="fixed top-0 w-full z-50 bg-cj-branco/90 backdrop-blur-md shadow-cj-sm border-b border-cj-border">
@@ -18,10 +39,10 @@ const Home: React.FC = () => {
               {t('nav.howItWorks')}
             </Link>
             <a className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-md text-label-md" href="#funcionalidades">
-              Funcionalidades
+              {t('nav.features')}
             </a>
             <a className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-md text-label-md" href="#precos">
-              Preços
+              {t('nav.pricing')}
             </a>
           </div>
           <div className="flex items-center gap-4">
@@ -40,48 +61,48 @@ const Home: React.FC = () => {
       </header>
 
       <main className="pt-20">
+        {/* Hero */}
         <section className="relative overflow-hidden py-16 md:py-24 bg-cj-grad-card">
           <div className="absolute inset-0 bg-cj-grad opacity-[0.04] pointer-events-none" />
           <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop flex flex-col md:flex-row items-center gap-16 relative">
             <div className="flex-1 text-center md:text-left z-10">
               <span className="inline-block px-4 py-1.5 bg-cj-verde-pale text-cj-verde border border-cj-verde/20 rounded-full font-label-md text-label-sm mb-6">
-                Organização para famílias cuidadoras
+                {t('home.hero.badge')}
               </span>
               <h1 className="font-display italic text-headline-xl md:text-[48px] md:leading-[56px] text-on-surface mb-6">
-                Cuide melhor dos seus pais, com toda a família organizada num só lugar.
+                {t('home.hero.title')}
               </h1>
               <p className="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-xl">
-                Guarde medicamentos, consultas, documentos, contactos de emergência e tarefas familiares
-                numa plataforma simples feita para famílias portuguesas.
+                {t('home.hero.subtitle')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
                 <Link
                   className="bg-primary text-on-primary px-8 py-4 rounded-full font-headline-md text-[18px] shadow-lg hover:shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all text-center"
                   to="/dashboard"
                 >
-                  Começar gratuitamente
+                  {t('home.hero.ctaPrimary')}
                 </Link>
                 <Link
                   className="bg-cj-branco text-primary border border-cj-border px-8 py-4 rounded-full font-headline-md text-[18px] hover:bg-cj-verde-pale transition-colors text-center"
                   to="/como-funciona"
                 >
-                  Ver como funciona
+                  {t('home.hero.ctaSecondary')}
                 </Link>
                 <Link
                   className="bg-surface-container-high text-primary px-8 py-4 rounded-full font-headline-md text-[18px] hover:bg-surface-container-highest transition-colors text-center"
                   to="/criar-conta"
                 >
-                  Criar conta em breve
+                  {t('home.hero.ctaCreate')}
                 </Link>
               </div>
               <p className="mt-4 text-label-sm text-on-surface-variant">
-                Versão demo — não é necessário criar conta.
+                {t('home.hero.demoNotice')}
               </p>
             </div>
             <div className="flex-1 w-full relative">
               <div className="relative z-10 glass-card p-6 rounded-2xl soft-shadow border border-white/40">
                 <img
-                  alt="Interface do painel CuidarJuntos"
+                  alt={t('home.hero.imageAlt')}
                   className="rounded-xl w-full h-auto shadow-sm"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdx1dfUc-1E1-dYKkda1s4AwDWV7zd-DsYZJBZT1Ga2a0l-pQO1WcPbToRKFI5mPb_T5Ew92lKs5To6EsrajdzDPYPDGaJbjxK5ltreRmhaDGqgXtM6-5hsoW8lNTpJuO9zquo31d-PAv4xrtNDmvhazpcGU-SATjU9z7h-hfvRaVbJp1qGfTJLUWuO2uZXhoxmWpE-fryqH8nRz9V8Rbv9DAVHoRbexzgA6VxLcuz150OWXd1Oo8yDQR9t19Of2_f6NzzLEj0N66N"
                 />
@@ -95,252 +116,164 @@ const Home: React.FC = () => {
           </div>
         </section>
 
+        {/* Problems */}
         <section className="py-20 bg-cj-branco">
           <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="font-headline-lg text-headline-lg md:text-headline-xl text-on-surface mb-4">
-                Cuidar de um familiar não devia depender de mensagens perdidas no WhatsApp.
+                {t('home.problems.title')}
               </h2>
               <p className="font-body-lg text-body-lg text-on-surface-variant">
-                A dispersão de informação causa stress e erros graves. Nós resolvemos os problemas mais
-                comuns do dia-a-dia.
+                {t('home.problems.subtitle')}
               </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[
-                { icon: 'calendar_today', title: 'Consultas esquecidas', text: 'A marcação ficou no telemóvel de um irmão e ninguém apareceu no hospital.' },
-                { icon: 'medical_services', title: 'Medicamentos errados', text: 'Dúvidas sobre se a dose da manhã já foi tomada ou se a receita expirou.' },
-                { icon: 'folder_off', title: 'Documentos espalhados', text: 'Onde está o último relatório médico ou o cartão do subsistema de saúde?' },
-                { icon: 'groups', title: 'Irmãos sem coordenação', text: '"Pensava que ias tu buscar os medicamentos..." — a falta de clareza gera conflitos.' },
-                { icon: 'search_off', title: 'Informação perdida', text: 'O contacto da fisioterapeuta ou o nome daquele novo sintoma perdeu-se no chat.' },
-                { icon: 'emergency_home', title: 'Emergências cegas', text: 'Chegar ao hospital e não saber a lista completa de doenças ou alergias.' },
-              ].map((item) => (
+              {features.map((item, idx) => (
                 <div
-                  key={item.title}
+                  key={idx}
                   className="bg-cj-branco p-8 rounded-2xl border border-cj-border soft-shadow-hover transition-all"
                 >
                   <span className="material-symbols-outlined text-cj-terracota mb-4 text-3xl">{item.icon}</span>
-                  <h3 className="font-headline-md text-headline-md mb-2">{item.title}</h3>
-                  <p className="text-on-surface-variant">{item.text}</p>
+                  <h3 className="font-headline-md text-headline-md mb-2">{t(`home.problems.items.${idx}.title`)}</h3>
+                  <p className="text-on-surface-variant">{t(`home.problems.items.${idx}.text`)}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
+        {/* Features */}
         <section className="py-24 bg-background" id="funcionalidades">
           <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop">
             <div className="text-center mb-16">
               <h2 className="font-headline-lg text-headline-lg md:text-headline-xl mb-4">
-                Tudo o que a família precisa, num só lugar.
+                {t('home.features.title')}
               </h2>
               <p className="font-body-lg text-body-lg text-on-surface-variant">
-                Uma ferramenta centralizada para paz de espírito e segurança.
+                {t('home.features.subtitle')}
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-6 auto-rows-[240px]">
-              <div className="md:col-span-3 lg:col-span-4 row-span-2 bg-cj-grad text-white p-8 rounded-2xl flex flex-col justify-between soft-shadow relative overflow-hidden group">
-                <div>
-                  <span className="material-symbols-outlined text-4xl mb-6">medication</span>
-                  <h3 className="font-headline-md text-headline-md mb-3">Medicamentos e horários</h3>
-                  <p className="opacity-90">Controlo rigoroso de stock e alertas de toma para nunca falhar uma dose.</p>
-                </div>
-              </div>
-              <div className="md:col-span-3 lg:col-span-8 bg-cj-verde-pale p-8 rounded-2xl flex flex-col justify-between soft-shadow-hover transition-all border border-cj-border">
-                <div className="flex justify-between items-start">
+              {featureCards.map((card, idx) => (
+                <div key={idx} className={`${card.span} p-8 rounded-2xl flex flex-col justify-between soft-shadow relative overflow-hidden group`}>
                   <div>
-                    <h3 className="font-headline-md text-headline-md mb-2">Consultas e exames</h3>
-                    <p className="text-on-surface-variant">
-                      Histórico completo e lembretes partilhados para toda a rede de cuidadores.
-                    </p>
+                    <span className="material-symbols-outlined text-4xl mb-6">{card.icon}</span>
+                    <h3 className="font-headline-md text-headline-md mb-3">{t(`home.features.${card.title}`)}</h3>
+                    <p className={card.span.includes('text-white') ? 'opacity-90' : 'text-on-surface-variant'}>{t(`home.features.${card.desc}`)}</p>
                   </div>
-                  <span className="material-symbols-outlined text-primary text-3xl">event_available</span>
-                </div>
-              </div>
-              <div className="md:col-span-3 lg:col-span-4 bg-warm-beige p-8 rounded-2xl flex flex-col justify-between soft-shadow-hover transition-all">
-                <span className="material-symbols-outlined text-secondary text-3xl mb-4">description</span>
-                <div>
-                  <h3 className="font-headline-md text-headline-md mb-2">Documentos importantes</h3>
-                  <p className="text-on-surface-variant">
-                    Digitalize e aceda a receitas, análises e relatórios médicos em segundos.
-                  </p>
-                </div>
-              </div>
-              <div className="md:col-span-3 lg:col-span-4 bg-surface-container-high p-8 rounded-2xl flex flex-col justify-between soft-shadow-hover transition-all">
-                <span className="material-symbols-outlined text-primary text-3xl mb-4">task_alt</span>
-                <div>
-                  <h3 className="font-headline-md text-headline-md mb-2">Tarefas da família</h3>
-                  <p className="text-on-surface-variant">
-                    Atribua quem faz as compras ou quem leva o familiar ao passeio diário.
-                  </p>
-                </div>
-              </div>
-              <div className="md:col-span-6 lg:col-span-4 bg-cj-terracota p-8 rounded-2xl text-white flex flex-col justify-between soft-shadow relative overflow-hidden">
-                <div>
-                  <span className="material-symbols-outlined text-3xl mb-4">contact_phone</span>
-                  <h3 className="font-headline-md text-headline-md mb-2">Contactos de emergência</h3>
-                  <p className="opacity-90">
-                    Lista rápida de médicos, vizinhos e familiares acessível em qualquer situação.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="py-24 bg-cj-verde-pale" id="como-funciona">
-          <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop">
-            <div className="text-center mb-20">
-              <h2 className="font-headline-lg text-headline-lg md:text-headline-xl">
-                Comece a cuidar em 4 passos simples
-              </h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-              {[
-                { step: '1', title: 'Crie o perfil', text: 'Registe o seu familiar com os dados básicos e foto.' },
-                { step: '2', title: 'Adicione dados', text: 'Insira medicamentos, próximas consultas e documentos.' },
-                { step: '3', title: 'Convide a família', text: 'Envie convites para os seus irmãos ou outros cuidadores.' },
-                { step: '4', title: 'Receba alertas', text: 'Mantenha todos atualizados com notificações automáticas.' },
-              ].map((item) => (
-                <div key={item.step} className="text-center">
-                  <div className="w-16 h-16 bg-primary text-on-primary rounded-full flex items-center justify-center mx-auto mb-6 text-xl font-bold">
-                    {item.step}
-                  </div>
-                  <h4 className="font-headline-md text-headline-md mb-3">{item.title}</h4>
-                  <p className="text-on-surface-variant">{item.text}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="py-24 bg-cj-branco" id="precos">
+        {/* How it works */}
+        <section className="py-24 bg-cj-verde-pale" id="como-funciona">
           <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop">
-            <div className="text-center mb-16">
-              <h2 className="font-headline-lg text-headline-lg md:text-headline-xl mb-4">
-                Um plano para cada família
+            <div className="text-center mb-20">
+              <h2 className="font-headline-lg text-headline-lg md:text-headline-xl">
+                {t('home.howItWorks.title')}
               </h2>
-              <p className="text-on-surface-variant font-body-lg">Paz de espírito acessível a todos.</p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="bg-surface-container-lowest p-8 rounded-2xl border border-outline-variant soft-shadow flex flex-col">
-                <h3 className="font-headline-md text-headline-md mb-2">Grátis</h3>
-                <div className="flex items-baseline gap-1 mb-6">
-                  <span className="text-3xl font-bold">0€</span>
-                  <span className="text-on-surface-variant">/mês</span>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+              {howItWorksSteps.map((i) => (
+                <div key={i} className="text-center">
+                  <div className="w-16 h-16 bg-primary text-on-primary rounded-full flex items-center justify-center mx-auto mb-6 text-xl font-bold">
+                    {t(`home.howItWorks.steps.${i}.step`)}
+                  </div>
+                  <h4 className="font-headline-md text-headline-md mb-3">{t(`home.howItWorks.steps.${i}.title`)}</h4>
+                  <p className="text-on-surface-variant">{t(`home.howItWorks.steps.${i}.text`)}</p>
                 </div>
-                <p className="text-on-surface-variant mb-8 flex-grow">
-                  Essencial para quem está a começar a organizar-se.
-                </p>
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-secondary">check</span> 1 Familiar
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-secondary">check</span> Até 2 Cuidadores
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-secondary">check</span> Registo de Medicamentos
-                  </li>
-                </ul>
-                <Link
-                  className="w-full py-3 rounded-full border border-primary text-primary font-bold hover:bg-primary/5 transition-colors text-center"
-                  to="/dashboard"
-                >
-                  Escolher este
-                </Link>
-              </div>
-              <div className="bg-primary text-on-primary p-8 rounded-2xl soft-shadow scale-105 flex flex-col z-10 relative">
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-cj-cobre text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                  Mais Popular
-                </div>
-                <h3 className="font-headline-md text-headline-md mb-2">Família</h3>
-                <div className="flex items-baseline gap-1 mb-6">
-                  <span className="text-3xl font-bold">4,99€</span>
-                  <span className="text-on-primary-container opacity-80">/mês</span>
-                </div>
-                <p className="opacity-90 mb-8 flex-grow">
-                  Gestão colaborativa completa para a família nuclear.
-                </p>
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-center gap-3">
-                    <span className="material-symbols-outlined">check</span> Até 3 Familiares
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="material-symbols-outlined">check</span> Cuidadores ilimitados
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="material-symbols-outlined">check</span> Documentos Ilimitados
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="material-symbols-outlined">check</span> Histórico exportável
-                  </li>
-                </ul>
-                <Link
-                  className="w-full py-4 rounded-full bg-on-primary text-primary font-bold hover:bg-primary-fixed-dim transition-all shadow-lg text-center"
-                  to="/dashboard"
-                >
-                  Escolher este
-                </Link>
-              </div>
-              <div className="bg-surface-container-lowest p-8 rounded-2xl border border-outline-variant soft-shadow flex flex-col">
-                <h3 className="font-headline-md text-headline-md mb-2">Plus</h3>
-                <div className="flex items-baseline gap-1 mb-6">
-                  <span className="text-3xl font-bold">8,99€</span>
-                  <span className="text-on-surface-variant">/mês</span>
-                </div>
-                <p className="text-on-surface-variant mb-8 flex-grow">
-                  Para famílias que precisam de apoio profissional e múltiplos perfis.
-                </p>
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-secondary">check</span> Até 6 Familiares
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-secondary">check</span> Integração com Sensores
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-secondary">check</span> Suporte prioritário 24/7
-                  </li>
-                </ul>
-                <Link
-                  className="w-full py-3 rounded-full border border-primary text-primary font-bold hover:bg-primary/5 transition-colors text-center"
-                  to="/dashboard"
-                >
-                  Escolher este
-                </Link>
-              </div>
+              ))}
             </div>
           </div>
         </section>
 
+        {/* Pricing */}
+        <section className="py-24 bg-cj-branco" id="precos">
+          <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop">
+            <div className="text-center mb-16">
+              <h2 className="font-headline-lg text-headline-lg md:text-headline-xl mb-4">
+                {t('home.pricing.title')}
+              </h2>
+              <p className="text-on-surface-variant font-body-lg">{t('home.pricing.subtitle')}</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {pricingPlans.map((plan) => {
+                const planKey = plan.key;
+                const isHighlighted = plan.highlighted;
+                return (
+                  <div key={planKey} className={`p-8 rounded-2xl soft-shadow flex flex-col ${isHighlighted ? 'bg-primary text-on-primary scale-105 z-10 relative' : 'bg-surface-container-lowest border border-outline-variant'}`}>
+                    {isHighlighted && (
+                      <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-cj-cobre text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                        {t(`home.pricing.${planKey}.popularBadge`)}
+                      </div>
+                    )}
+                    <h3 className={`font-headline-md text-headline-md mb-2 ${isHighlighted ? 'text-on-primary' : ''}`}>{t(`home.pricing.${planKey}.title`)}</h3>
+                    <div className={`flex items-baseline gap-1 mb-6 ${isHighlighted ? 'text-on-primary' : ''}`}>
+                      <span className="text-3xl font-bold">{t(`home.pricing.${planKey}.price`)}</span>
+                      <span className={isHighlighted ? 'opacity-80' : 'text-on-surface-variant'}>{t(`home.pricing.${planKey}.period`)}</span>
+                    </div>
+                    <p className={`mb-8 flex-grow ${isHighlighted ? 'opacity-90' : 'text-on-surface-variant'}`}>
+                      {t(`home.pricing.${planKey}.description`)}
+                    </p>
+                    <ul className={`space-y-4 mb-8 ${isHighlighted ? '' : ''}`}>
+                      {[0, 1, 2, 3].map((fi) => {
+                        const featKey = `home.pricing.${planKey}.features.${fi}`;
+                        const featVal = t(featKey);
+                        if (!featVal) return null;
+                        return (
+                          <li key={fi} className="flex items-center gap-3">
+                            <span className={`material-symbols-outlined ${isHighlighted ? '' : 'text-secondary'}`}>check</span>
+                            {featVal}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                    <Link
+                      className={`w-full py-3 rounded-full text-center font-bold transition-all ${
+                        isHighlighted
+                          ? 'bg-on-primary text-primary hover:bg-primary-fixed-dim shadow-lg'
+                          : 'border border-primary text-primary hover:bg-primary/5'
+                      }`}
+                      to="/dashboard"
+                    >
+                      {t(`home.pricing.${planKey}.cta`)}
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* CTA */}
         <section className="py-24 bg-background overflow-hidden relative">
           <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop">
             <div className="bg-cj-grad p-12 md:p-20 rounded-[3rem] text-center relative z-10 text-white">
               <h2 className="font-display italic text-headline-xl mb-6">
-                Comece a organizar os cuidados da sua família hoje.
+                {t('home.cta.title')}
               </h2>
               <p className="font-body-lg text-body-lg text-white/80 mb-10 max-w-2xl mx-auto">
-                Junte-se a milhares de famílias portuguesas que já encontraram o equilíbrio no cuidado
-                familiar.
+                {t('home.cta.subtitle')}
               </p>
               <Link
                 className="inline-block bg-cj-terracota text-white px-10 py-5 rounded-full font-headline-md text-xl shadow-xl hover:scale-105 active:scale-95 transition-all"
                 to="/dashboard"
               >
-                Começar gratuitamente agora
+                {t('home.cta.button')}
               </Link>
               <p className="mt-6 text-label-sm text-white/70">
-                Versão demo — não é necessário criar conta.
+                {t('home.cta.demoNotice')}
               </p>
               <div className="mt-12 flex flex-wrap justify-center gap-8 opacity-60 grayscale hover:grayscale-0 transition-all">
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined">verified_user</span>
-                  <span className="font-label-md">Segurança de dados bancária</span>
+                  <span className="font-label-md">{t('home.cta.badgeSecure')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined">health_and_safety</span>
-                  <span className="font-label-md">Focado em Cuidados</span>
+                  <span className="font-label-md">{t('home.cta.badgeCare')}</span>
                 </div>
               </div>
             </div>
@@ -348,17 +281,17 @@ const Home: React.FC = () => {
           <div className="absolute -right-20 top-1/2 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
         </section>
 
+        {/* Disclaimer */}
         <section className="pb-12 pt-0 px-container-padding-mobile">
           <div className="max-w-[800px] mx-auto text-center opacity-50">
             <p className="font-label-sm text-label-sm italic">
-              O CuidarJuntos é uma ferramenta de organização familiar e não substitui qualquer serviço
-              médico, de enfermagem ou aconselhamento profissional de saúde. Consulte sempre o seu médico
-              para decisões clínicas.
+              {t('home.disclaimer')}
             </p>
           </div>
         </section>
       </main>
 
+      {/* Footer */}
       <footer className="bg-cj-branco border-t border-cj-border py-16">
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop">
           <div className="flex flex-col md:flex-row justify-between items-start gap-12 mb-12">
@@ -367,62 +300,61 @@ const Home: React.FC = () => {
                 <CuidarJuntosLogo variant="default" size="md" />
               </div>
               <p className="text-on-surface-variant font-label-md">
-                O porto de abrigo digital para a sua família. Organização, segurança e carinho em cada
-                detalhe.
+                {t('footer.description')}
               </p>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-8">
               <div>
-                <h4 className="font-label-md text-primary mb-4">Plataforma</h4>
+                <h4 className="font-label-md text-primary mb-4">{t('footer.platform')}</h4>
                 <ul className="space-y-2">
                   <li>
                     <Link className="text-on-surface-variant hover:text-primary transition-all text-label-md" to="/como-funciona">
-                      Como funciona
+                      {t('footer.howItWorks')}
                     </Link>
                   </li>
                   <li>
                     <a className="text-on-surface-variant hover:text-primary transition-all text-label-md" href="#funcionalidades">
-                      Funcionalidades
+                      {t('footer.features')}
                     </a>
                   </li>
                   <li>
                     <a className="text-on-surface-variant hover:text-primary transition-all text-label-md" href="#precos">
-                      Preços
+                      {t('footer.pricing')}
                     </a>
                   </li>
                   <li>
                     <Link className="text-on-surface-variant hover:text-primary transition-all text-label-md" to="/privacidade">
-                      Segurança
+                      {t('footer.security')}
                     </Link>
                   </li>
                 </ul>
               </div>
               <div>
-                <h4 className="font-label-md text-primary mb-4">Suporte</h4>
+                <h4 className="font-label-md text-primary mb-4">{t('footer.support')}</h4>
                 <ul className="space-y-2">
-                  <li><span className="text-on-surface-variant text-label-md">Ajuda</span></li>
+                  <li><span className="text-on-surface-variant text-label-md">{t('footer.help')}</span></li>
                   <li>
                     <a
                       className="text-on-surface-variant hover:text-primary transition-all text-label-md"
                       href="mailto:contato@cuidarjuntos.pt"
                     >
-                      Contacto
+                      {t('footer.contact')}
                     </a>
                   </li>
-                  <li><span className="text-on-surface-variant text-label-md">Blog</span></li>
+                  <li><span className="text-on-surface-variant text-label-md">{t('footer.blog')}</span></li>
                 </ul>
               </div>
               <div>
-                <h4 className="font-label-md text-primary mb-4">Legal</h4>
+                <h4 className="font-label-md text-primary mb-4">{t('footer.legal')}</h4>
                 <ul className="space-y-2">
                   <li>
                     <Link className="text-on-surface-variant hover:text-primary transition-all text-label-md" to="/termos">
-                      Termos
+                      {t('footer.terms')}
                     </Link>
                   </li>
                   <li>
                     <Link className="text-on-surface-variant hover:text-primary transition-all text-label-md" to="/privacidade">
-                      Privacidade
+                      {t('footer.privacy')}
                     </Link>
                   </li>
                 </ul>
@@ -431,7 +363,7 @@ const Home: React.FC = () => {
           </div>
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 pt-12 border-t border-surface-variant">
             <p className="text-label-md text-on-surface-variant opacity-70">
-              © 2024 CuidarJuntos. O seu porto de abrigo no cuidado familiar.
+              {t('footer.copyright')}
             </p>
             <div className="flex gap-6">
               <span className="text-on-surface-variant">
