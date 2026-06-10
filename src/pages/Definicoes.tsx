@@ -9,7 +9,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../i18n/LanguageContext';
 
 const Definicoes: React.FC = () => {
-  const { data, resetDemoData, importDemoData, showFeedback } = useCareData();
+  const { data, resetDemoData, importDemoData, showFeedback, storageMode, syncStatus, reloadCloudData } = useCareData();
   const [importMessage, setImportMessage] = useState('');
   const [importError, setImportError] = useState('');
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -63,6 +63,12 @@ const Definicoes: React.FC = () => {
     fileInputRef.current?.click();
   };
 
+  const handleReload = () => {
+    reloadCloudData();
+  };
+
+  const isCloud = storageMode === 'cloud';
+
   return (
     <DashboardLayout>
       <main className="flex-1 w-full relative ">
@@ -99,7 +105,12 @@ const Definicoes: React.FC = () => {
                   <div>
                     <p className="text-headline-md font-headline-md text-on-surface">{caregiver.nome}</p>
                     <p className="text-label-md text-on-surface-variant">{caregiver.funcao}</p>
-                    <p className="text-label-sm text-primary">ana.silva@cuidarjuntos.pt</p>
+                    {isCloud && user && (
+                      <p className="text-label-sm text-primary">{user.email}</p>
+                    )}
+                    {!isCloud && (
+                      <p className="text-label-sm text-primary">ana.silva@cuidarjuntos.pt</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -109,15 +120,26 @@ const Definicoes: React.FC = () => {
                   <div>
                     <h2 className="text-headline-md font-headline-md">{t('pages.settings.account')}</h2>
                     <p className="text-label-md text-on-surface-variant">
-                      {t('pages.settings.accountNotActive')}
+                      {isCloud ? t('pages.settings.cloudActive') : t('pages.settings.accountNotActive')}
                     </p>
                   </div>
                 </div>
-                {user ? (
+                {isCloud && user ? (
                   <div className="mb-6 rounded-[24px] border border-primary/20 bg-primary/5 p-6">
-                    <p className="text-label-md text-on-surface">{t('global.signIn')} <strong>{user.user_metadata?.full_name || user.email}</strong></p>
-                    <p className="text-label-sm text-on-surface-variant mt-2">{t('demo.notice')}</p>
-                    <button type="button" onClick={handleSignOut} className="mt-4 px-6 py-3 rounded-full border border-primary text-primary font-bold hover:bg-primary/5 transition-colors">{t('global.signOut')}</button>
+                    <p className="text-label-md text-on-surface">{t('global.signIn')} <strong>{user.email}</strong></p>
+                    <p className="text-label-sm text-on-surface-variant mt-2">{t('pages.settings.cloudActive')}</p>
+                    <p className="text-label-sm text-on-surface-variant mt-1">{t('pages.settings.uploadNotActive')}</p>
+                    <div className="mt-4 flex flex-wrap gap-3">
+                      <button
+                        type="button"
+                        onClick={handleReload}
+                        disabled={syncStatus === 'loading'}
+                        className="px-6 py-3 rounded-full border border-primary text-primary font-bold hover:bg-primary/5 transition-colors disabled:opacity-50"
+                      >
+                        {syncStatus === 'loading' ? t('global.loading') : t('pages.settings.reloadAccountData')}
+                      </button>
+                      <button type="button" onClick={handleSignOut} className="px-6 py-3 rounded-full border border-primary text-primary font-bold hover:bg-primary/5 transition-colors">{t('global.signOut')}</button>
+                    </div>
                   </div>
                 ) : (
                   <div className="mb-6 grid gap-3 sm:grid-cols-2">
@@ -129,7 +151,7 @@ const Definicoes: React.FC = () => {
                   {[
                     {
                       title: t('pages.settings.dataStorage'),
-                      description: t('pages.settings.localStored'),
+                      description: isCloud ? t('pages.settings.cloudActive') : t('pages.settings.localStored'),
                       icon: 'cloud',
                     },
                     {
@@ -167,15 +189,17 @@ const Definicoes: React.FC = () => {
                     onClick={exportDemoData}
                     className="px-6 py-3 rounded-full bg-primary text-on-primary font-bold hover:opacity-90 transition-all"
                   >
-                    {t('pages.settings.export')}
+                    {isCloud ? t('pages.settings.export') : t('pages.settings.export')}
                   </button>
-                  <button
-                    type="button"
-                    onClick={openImportDialog}
-                    className="px-6 py-3 rounded-full border border-primary text-primary font-bold hover:bg-primary/5 transition-all"
-                  >
-                    {t('pages.settings.import')}
-                  </button>
+                  {!isCloud && (
+                    <button
+                      type="button"
+                      onClick={openImportDialog}
+                      className="px-6 py-3 rounded-full border border-primary text-primary font-bold hover:bg-primary/5 transition-all"
+                    >
+                      {t('pages.settings.import')}
+                    </button>
+                  )}
                 </div>
                 <input
                   ref={fileInputRef}
@@ -190,16 +214,18 @@ const Definicoes: React.FC = () => {
                 {importError && (
                   <p className="mt-4 text-label-md text-error font-bold">{importError}</p>
                 )}
-                <div className="mt-6 border-t border-outline-variant pt-6">
-                  <button
-                    type="button"
-                    onClick={handleReset}
-                    className="px-6 py-3 border-2 border-primary text-primary font-bold rounded-full hover:bg-primary/5 transition-colors flex items-center gap-2"
-                  >
-                    <span className="material-symbols-outlined">restart_alt</span>
-                    {t('pages.settings.resetDemo')}
-                  </button>
-                </div>
+                {!isCloud && (
+                  <div className="mt-6 border-t border-outline-variant pt-6">
+                    <button
+                      type="button"
+                      onClick={handleReset}
+                      className="px-6 py-3 border-2 border-primary text-primary font-bold rounded-full hover:bg-primary/5 transition-colors flex items-center gap-2"
+                    >
+                      <span className="material-symbols-outlined">restart_alt</span>
+                      {t('pages.settings.resetDemo')}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -207,7 +233,7 @@ const Definicoes: React.FC = () => {
               <div className="bg-white p-6 rounded-[24px] soft-shadow">
                 <h3 className="text-headline-md font-headline-md text-on-surface mb-4">{t('pages.settings.dataStorage')}</h3>
                 <p className="text-label-md text-on-surface-variant mb-4">
-                  {t('pages.settings.localStored')}
+                  {isCloud ? t('pages.settings.cloudActive') : t('pages.settings.localStored')}
                 </p>
                 <button
                   type="button"

@@ -1,10 +1,11 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import {
   Appointment,
   CareData,
   CareNote,
   Document,
   DocumentCategory,
+  EmergencyContact,
   FamilyMember,
   FamilyRole,
   Medication,
@@ -15,6 +16,25 @@ import {
   getInitialCareData,
 } from '../data/initialData';
 import translations from '../i18n/translations';
+import { useAuth } from './AuthContext';
+import {
+  getOrCreateUserProfile,
+  getOrCreateDefaultCareProfile,
+  loadCareDataFromSupabase,
+  createMedication as sbCreateMedication,
+  deleteMedication as sbDeleteMedication,
+  createAppointment as sbCreateAppointment,
+  deleteAppointment as sbDeleteAppointment,
+  createTask as sbCreateTask,
+  updateTask as sbUpdateTask,
+  deleteTask as sbDeleteTask,
+  createDocumentRecord as sbCreateDocument,
+  deleteDocumentRecord as sbDeleteDocument,
+  createCareNote as sbCreateCareNote,
+  deleteCareNote as sbDeleteCareNote,
+  updateCareProfile as sbUpdateCareProfile,
+} from '../lib/data/supabaseDataAdapter';
+import { isSupabaseConfigured } from '../lib/supabaseClient';
 
 const STORAGE_KEY = 'cuidarjuntos-care-data';
 
@@ -30,10 +50,10 @@ const getCurrentLang = (): 'pt' | 'en' => {
 const tt = (path: string): string => {
   const lang = getCurrentLang();
   const parts = path.split('.');
-  let cur: any = translations[lang];
+  let cur: Record<string, unknown> = translations[lang];
   for (const p of parts) {
     if (!cur) return '';
-    cur = cur[p];
+    cur = cur[p] as Record<string, unknown>;
   }
   return typeof cur === 'string' ? cur : '';
 };
@@ -64,7 +84,7 @@ const loadFromStorage = (): CareData => {
       };
     }
   } catch {
-    /* usar dados iniciais */
+    /* use initial data */
   }
   return getInitialCareData();
 };
@@ -95,9 +115,20 @@ const formatDateTime = (value: string) => {
   });
 };
 
+// ---------------------------------------------------------------------------
+// Context types
+// ---------------------------------------------------------------------------
+
+export type StorageMode = 'demo' | 'cloud';
+export type SyncStatus = 'idle' | 'loading' | 'saving' | 'error' | 'synced';
+
 interface CareDataContextValue {
   data: CareData;
   feedback: string | null;
+  storageMode: StorageMode;
+  syncStatus: SyncStatus;
+  syncError: string | null;
+  reloadCloudData: () => Promise<void>;
   showFeedback: (message: string) => void;
   addMedication: (med: Omit<Medication, 'id' | 'estado' | 'instrucoes' | 'responsavel'> & { responsavel?: string; instrucoes?: string }) => boolean;
   removeMedication: (id: string) => void;
@@ -132,43 +163,178 @@ interface CareDataContextValue {
 const CareDataContext = createContext<CareDataContextValue | null>(null);
 
 export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
   const [data, setData] = useState<CareData>(loadFromStorage);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [storageMode, setStorageMode] = useState<StorageMode>('demo');
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>('idle');
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const [careProfileId, setCareProfileId] = useState<string | null>(null);
+  const cloudLoadAttempted = useRef(false);
+
+  // ---------------------------------------------------------------------------
+  // Persist to localStorage in demo mode
+  // ---------------------------------------------------------------------------
+  useEffect(() => {
+    if (storageMode === 'demo') {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+  }, [data, storageMode]);
+
+  // ---------------------------------------------------------------------------
+  // Cloud data loading on login
+  // ---------------------------------------------------------------------------
+  const loadCloudData = useCallback(async () => {
+    if (!user || !isSupabaseConfigured) return;
+
+    setSyncStatus('loading');
+    setSyncError(null);
+
+    try {
+      // Ensure user profile exists
+      await getOrCreateUserProfile(user);
+
+      // Get or create default care profile (seeds data on first login)
+      const profileId = await getOrCreateDefaultCareProfile(user);
+      if (!profileId) {
+        throw new Error('Could not load or create care profile');
+      }
+
+      setCareProfileId(profileId);
+
+      // Load all data from Supabase
+      const cloudData = await loadCareDataFromSupabase(profileId);
+      if (!cloudData) {
+        throw new Error('Could not load care data');
+      }
+
+      setData(cloudData);
+      setStorageMode('cloud');
+      setSyncStatus('synced');
+    } catch (err) {
+      console.error('[CareDataContext] Cloud load error:', err);
+      setSyncStatus('error');
+      const lang = getCurrentLang();
+      setSyncError(
+        lang === 'en'
+          ? 'Could not sync your data. Please try again or check your connection.'
+          : 'Não foi possível sincronizar os dados. A tentar novamente ou verifique a ligação.'
+      );
+    }
+  }, [user]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  }, [data]);
+    if (user && isSupabaseConfigured && !cloudLoadAttempted.current) {
+      cloudLoadAttempted.current = true;
+      loadCloudData();
+    }
 
+    if (!user && cloudLoadAttempted.current) {
+      // Logged out — fallback to demo data
+      cloudLoadAttempted.current = false;
+      setCareProfileId(null);
+      setStorageMode('demo');
+      setSyncStatus('idle');
+      setSyncError(null);
+      setData(loadFromStorage());
+    }
+  }, [user, loadCloudData]);
+
+  // ---------------------------------------------------------------------------
+  // Reload cloud data (manual refresh)
+  // ---------------------------------------------------------------------------
+  const reloadCloudData = useCallback(async () => {
+    if (!user || !isSupabaseConfigured || storageMode !== 'cloud') return;
+    setSyncStatus('loading');
+    try {
+      if (careProfileId) {
+        const cloudData = await loadCareDataFromSupabase(careProfileId);
+        if (cloudData) {
+          setData(cloudData);
+          setSyncStatus('synced');
+          setSyncError(null);
+        }
+      }
+    } catch {
+      setSyncStatus('error');
+    }
+  }, [user, careProfileId, storageMode]);
+
+  // ---------------------------------------------------------------------------
+  // Feedback
+  // ---------------------------------------------------------------------------
   const showFeedback = useCallback((msgKey: string) => {
     const msg = tt(msgKey) || msgKey;
     setFeedback(msg);
     setTimeout(() => setFeedback(null), 3000);
   }, []);
 
+  // ---------------------------------------------------------------------------
+  // Helper: run cloud operation then update local state
+  // ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // CRUD: Medications
+  // ---------------------------------------------------------------------------
   const addMedication: CareDataContextValue['addMedication'] = useCallback((med) => {
     if (!med.nome.trim() || !med.dosagem.trim() || !med.horario.trim() || !med.frequencia.trim()) {
       return false;
     }
-    const novo: Medication = {
-      id: generateId(),
+
+    // Demo mode
+    if (storageMode === 'demo') {
+      const novo: Medication = {
+        id: generateId(),
+        nome: med.nome.trim(),
+        dosagem: med.dosagem.trim(),
+        horario: med.horario.trim(),
+        frequencia: med.frequencia.trim(),
+        responsavel: med.responsavel?.trim() || caregiver.nome,
+        estado: 'Ativo',
+        instrucoes: med.instrucoes?.trim() || '',
+        tomadoHoje: false,
+      };
+      setData((prev) => ({ ...prev, medications: [...prev.medications, novo] }));
+      showFeedback('feedback.medicationAdded');
+      return true;
+    }
+
+    // Cloud mode
+    if (!careProfileId) return false;
+    sbCreateMedication(careProfileId, {
       nome: med.nome.trim(),
       dosagem: med.dosagem.trim(),
       horario: med.horario.trim(),
       frequencia: med.frequencia.trim(),
       responsavel: med.responsavel?.trim() || caregiver.nome,
-      estado: 'Ativo',
       instrucoes: med.instrucoes?.trim() || '',
-      tomadoHoje: false,
-    };
-    setData((prev) => ({ ...prev, medications: [...prev.medications, novo] }));
-    showFeedback('feedback.medicationAdded');
-    return true;
-  }, [showFeedback]);
+    }).then((created) => {
+      if (created) {
+        setData((prev) => ({ ...prev, medications: [...prev.medications, created] }));
+        showFeedback('feedback.medicationAdded');
+        setSyncStatus('synced');
+      } else {
+        setSyncStatus('error');
+      }
+    });
+    return true; // Optimistic return for UI responsiveness
+  }, [storageMode, careProfileId, showFeedback]);
 
   const removeMedication = useCallback((id: string) => {
-    setData((prev) => ({ ...prev, medications: prev.medications.filter((m) => m.id !== id) }));
-    showFeedback('feedback.medicationRemoved');
-  }, [showFeedback]);
+    if (storageMode === 'demo') {
+      setData((prev) => ({ ...prev, medications: prev.medications.filter((m) => m.id !== id) }));
+      showFeedback('feedback.medicationRemoved');
+      return;
+    }
+    sbDeleteMedication(id).then((ok) => {
+      if (ok) {
+        setData((prev) => ({ ...prev, medications: prev.medications.filter((m) => m.id !== id) }));
+        showFeedback('feedback.medicationRemoved');
+        setSyncStatus('synced');
+      } else {
+        setSyncStatus('error');
+      }
+    });
+  }, [storageMode, showFeedback]);
 
   const updateMedicationTaken = useCallback((id: string, tomadoHoje: boolean) => {
     setData((prev) => ({
@@ -178,95 +344,252 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     showFeedback(tomadoHoje ? 'feedback.medicationTaken' : 'feedback.medicationUntaken');
   }, [showFeedback]);
 
+  // ---------------------------------------------------------------------------
+  // CRUD: Appointments
+  // ---------------------------------------------------------------------------
   const addAppointment: CareDataContextValue['addAppointment'] = useCallback((apt) => {
     if (!apt.tipo.trim() || !apt.dataHora.trim() || !apt.local.trim()) return false;
-    const novo: Appointment = {
-      id: generateId(),
+
+    if (storageMode === 'demo') {
+      const novo: Appointment = {
+        id: generateId(),
+        tipo: apt.tipo.trim(),
+        dataHora: formatDateTime(apt.dataHora),
+        local: apt.local.trim(),
+        medico: apt.medico?.trim() || '—',
+        responsavel: apt.responsavel?.trim() || caregiver.nome,
+        notas: apt.notas?.trim() || '',
+        estado: 'Agendada',
+      };
+      setData((prev) => ({ ...prev, appointments: [...prev.appointments, novo] }));
+      showFeedback('feedback.appointmentAdded');
+      return true;
+    }
+
+    if (!careProfileId) return false;
+    sbCreateAppointment(careProfileId, {
       tipo: apt.tipo.trim(),
-      dataHora: formatDateTime(apt.dataHora),
+      dataHora: apt.dataHora,
       local: apt.local.trim(),
-      medico: apt.medico?.trim() || '—',
-      responsavel: apt.responsavel?.trim() || caregiver.nome,
-      notas: apt.notas?.trim() || '',
-      estado: 'Agendada',
-    };
-    setData((prev) => ({ ...prev, appointments: [...prev.appointments, novo] }));
-    showFeedback('feedback.appointmentAdded');
+      medico: apt.medico?.trim(),
+      responsavel: apt.responsavel?.trim(),
+      notas: apt.notas?.trim(),
+    }).then((created) => {
+      if (created) {
+        setData((prev) => ({ ...prev, appointments: [...prev.appointments, created] }));
+        showFeedback('feedback.appointmentAdded');
+        setSyncStatus('synced');
+      } else {
+        setSyncStatus('error');
+      }
+    });
     return true;
-  }, [showFeedback]);
+  }, [storageMode, careProfileId, showFeedback]);
 
   const removeAppointment = useCallback((id: string) => {
-    setData((prev) => ({ ...prev, appointments: prev.appointments.filter((a) => a.id !== id) }));
-    showFeedback('feedback.appointmentRemoved');
-  }, [showFeedback]);
+    if (storageMode === 'demo') {
+      setData((prev) => ({ ...prev, appointments: prev.appointments.filter((a) => a.id !== id) }));
+      showFeedback('feedback.appointmentRemoved');
+      return;
+    }
+    sbDeleteAppointment(id).then((ok) => {
+      if (ok) {
+        setData((prev) => ({ ...prev, appointments: prev.appointments.filter((a) => a.id !== id) }));
+        showFeedback('feedback.appointmentRemoved');
+        setSyncStatus('synced');
+      } else {
+        setSyncStatus('error');
+      }
+    });
+  }, [storageMode, showFeedback]);
 
+  // ---------------------------------------------------------------------------
+  // CRUD: Tasks
+  // ---------------------------------------------------------------------------
   const addTask: CareDataContextValue['addTask'] = useCallback((task) => {
     if (!task.titulo.trim()) return false;
-    const novo: Task = {
-      id: generateId(),
+
+    if (storageMode === 'demo') {
+      const novo: Task = {
+        id: generateId(),
+        titulo: task.titulo.trim(),
+        responsavel: task.responsavel?.trim() || caregiver.nome,
+        prioridade: task.prioridade || 'Média',
+        dataLimite: task.dataLimite?.trim() || 'Sem data',
+        status: task.status || 'por_fazer',
+        local: task.local?.trim() || '',
+      };
+      setData((prev) => ({ ...prev, tasks: [...prev.tasks, novo] }));
+      showFeedback('feedback.taskAdded');
+      return true;
+    }
+
+    if (!careProfileId) return false;
+    sbCreateTask(careProfileId, {
       titulo: task.titulo.trim(),
       responsavel: task.responsavel?.trim() || caregiver.nome,
       prioridade: task.prioridade || 'Média',
       dataLimite: task.dataLimite?.trim() || 'Sem data',
       status: task.status || 'por_fazer',
       local: task.local?.trim() || '',
-    };
-    setData((prev) => ({ ...prev, tasks: [...prev.tasks, novo] }));
-    showFeedback('feedback.taskAdded');
+    }).then((created) => {
+      if (created) {
+        setData((prev) => ({ ...prev, tasks: [...prev.tasks, created] }));
+        showFeedback('feedback.taskAdded');
+        setSyncStatus('synced');
+      } else {
+        setSyncStatus('error');
+      }
+    });
     return true;
-  }, [showFeedback]);
+  }, [storageMode, careProfileId, showFeedback]);
 
   const removeTask = useCallback((id: string) => {
-    setData((prev) => ({ ...prev, tasks: prev.tasks.filter((t) => t.id !== id) }));
-    showFeedback('feedback.taskRemoved');
-  }, [showFeedback]);
+    if (storageMode === 'demo') {
+      setData((prev) => ({ ...prev, tasks: prev.tasks.filter((t) => t.id !== id) }));
+      showFeedback('feedback.taskRemoved');
+      return;
+    }
+    sbDeleteTask(id).then((ok) => {
+      if (ok) {
+        setData((prev) => ({ ...prev, tasks: prev.tasks.filter((t) => t.id !== id) }));
+        showFeedback('feedback.taskRemoved');
+        setSyncStatus('synced');
+      } else {
+        setSyncStatus('error');
+      }
+    });
+  }, [storageMode, showFeedback]);
 
   const updateTaskStatus = useCallback((id: string, status: TaskStatus) => {
-    setData((prev) => ({
-      ...prev,
-      tasks: prev.tasks.map((t) => (t.id === id ? { ...t, status } : t)),
-    }));
-    showFeedback('feedback.taskStatusUpdated');
-  }, [showFeedback]);
+    if (storageMode === 'demo') {
+      setData((prev) => ({
+        ...prev,
+        tasks: prev.tasks.map((t) => (t.id === id ? { ...t, status } : t)),
+      }));
+      showFeedback('feedback.taskStatusUpdated');
+      return;
+    }
+    sbUpdateTask(id, { status }).then((updated) => {
+      if (updated) {
+        setData((prev) => ({
+          ...prev,
+          tasks: prev.tasks.map((t) => (t.id === id ? updated : t)),
+        }));
+        showFeedback('feedback.taskStatusUpdated');
+        setSyncStatus('synced');
+      } else {
+        setSyncStatus('error');
+      }
+    });
+  }, [storageMode, showFeedback]);
 
+  // ---------------------------------------------------------------------------
+  // CRUD: Documents
+  // ---------------------------------------------------------------------------
   const addDocument: CareDataContextValue['addDocument'] = useCallback((doc) => {
     if (!doc.titulo.trim()) return false;
-    const novo: Document = {
-      id: generateId(),
+
+    if (storageMode === 'demo') {
+      const novo: Document = {
+        id: generateId(),
+        titulo: doc.titulo.trim(),
+        categoria: doc.categoria,
+        dataAdicao: 'Agora',
+        dataValidade: doc.dataValidade?.trim() || '',
+        notas: doc.notas?.trim() || '',
+      };
+      setData((prev) => ({ ...prev, documents: [...prev.documents, novo] }));
+      showFeedback('feedback.documentAdded');
+      return true;
+    }
+
+    if (!careProfileId) return false;
+    sbCreateDocument(careProfileId, {
       titulo: doc.titulo.trim(),
       categoria: doc.categoria,
-      dataAdicao: 'Agora',
       dataValidade: doc.dataValidade?.trim() || '',
       notas: doc.notas?.trim() || '',
-    };
-    setData((prev) => ({ ...prev, documents: [...prev.documents, novo] }));
-    showFeedback('feedback.documentAdded');
+    }).then((created) => {
+      if (created) {
+        setData((prev) => ({ ...prev, documents: [...prev.documents, created] }));
+        showFeedback('feedback.documentAdded');
+        setSyncStatus('synced');
+      } else {
+        setSyncStatus('error');
+      }
+    });
     return true;
-  }, [showFeedback]);
+  }, [storageMode, careProfileId, showFeedback]);
 
   const removeDocument = useCallback((id: string) => {
-    setData((prev) => ({ ...prev, documents: prev.documents.filter((d) => d.id !== id) }));
-    showFeedback('feedback.documentRemoved');
-  }, [showFeedback]);
+    if (storageMode === 'demo') {
+      setData((prev) => ({ ...prev, documents: prev.documents.filter((d) => d.id !== id) }));
+      showFeedback('feedback.documentRemoved');
+      return;
+    }
+    sbDeleteDocument(id).then((ok) => {
+      if (ok) {
+        setData((prev) => ({ ...prev, documents: prev.documents.filter((d) => d.id !== id) }));
+        showFeedback('feedback.documentRemoved');
+        setSyncStatus('synced');
+      } else {
+        setSyncStatus('error');
+      }
+    });
+  }, [storageMode, showFeedback]);
 
+  // ---------------------------------------------------------------------------
+  // CRUD: Care Notes
+  // ---------------------------------------------------------------------------
   const addCareNote = useCallback((texto: string) => {
     if (!texto.trim()) return false;
-    const novo: CareNote = {
-      id: generateId(),
-      nota: texto.trim(),
-      autor: caregiver.nome,
-      dataHora: formatNow(),
-    };
-    setData((prev) => ({ ...prev, careNotes: [novo, ...prev.careNotes] }));
-    showFeedback('feedback.noteAdded');
+
+    if (storageMode === 'demo') {
+      const novo: CareNote = {
+        id: generateId(),
+        nota: texto.trim(),
+        autor: caregiver.nome,
+        dataHora: formatNow(),
+      };
+      setData((prev) => ({ ...prev, careNotes: [novo, ...prev.careNotes] }));
+      showFeedback('feedback.noteAdded');
+      return true;
+    }
+
+    if (!careProfileId) return false;
+    sbCreateCareNote(careProfileId, texto.trim()).then((created) => {
+      if (created) {
+        setData((prev) => ({ ...prev, careNotes: [created, ...prev.careNotes] }));
+        showFeedback('feedback.noteAdded');
+        setSyncStatus('synced');
+      } else {
+        setSyncStatus('error');
+      }
+    });
     return true;
-  }, [showFeedback]);
+  }, [storageMode, careProfileId, showFeedback]);
 
   const removeCareNote = useCallback((id: string) => {
-    setData((prev) => ({ ...prev, careNotes: prev.careNotes.filter((n) => n.id !== id) }));
-    showFeedback('feedback.noteRemoved');
-  }, [showFeedback]);
+    if (storageMode === 'demo') {
+      setData((prev) => ({ ...prev, careNotes: prev.careNotes.filter((n) => n.id !== id) }));
+      showFeedback('feedback.noteRemoved');
+      return;
+    }
+    sbDeleteCareNote(id).then((ok) => {
+      if (ok) {
+        setData((prev) => ({ ...prev, careNotes: prev.careNotes.filter((n) => n.id !== id) }));
+        showFeedback('feedback.noteRemoved');
+        setSyncStatus('synced');
+      } else {
+        setSyncStatus('error');
+      }
+    });
+  }, [storageMode, showFeedback]);
 
+  // ---------------------------------------------------------------------------
+  // CRUD: Family Members (demo only for now)
+  // ---------------------------------------------------------------------------
   const addFamilyMember: CareDataContextValue['addFamilyMember'] = useCallback((member) => {
     if (!member.nome.trim() || !member.contacto.trim() || !member.relacao.trim()) return false;
     const novo: FamilyMember = {
@@ -288,22 +611,58 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     showFeedback('feedback.familyRemoved');
   }, [showFeedback]);
 
-  const updateCareProfile = useCallback((profile: Partial<CareData['careProfile']>) => {
-    setData((prev) => ({
-      ...prev,
-      careProfile: {
-        ...prev.careProfile,
-        ...profile,
-        atualizadoEm: new Date().toLocaleDateString('pt-PT', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-        }),
-      },
-    }));
-    showFeedback('feedback.profileUpdated');
-  }, [showFeedback]);
+  // ---------------------------------------------------------------------------
+  // CRUD: Emergency Contacts
+  // ---------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
+  // Care Profile update
+  // ---------------------------------------------------------------------------
+  const updateCareProfileFn = useCallback((profile: Partial<CareData['careProfile']>) => {
+    if (storageMode === 'demo') {
+      setData((prev) => ({
+        ...prev,
+        careProfile: {
+          ...prev.careProfile,
+          ...profile,
+          atualizadoEm: new Date().toLocaleDateString('pt-PT', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          }),
+        },
+      }));
+      showFeedback('feedback.profileUpdated');
+      return;
+    }
 
+    // Cloud mode: write to Supabase then update local
+    if (careProfileId) {
+      sbUpdateCareProfile(careProfileId, profile).then((ok) => {
+        if (ok) {
+          setData((prev) => ({
+            ...prev,
+            careProfile: {
+              ...prev.careProfile,
+              ...profile,
+              atualizadoEm: new Date().toLocaleDateString('pt-PT', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              }),
+            },
+          }));
+          showFeedback('feedback.profileUpdated');
+          setSyncStatus('synced');
+        } else {
+          setSyncStatus('error');
+        }
+      });
+    }
+  }, [storageMode, careProfileId, showFeedback]);
+
+  // ---------------------------------------------------------------------------
+  // Demo mode actions
+  // ---------------------------------------------------------------------------
   const resetDemoData = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY);
     setData(getInitialCareData());
@@ -315,6 +674,9 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     showFeedback('feedback.demoImported');
   }, [showFeedback]);
 
+  // ---------------------------------------------------------------------------
+  // Emergency summary
+  // ---------------------------------------------------------------------------
   const getEmergencySummary = useCallback((langOverride?: 'pt' | 'en') => {
     const lang = langOverride || getCurrentLang();
     const profile = data.careProfile;
@@ -352,7 +714,10 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     ].join('\n');
   }, [data.medications, data.emergencyContacts, data.careProfile]);
 
-  const dashboardSummary = useMemo(() => {
+  // ---------------------------------------------------------------------------
+  // Dashboard summary
+  // ---------------------------------------------------------------------------
+  const dashboardSummary = React.useMemo(() => {
     const lang = getCurrentLang();
     const medCount = data.medications.filter((m) => m.estado === 'Ativo').length;
     const medsAtivos = data.medications.filter((m) => m.estado === 'Ativo');
@@ -419,9 +784,16 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     };
   }, [data.medications, data.tasks, data.appointments, data.emergencyContacts, data.careProfile]);
 
+  // ---------------------------------------------------------------------------
+  // Context value
+  // ---------------------------------------------------------------------------
   const value: CareDataContextValue = {
     data,
     feedback,
+    storageMode,
+    syncStatus,
+    syncError,
+    reloadCloudData,
     showFeedback,
     addMedication,
     removeMedication,
@@ -437,7 +809,7 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     removeCareNote,
     addFamilyMember,
     removeFamilyMember,
-    updateCareProfile,
+    updateCareProfile: updateCareProfileFn,
     importDemoData,
     resetDemoData,
     getEmergencySummary,
@@ -453,4 +825,4 @@ export const useCareData = (): CareDataContextValue => {
   return ctx;
 };
 
-export type { DocumentCategory, TaskStatus, TaskPriority, FamilyRole };
+export type { DocumentCategory, TaskStatus, TaskPriority, FamilyRole, CareNote, EmergencyContact };

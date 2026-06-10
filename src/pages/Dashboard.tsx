@@ -7,7 +7,7 @@ import OnboardingChecklist from '../components/OnboardingChecklist';
 import { useLanguage } from '../i18n/LanguageContext';
 
 const Dashboard: React.FC = () => {
-  const { data, dashboardSummary } = useCareData();
+  const { data, dashboardSummary, storageMode } = useCareData();
   const { t } = useLanguage();
   const { medications, appointments, tasks, documents, emergencyContacts, careNotes } = data;
 
@@ -30,21 +30,25 @@ const Dashboard: React.FC = () => {
         <DashboardPageHeader />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
-          <div className="mb-stack-lg rounded-[24px] border border-cj-verde-pale bg-cj-verde-pale/10 p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-label-md font-bold text-cj-terra">{t('dashboard.bannerTitle')}</p>
-              <p className="text-body-md text-on-surface-variant max-w-2xl">{t('dashboard.bannerSubtitle')}</p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-                <Link to="/criar-conta" className="px-5 py-3 rounded-full bg-primary text-on-primary font-bold hover:opacity-90 transition-all">
-                {t('global.createAccount')}
-              </Link>
-              <Link to="/entrar" className="px-5 py-3 rounded-full border border-primary text-primary font-bold hover:bg-primary/5 transition-all">
-                {t('global.signIn')}
-              </Link>
-            </div>
-          </div>
-          <p className="text-label-sm text-on-surface-variant mb-4 p-3 bg-surface-container-low rounded-xl">{t('dashboard.exampleDataNote')}</p>
+          {storageMode === 'demo' && (
+            <>
+              <div className="mb-stack-lg rounded-[24px] border border-cj-verde-pale bg-cj-verde-pale/10 p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <p className="text-label-md font-bold text-cj-terra">{t('dashboard.bannerTitle')}</p>
+                  <p className="text-body-md text-on-surface-variant max-w-2xl">{t('dashboard.bannerSubtitle')}</p>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                    <Link to="/criar-conta" className="px-5 py-3 rounded-full bg-primary text-on-primary font-bold hover:opacity-90 transition-all">
+                    {t('global.createAccount')}
+                  </Link>
+                  <Link to="/entrar" className="px-5 py-3 rounded-full border border-primary text-primary font-bold hover:bg-primary/5 transition-all">
+                    {t('global.signIn')}
+                  </Link>
+                </div>
+              </div>
+              <p className="text-label-sm text-on-surface-variant mb-4 p-3 bg-surface-container-low rounded-xl">{t('dashboard.exampleDataNote')}</p>
+            </>
+          )}
 
           <OnboardingChecklist />
 

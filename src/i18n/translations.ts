@@ -51,7 +51,13 @@ const translations = {
     demo: {
       notice: 'Versão demo — os dados ficam guardados apenas neste navegador.',
       signedInNotice:
-        'Sessão iniciada. Nesta versão, os dados do painel ainda ficam guardados apenas neste navegador. Sincronização segura será adicionada na próxima fase.',
+        'Sessão iniciada — sincronização na nuvem ativa.',
+      cloudSyncActive: 'Sessão iniciada — sincronização na nuvem ativa.',
+      loadingAccount: 'A carregar dados da conta...',
+      syncError: 'Não foi possível sincronizar os dados. A tentar novamente ou verifique a ligação.',
+      cloudSyncActiveEn: 'Signed in — cloud sync active.',
+      loadingAccountEn: 'Loading account data...',
+      syncErrorEn: 'Could not sync your data. Please try again or check your connection.',
     },
     auth: {
       titleSignIn: 'Entrar no CuidarJuntos',
@@ -352,6 +358,9 @@ const translations = {
         title: 'Definições',
         account: 'Conta',
         accountNotActive: 'Sincronização de conta não está ativa nesta versão. Os dados continuam guardados localmente.',
+      cloudActive: 'Sincronização na nuvem ativa',
+      reloadAccountData: 'Recarregar dados da conta',
+      uploadNotActive: 'O upload de documentos reais ainda não está disponível.',
         signOut: 'Sair da conta',
         resetDemo: 'Repor dados de demo',
         resetWarning: 'Esta ação não pode ser desfeita. Todos os dados locais serão apagados.',
@@ -533,7 +542,10 @@ const translations = {
     demo: {
       notice: 'Demo version — data is stored only in this browser.',
       signedInNotice:
-        'Signed in. In this version, dashboard data is still stored only in this browser. Secure sync will be added in the next phase.',
+        'Signed in — cloud sync active.',
+      cloudSyncActive: 'Signed in — cloud sync active.',
+      loadingAccount: 'Loading account data...',
+      syncError: 'Could not sync your data. Please try again or check your connection.',
     },
     auth: {
       titleSignIn: 'Sign in to CuidarJuntos',
@@ -836,6 +848,9 @@ const translations = {
         title: 'Settings',
         account: 'Account',
         accountNotActive: 'Account synchronization is not active in this version. Data continues to be stored locally.',
+      cloudActive: 'Cloud sync active',
+      reloadAccountData: 'Reload account data',
+      uploadNotActive: 'Real document upload is not available yet.',
         signOut: 'Sign out of account',
         resetDemo: 'Reset demo data',
         resetWarning: 'This action cannot be undone. All local data will be deleted.',

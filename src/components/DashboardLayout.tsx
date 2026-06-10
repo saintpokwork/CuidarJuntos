@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { caregiver } from '../data/initialData';
 import { useAuth } from '../context/AuthContext';
+import { useCareData } from '../context/CareDataContext';
 import GuideBanner from './GuideBanner';
 import CuidarJuntosLogo from './brand/CuidarJuntosLogo';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -54,6 +55,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
   const { t } = useLanguage();
+  const { storageMode, syncStatus } = useCareData();
 
   const handleSignOut = async () => {
     await signOut();
@@ -132,17 +134,17 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         <GuideBanner />
 
         <div className="bg-cj-verde-pale border-b border-cj-border px-container-padding-mobile md:px-container-padding-desktop py-2 text-label-sm text-on-surface-variant">
-          {user ? (
+          {storageMode === 'cloud' ? (
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary text-base">person</span>
+                <span className="material-symbols-outlined text-primary text-base">cloud</span>
                 <span>
                   {t('global.sessionStarted')} <strong className="text-primary">{displayName}</strong>
                 </span>
               </div>
               <div className="flex flex-wrap gap-3 items-center">
                 <span className="text-label-sm text-on-surface-variant">
-                  {t('demo.signedInNotice')}
+                  {syncStatus === 'loading' ? t('demo.loadingAccount') : syncStatus === 'error' ? t('demo.syncError') : t('demo.cloudSyncActive')}
                 </span>
                 <button
                   type="button"

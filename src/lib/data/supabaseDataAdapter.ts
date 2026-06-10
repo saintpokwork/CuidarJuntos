@@ -1,0 +1,922 @@
+/**
+ * Supabase Data Adapter — CuidarJuntos
+ *
+ * Maps between the app's camelCase/Portuguese data shapes and the
+ * Supabase snake_case/English table columns. All writes respect RLS.
+ */
+import { supabase } from '../supabaseClient';
+import type {
+  CareData,
+  CareProfile,
+  Medication,
+  Appointment,
+  Task,
+  Document,
+  CareNote,
+  EmergencyContact,
+} from './types';
+
+// ---------------------------------------------------------------------------
+// Types for Supabase rows (subset we use)
+// ---------------------------------------------------------------------------
+
+interface DbCareProfile {
+  id: string;
+  created_by: string | null;
+  full_name: string;
+  date_of_birth: string | null;
+  address: string | null;
+  sns_number: string | null;
+  allergies: string | null;
+  conditions: string | null;
+  doctor_name: string | null;
+  pharmacy_name: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface DbMedication {
+  id: string;
+  care_profile_id: string;
+  name: string;
+  dosage: string | null;
+  frequency: string | null;
+  time: string | null;
+  instructions: string | null;
+  responsible_user_id: string | null;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+interface DbAppointment {
+  id: string;
+  care_profile_id: string;
+  title: string;
+  appointment_at: string | null;
+  location: string | null;
+  doctor_or_service: string | null;
+  responsible_user_id: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface DbTask {
+  id: string;
+  care_profile_id: string;
+  title: string;
+  description: string | null;
+  assigned_to: string | null;
+  due_date: string | null;
+  status: string;
+  priority: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface DbDocument {
+  id: string;
+  care_profile_id: string;
+  title: string;
+  category: string | null;
+  expiry_date: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface DbCareNote {
+  id: string;
+  care_profile_id: string;
+  note: string;
+  created_by: string | null;
+  created_at: string;
+}
+
+interface DbEmergencyContact {
+  id: string;
+  care_profile_id: string;
+  name: string;
+  relationship: string | null;
+  phone: string | null;
+  email: string | null;
+  priority: number;
+  created_at: string;
+  updated_at: string;
+}
+
+// ---------------------------------------------------------------------------
+// Mapping helpers
+// ---------------------------------------------------------------------------
+
+// Task status: app ↔ Supabase
+const statusToDb: Record<string, string> = {
+  por_fazer: 'todo',
+  em_progresso: 'in_progress',
+  concluido: 'done',
+};
+const statusFromDb: Record<string, string> = {
+  todo: 'por_fazer',
+  in_progress: 'em_progresso',
+  done: 'concluido',
+};
+
+// Priority: app ↔ Supabase
+const priorityToDb: Record<string, string> = {
+  'Baixa': 'low',
+  'Média': 'normal',
+  'Urgente': 'urgent',
+};
+const priorityFromDb: Record<string, string> = {
+  low: 'Baixa',
+  normal: 'Média',
+  urgent: 'Urgente',
+};
+
+// Medication estado ↔ active flag
+const estadoFromActive = (active: boolean): 'Ativo' | 'Em falta' =>
+  active ? 'Ativo' : 'Em falta';
+
+// ---------------------------------------------------------------------------
+// Row → App mappers
+// ---------------------------------------------------------------------------
+
+const mapMedication = (row: DbMedication): Medication => ({
+  id: row.id,
+  nome: row.name,
+  dosagem: row.dosage || '',
+  horario: row.time || '',
+  frequencia: row.frequency || '',
+  responsavel: '', // We don't join profiles for display name in v1
+  estado: estadoFromActive(row.active),
+  instrucoes: row.instructions || '',
+  tomadoHoje: false,
+});
+
+const mapAppointment = (row: DbAppointment): Appointment => {
+  let dataHora = '';
+  if (row.appointment_at) {
+    try {
+      const d = new Date(row.appointment_at);
+      const locale = 'pt-PT';
+      dataHora = d.toLocaleString(locale, {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } catch {
+      dataHora = row.appointment_at;
+    }
+  }
+  return {
+    id: row.id,
+    tipo: row.title,
+    dataHora,
+    local: row.location || '',
+    medico: row.doctor_or_service || '—',
+    responsavel: '',
+    notas: row.notes || '',
+    estado: 'Agendada',
+  };
+};
+
+const mapTask = (row: DbTask): Task => ({
+  id: row.id,
+  titulo: row.title,
+  responsavel: '',
+  prioridade: (priorityFromDb[row.priority] as Task['prioridade']) || 'Média',
+  dataLimite: row.due_date || 'Sem data',
+  status: (statusFromDb[row.status] as Task['status']) || 'por_fazer',
+  local: row.description || '', // description used as local in app
+});
+
+const mapDocument = (row: DbDocument): Document => ({
+  id: row.id,
+  titulo: row.title,
+  categoria: (row.category as Document['categoria']) || 'Outros',
+  dataAdicao: row.created_at ? new Date(row.created_at).toLocaleDateString('pt-PT') : '',
+  dataValidade: row.expiry_date || '',
+  notas: row.notes || '',
+});
+
+const mapCareNote = (row: DbCareNote): CareNote => ({
+  id: row.id,
+  nota: row.note,
+  autor: '', // Will be populated if needed
+  dataHora: row.created_at
+    ? new Date(row.created_at).toLocaleString('pt-PT', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : '',
+});
+
+const mapEmergencyContact = (row: DbEmergencyContact): EmergencyContact => ({
+  id: row.id,
+  nome: row.name,
+  funcao: row.relationship || '',
+  telefone: row.phone || '',
+  avatar: '',
+});
+
+const mapCareProfile = (row: DbCareProfile): CareProfile => {
+  const parseList = (val: string | null): string[] => {
+    if (!val) return [];
+    return val.split(',').map((s) => s.trim()).filter(Boolean);
+  };
+  return {
+    nome: row.full_name,
+    dataNascimento: row.date_of_birth || '',
+    morada: row.address || '',
+    numeroSNS: row.sns_number || '',
+    alergias: parseList(row.allergies),
+    condicoes: parseList(row.conditions),
+    medicoFamilia: row.doctor_name || '',
+    farmaciaHabitual: row.pharmacy_name || '',
+    notasImportantes: row.notes || '',
+    contactosPrincipais: [],
+    atualizadoEm: row.updated_at || row.created_at,
+  };
+};
+
+// ---------------------------------------------------------------------------
+// App → DB mappers
+// ---------------------------------------------------------------------------
+
+const medicationToDb = (
+  med: Omit<Medication, 'id' | 'estado' | 'instrucoes' | 'responsavel'> & {
+    responsavel?: string;
+    instrucoes?: string;
+    id?: string;
+  },
+  careProfileId: string,
+) => ({
+  care_profile_id: careProfileId,
+  name: med.nome,
+  dosage: med.dosagem,
+  frequency: med.frequencia,
+  time: med.horario,
+  instructions: med.instrucoes || '',
+  active: true,
+});
+
+const appointmentToDb = (
+  apt: { tipo: string; dataHora?: string; local?: string; medico?: string; responsavel?: string; notas?: string; id?: string },
+  careProfileId: string,
+) => ({
+  care_profile_id: careProfileId,
+  title: apt.tipo,
+  appointment_at: apt.dataHora || null,
+  location: apt.local,
+  doctor_or_service: apt.medico || null,
+  notes: apt.notas || null,
+});
+
+const taskToDb = (
+  task: Omit<Task, 'id'> & { id?: string },
+  careProfileId: string,
+) => ({
+  care_profile_id: careProfileId,
+  title: task.titulo,
+  description: task.local || null,
+  due_date: task.dataLimite === 'Sem data' ? null : task.dataLimite,
+  status: statusToDb[task.status] || 'todo',
+  priority: priorityToDb[task.prioridade] || 'normal',
+});
+
+const documentToDb = (
+  doc: Omit<Document, 'id' | 'dataAdicao'> & { id?: string },
+  careProfileId: string,
+) => ({
+  care_profile_id: careProfileId,
+  title: doc.titulo,
+  category: doc.categoria,
+  expiry_date: doc.dataValidade || null,
+  notes: doc.notas || null,
+});
+
+const careNoteToDb = (note: string, careProfileId: string) => ({
+  care_profile_id: careProfileId,
+  note,
+});
+
+const emergencyContactToDb = (
+  contact: Omit<EmergencyContact, 'id' | 'avatar'> & { id?: string },
+  careProfileId: string,
+) => ({
+  care_profile_id: careProfileId,
+  name: contact.nome,
+  relationship: contact.funcao || null,
+  phone: contact.telefone || null,
+});
+
+// ---------------------------------------------------------------------------
+// Profile helpers
+// ---------------------------------------------------------------------------
+
+export const getOrCreateUserProfile = async (
+  user: { id: string; email?: string; user_metadata?: Record<string, unknown> },
+): Promise<{ id: string } | null> => {
+  // Try to fetch existing profile
+  const { data: existing } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (existing) return existing;
+
+  // Insert new profile (RLS allows insert where auth.uid() = id)
+  const { error } = await supabase.from('profiles').insert({
+    id: user.id,
+    full_name: (user.user_metadata?.full_name as string) || user.email?.split('@')[0] || '',
+    email: user.email || '',
+    language: 'pt',
+  });
+
+  if (error) {
+    console.error('[supabaseDataAdapter] Failed to create profile:', error);
+    return null;
+  }
+
+  return { id: user.id };
+};
+
+// ---------------------------------------------------------------------------
+// Care profile helpers
+// ---------------------------------------------------------------------------
+
+export const getCareProfilesForUser = async (
+  userId: string,
+): Promise<DbCareProfile[]> => {
+  // First get care_profile_ids the user is a member of
+  const { data: memberships, error: memErr } = await supabase
+    .from('care_profile_members')
+    .select('care_profile_id')
+    .eq('user_id', userId)
+    .eq('status', 'active');
+
+  if (memErr || !memberships || memberships.length === 0) return [];
+
+  const ids = memberships.map((m) => m.care_profile_id);
+
+  const { data: profiles, error: profErr } = await supabase
+    .from('care_profiles')
+    .select('*')
+    .in('id', ids);
+
+  if (profErr || !profiles) return [];
+  return profiles as DbCareProfile[];
+};
+
+export const getOrCreateDefaultCareProfile = async (
+  user: { id: string; email?: string; user_metadata?: Record<string, unknown> },
+): Promise<string | null> => {
+  const existing = await getCareProfilesForUser(user.id);
+  if (existing.length > 0) return existing[0].id;
+
+  const { data: profile, error: profErr } = await supabase
+    .from('care_profiles')
+    .insert({
+      full_name: 'Maria Fernandes',
+      created_by: user.id,
+      date_of_birth: '1948-03-12',
+      address: 'Rua das Flores, 42, 3.º Esq., 1200-195 Lisboa',
+      sns_number: '123 456 789',
+      allergies: 'Penicilina, Amendoim',
+      conditions: 'Diabetes Tipo 2, Hipertensão arterial, Osteoartrite',
+      doctor_name: 'Dr. António Pereira — USF Campo de Ourique',
+      pharmacy_name: 'Farmácia Central do Chiado',
+      notes:
+        'Paciente com diabetes e hipertensão. Em caso de desmaio, verificar glicemia. Contactar sempre a filha Ana Silva em primeiro lugar.',
+    })
+    .select('id')
+    .single();
+
+  if (profErr || !profile) {
+    console.error('[supabaseDataAdapter] Failed to create care profile:', profErr);
+    return null;
+  }
+
+  // Create membership
+  const { error: memErr } = await supabase.from('care_profile_members').insert({
+    care_profile_id: profile.id,
+    user_id: user.id,
+    role: 'admin',
+    status: 'active',
+  });
+
+  if (memErr) {
+    console.error('[supabaseDataAdapter] Failed to create membership:', memErr);
+    // Still return profile id — profile exists even if membership insert had an issue
+  }
+
+  // Seed starter data
+  await seedStarterData(profile.id);
+
+  return profile.id;
+};
+
+// ---------------------------------------------------------------------------
+// Seed starter data (only once, when profile is first created)
+// ---------------------------------------------------------------------------
+
+const seedStarterData = async (careProfileId: string) => {
+  // Medications
+  const meds = [
+    {
+      care_profile_id: careProfileId,
+      name: 'Metformina',
+      dosage: '500mg',
+      frequency: 'Diariamente',
+      time: '08:00, 20:00',
+      instructions: 'Após as refeições',
+      active: true,
+    },
+    {
+      care_profile_id: careProfileId,
+      name: 'Aspirina',
+      dosage: '100mg',
+      frequency: 'Diariamente',
+      time: '09:00',
+      instructions: 'Após o pequeno-almoço',
+      active: true,
+    },
+    {
+      care_profile_id: careProfileId,
+      name: 'Losartan',
+      dosage: '50mg',
+      frequency: 'Diariamente',
+      time: '08:00',
+      instructions: 'Em jejum',
+      active: true,
+    },
+  ];
+
+  await supabase.from('medications').insert(meds);
+
+  // Appointments
+  await supabase.from('appointments').insert({
+    care_profile_id: careProfileId,
+    title: 'Consulta de cardiologia',
+    location: 'Hospital de Santa Maria — Piso 3',
+    doctor_or_service: 'Dr. Roberto Santos',
+    notes: 'Levar últimas análises de colesterol',
+  });
+
+  // Tasks
+  const tasks = [
+    {
+      care_profile_id: careProfileId,
+      title: 'Comprar gaze e álcool',
+      description: 'Farmácia Central do Chiado',
+      due_date: new Date().toISOString().slice(0, 10),
+      status: 'todo',
+      priority: 'urgent',
+    },
+    {
+      care_profile_id: careProfileId,
+      title: 'Marcar consulta de oftalmologia',
+      description: 'USF Campo de Ourique',
+      status: 'todo',
+      priority: 'normal',
+    },
+  ];
+
+  await supabase.from('tasks').insert(tasks);
+
+  // Emergency contacts
+  const contacts = [
+    {
+      care_profile_id: careProfileId,
+      name: 'Dr. Roberto Santos',
+      relationship: 'Cardiologista',
+      phone: '+351 213 456 789',
+      priority: 1,
+    },
+    {
+      care_profile_id: careProfileId,
+      name: 'Ana Silva',
+      relationship: 'Filha / Contacto principal',
+      phone: '+351 912 345 678',
+      priority: 2,
+    },
+  ];
+
+  await supabase.from('emergency_contacts').insert(contacts);
+
+  // Care notes
+  await supabase.from('care_notes').insert({
+    care_profile_id: careProfileId,
+    note: 'Lembrar de medir a tensão arterial amanhã de manhã antes da medicação.',
+  });
+
+  // Document metadata only
+  await supabase.from('documents').insert({
+    care_profile_id: careProfileId,
+    title: 'Análises_Julho_2024.pdf',
+    category: 'Exames',
+    expiry_date: '2025-12-31',
+    notes: 'Resultados de rotina',
+  });
+};
+
+// ---------------------------------------------------------------------------
+// Load all care data from Supabase
+// ---------------------------------------------------------------------------
+
+export const loadCareDataFromSupabase = async (
+  careProfileId: string,
+): Promise<CareData | null> => {
+  const [medsRes, aptsRes, tasksRes, docsRes, notesRes, ecRes, cpRes] =
+    await Promise.all([
+      supabase.from('medications').select('*').eq('care_profile_id', careProfileId),
+      supabase.from('appointments').select('*').eq('care_profile_id', careProfileId).order('appointment_at', { ascending: true }),
+      supabase.from('tasks').select('*').eq('care_profile_id', careProfileId).order('created_at', { ascending: false }),
+      supabase.from('documents').select('*').eq('care_profile_id', careProfileId).order('created_at', { ascending: false }),
+      supabase.from('care_notes').select('*').eq('care_profile_id', careProfileId).order('created_at', { ascending: false }),
+      supabase.from('emergency_contacts').select('*').eq('care_profile_id', careProfileId).order('priority', { ascending: true }),
+      supabase.from('care_profiles').select('*').eq('id', careProfileId).single(),
+    ]);
+
+  // Log errors but don't crash
+  if (medsRes.error) console.error('[load] medications error:', medsRes.error);
+  if (aptsRes.error) console.error('[load] appointments error:', aptsRes.error);
+  if (tasksRes.error) console.error('[load] tasks error:', tasksRes.error);
+  if (docsRes.error) console.error('[load] documents error:', docsRes.error);
+  if (notesRes.error) console.error('[load] care_notes error:', notesRes.error);
+  if (ecRes.error) console.error('[load] emergency_contacts error:', ecRes.error);
+  if (cpRes.error) console.error('[load] care_profiles error:', cpRes.error);
+
+  if (cpRes.error || !cpRes.data) return null;
+
+  return {
+    medications: (medsRes.data || []).map(mapMedication),
+    appointments: (aptsRes.data || []).map(mapAppointment),
+    tasks: (tasksRes.data || []).map(mapTask),
+    documents: (docsRes.data || []).map(mapDocument),
+    careNotes: (notesRes.data || []).map(mapCareNote),
+    emergencyContacts: (ecRes.data || []).map(mapEmergencyContact),
+    careProfile: mapCareProfile(cpRes.data),
+    familyMembers: [], // Family members not synced in v1
+  };
+};
+
+// ---------------------------------------------------------------------------
+// CRUD: Medications
+// ---------------------------------------------------------------------------
+
+export const createMedication = async (
+  careProfileId: string,
+  med: Omit<Medication, 'id' | 'estado' | 'instrucoes' | 'responsavel'> & {
+    responsavel?: string;
+    instrucoes?: string;
+  },
+): Promise<Medication | null> => {
+  const row = medicationToDb(med, careProfileId);
+  const { data, error } = await supabase
+    .from('medications')
+    .insert(row)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('[supabaseDataAdapter] createMedication error:', error);
+    return null;
+  }
+  return mapMedication(data as DbMedication);
+};
+
+export const updateMedication = async (
+  id: string,
+  updates: Partial<Pick<Medication, 'nome' | 'dosagem' | 'horario' | 'frequencia' | 'instrucoes' | 'estado'>>,
+): Promise<Medication | null> => {
+  const dbUpdates: Record<string, unknown> = {};
+  if (updates.nome !== undefined) dbUpdates.name = updates.nome;
+  if (updates.dosagem !== undefined) dbUpdates.dosage = updates.dosagem;
+  if (updates.horario !== undefined) dbUpdates.time = updates.horario;
+  if (updates.frequencia !== undefined) dbUpdates.frequency = updates.frequencia;
+  if (updates.instrucoes !== undefined) dbUpdates.instructions = updates.instrucoes;
+  if (updates.estado !== undefined) dbUpdates.active = updates.estado === 'Ativo';
+
+  const { data, error } = await supabase
+    .from('medications')
+    .update(dbUpdates)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('[supabaseDataAdapter] updateMedication error:', error);
+    return null;
+  }
+  return mapMedication(data as DbMedication);
+};
+
+export const deleteMedication = async (id: string): Promise<boolean> => {
+  const { error } = await supabase.from('medications').delete().eq('id', id);
+  if (error) {
+    console.error('[supabaseDataAdapter] deleteMedication error:', error);
+    return false;
+  }
+  return true;
+};
+
+// ---------------------------------------------------------------------------
+// CRUD: Appointments
+// ---------------------------------------------------------------------------
+
+export const createAppointment = async (
+  careProfileId: string,
+  apt: Omit<Appointment, 'id' | 'estado' | 'dataHora' | 'medico' | 'responsavel' | 'notas'> & {
+    dataHora: string;
+    medico?: string;
+    responsavel?: string;
+    notas?: string;
+  },
+): Promise<Appointment | null> => {
+  const row = appointmentToDb(apt, careProfileId);
+  const { data, error } = await supabase
+    .from('appointments')
+    .insert(row)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('[supabaseDataAdapter] createAppointment error:', error);
+    return null;
+  }
+  return mapAppointment(data as DbAppointment);
+};
+
+export const updateAppointment = async (
+  id: string,
+  updates: Partial<Pick<Appointment, 'tipo' | 'dataHora' | 'local' | 'medico' | 'notas'>>,
+): Promise<Appointment | null> => {
+  const dbUpdates: Record<string, unknown> = {};
+  if (updates.tipo !== undefined) dbUpdates.title = updates.tipo;
+  if (updates.dataHora !== undefined) dbUpdates.appointment_at = updates.dataHora;
+  if (updates.local !== undefined) dbUpdates.location = updates.local;
+  if (updates.medico !== undefined) dbUpdates.doctor_or_service = updates.medico;
+  if (updates.notas !== undefined) dbUpdates.notes = updates.notas;
+
+  const { data, error } = await supabase
+    .from('appointments')
+    .update(dbUpdates)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('[supabaseDataAdapter] updateAppointment error:', error);
+    return null;
+  }
+  return mapAppointment(data as DbAppointment);
+};
+
+export const deleteAppointment = async (id: string): Promise<boolean> => {
+  const { error } = await supabase.from('appointments').delete().eq('id', id);
+  if (error) {
+    console.error('[supabaseDataAdapter] deleteAppointment error:', error);
+    return false;
+  }
+  return true;
+};
+
+// ---------------------------------------------------------------------------
+// CRUD: Tasks
+// ---------------------------------------------------------------------------
+
+export const createTask = async (
+  careProfileId: string,
+  task: Omit<Task, 'id' | 'status'> & { status?: Task['status'] },
+): Promise<Task | null> => {
+  const row = taskToDb(
+    { ...task, status: task.status || 'por_fazer' },
+    careProfileId,
+  );
+  const { data, error } = await supabase
+    .from('tasks')
+    .insert(row)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('[supabaseDataAdapter] createTask error:', error);
+    return null;
+  }
+  return mapTask(data as DbTask);
+};
+
+export const updateTask = async (
+  id: string,
+  updates: Partial<Pick<Task, 'titulo' | 'responsavel' | 'prioridade' | 'dataLimite' | 'status' | 'local'>>,
+): Promise<Task | null> => {
+  const dbUpdates: Record<string, unknown> = {};
+  if (updates.titulo !== undefined) dbUpdates.title = updates.titulo;
+  if (updates.local !== undefined) dbUpdates.description = updates.local;
+  if (updates.dataLimite !== undefined)
+    dbUpdates.due_date = updates.dataLimite === 'Sem data' ? null : updates.dataLimite;
+  if (updates.status !== undefined) dbUpdates.status = statusToDb[updates.status] || 'todo';
+  if (updates.prioridade !== undefined) dbUpdates.priority = priorityToDb[updates.prioridade] || 'normal';
+
+  const { data, error } = await supabase
+    .from('tasks')
+    .update(dbUpdates)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('[supabaseDataAdapter] updateTask error:', error);
+    return null;
+  }
+  return mapTask(data as DbTask);
+};
+
+export const deleteTask = async (id: string): Promise<boolean> => {
+  const { error } = await supabase.from('tasks').delete().eq('id', id);
+  if (error) {
+    console.error('[supabaseDataAdapter] deleteTask error:', error);
+    return false;
+  }
+  return true;
+};
+
+// ---------------------------------------------------------------------------
+// CRUD: Documents (metadata only — no file uploads)
+// ---------------------------------------------------------------------------
+
+export const createDocumentRecord = async (
+  careProfileId: string,
+  doc: Omit<Document, 'id' | 'dataAdicao'>,
+): Promise<Document | null> => {
+  const row = documentToDb(doc, careProfileId);
+  const { data, error } = await supabase
+    .from('documents')
+    .insert(row)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('[supabaseDataAdapter] createDocumentRecord error:', error);
+    return null;
+  }
+  return mapDocument(data as DbDocument);
+};
+
+export const updateDocumentRecord = async (
+  id: string,
+  updates: Partial<Pick<Document, 'titulo' | 'categoria' | 'dataValidade' | 'notas'>>,
+): Promise<Document | null> => {
+  const dbUpdates: Record<string, unknown> = {};
+  if (updates.titulo !== undefined) dbUpdates.title = updates.titulo;
+  if (updates.categoria !== undefined) dbUpdates.category = updates.categoria;
+  if (updates.dataValidade !== undefined) dbUpdates.expiry_date = updates.dataValidade || null;
+  if (updates.notas !== undefined) dbUpdates.notes = updates.notas;
+
+  const { data, error } = await supabase
+    .from('documents')
+    .update(dbUpdates)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('[supabaseDataAdapter] updateDocumentRecord error:', error);
+    return null;
+  }
+  return mapDocument(data as DbDocument);
+};
+
+export const deleteDocumentRecord = async (id: string): Promise<boolean> => {
+  const { error } = await supabase.from('documents').delete().eq('id', id);
+  if (error) {
+    console.error('[supabaseDataAdapter] deleteDocumentRecord error:', error);
+    return false;
+  }
+  return true;
+};
+
+// ---------------------------------------------------------------------------
+// CRUD: Care Notes
+// ---------------------------------------------------------------------------
+
+export const createCareNote = async (
+  careProfileId: string,
+  note: string,
+): Promise<CareNote | null> => {
+  const row = careNoteToDb(note, careProfileId);
+  const { data, error } = await supabase
+    .from('care_notes')
+    .insert(row)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('[supabaseDataAdapter] createCareNote error:', error);
+    return null;
+  }
+  return mapCareNote(data as DbCareNote);
+};
+
+export const deleteCareNote = async (id: string): Promise<boolean> => {
+  const { error } = await supabase.from('care_notes').delete().eq('id', id);
+  if (error) {
+    console.error('[supabaseDataAdapter] deleteCareNote error:', error);
+    return false;
+  }
+  return true;
+};
+
+// ---------------------------------------------------------------------------
+// CRUD: Emergency Contacts
+// ---------------------------------------------------------------------------
+
+export const createEmergencyContact = async (
+  careProfileId: string,
+  contact: Omit<EmergencyContact, 'id' | 'avatar'>,
+): Promise<EmergencyContact | null> => {
+  const row = emergencyContactToDb(contact, careProfileId);
+  const { data, error } = await supabase
+    .from('emergency_contacts')
+    .insert(row)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('[supabaseDataAdapter] createEmergencyContact error:', error);
+    return null;
+  }
+  return mapEmergencyContact(data as DbEmergencyContact);
+};
+
+export const updateEmergencyContact = async (
+  id: string,
+  updates: Partial<Pick<EmergencyContact, 'nome' | 'funcao' | 'telefone'>>,
+): Promise<EmergencyContact | null> => {
+  const dbUpdates: Record<string, unknown> = {};
+  if (updates.nome !== undefined) dbUpdates.name = updates.nome;
+  if (updates.funcao !== undefined) dbUpdates.relationship = updates.funcao;
+  if (updates.telefone !== undefined) dbUpdates.phone = updates.telefone;
+
+  const { data, error } = await supabase
+    .from('emergency_contacts')
+    .update(dbUpdates)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('[supabaseDataAdapter] updateEmergencyContact error:', error);
+    return null;
+  }
+  return mapEmergencyContact(data as DbEmergencyContact);
+};
+
+export const deleteEmergencyContact = async (id: string): Promise<boolean> => {
+  const { error } = await supabase.from('emergency_contacts').delete().eq('id', id);
+  if (error) {
+    console.error('[supabaseDataAdapter] deleteEmergencyContact error:', error);
+    return false;
+  }
+  return true;
+};
+
+// ---------------------------------------------------------------------------
+// Update care profile
+// ---------------------------------------------------------------------------
+
+export const updateCareProfile = async (
+  id: string,
+  updates: Partial<CareProfile>,
+): Promise<boolean> => {
+  const dbUpdates: Record<string, unknown> = {};
+  if (updates.nome !== undefined) dbUpdates.full_name = updates.nome;
+  if (updates.dataNascimento !== undefined) dbUpdates.date_of_birth = updates.dataNascimento;
+  if (updates.morada !== undefined) dbUpdates.address = updates.morada;
+  if (updates.numeroSNS !== undefined) dbUpdates.sns_number = updates.numeroSNS;
+  if (updates.alergias !== undefined) dbUpdates.allergies = updates.alergias.join(', ');
+  if (updates.condicoes !== undefined) dbUpdates.conditions = updates.condicoes.join(', ');
+  if (updates.medicoFamilia !== undefined) dbUpdates.doctor_name = updates.medicoFamilia;
+  if (updates.farmaciaHabitual !== undefined) dbUpdates.pharmacy_name = updates.farmaciaHabitual;
+  if (updates.notasImportantes !== undefined) dbUpdates.notes = updates.notasImportantes;
+
+  const { error } = await supabase
+    .from('care_profiles')
+    .update(dbUpdates)
+    .eq('id', id);
+
+  if (error) {
+    console.error('[supabaseDataAdapter] updateCareProfile error:', error);
+    return false;
+  }
+  return true;
+};
