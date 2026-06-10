@@ -768,7 +768,7 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const pendLabel = lang === 'en' ? 'pending' : 'pendente';
 
     return {
-      saudacao: `${greeting}, ${caregiver.nome}`,
+      saudacao: `${greeting}, ${data.careProfile.nome || caregiver.nome}`,
       resumo: `${lang === 'en' ? 'Today there are' : 'Hoje há'} ${medCount} ${medLabel}${medCount !== 1 ? (lang === 'en' ? 's' : 's') : ''}, ${pendingTasks} ${taskLabel}${pendingTasks !== 1 ? (lang === 'en' ? 's' : 's') : ''} ${pendLabel}${pendingTasks !== 1 ? (lang === 'en' ? '' : 's') : ''} ${lang === 'en' ? 'and' : 'e'} ${aptText}.`,
       totalMedicamentosHoje: medCount,
       medicamentosTomadosHoje: takenToday,
