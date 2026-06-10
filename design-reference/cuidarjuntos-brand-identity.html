@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CuidarJuntos — Brand Identity System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* ── Brand Palette ── */
+    --cj-verde:       #2D6A52;   /* primary — calm Portuguese forest green */
+    --cj-verde-light: #3D8B6E;   /* hover / interactive */
+    --cj-verde-pale:  #EAF4EF;   /* surface tint */
+    --cj-areia:       #F5EFE6;   /* warm off-white background */
+    --cj-terracota:   #C8623A;   /* accent — Azulejo warmth */
+    --cj-cobre:       #D4845A;   /* accent light */
+    --cj-terra:       #3C2E28;   /* rich dark text */
+    --cj-cinza:       #6B6560;   /* muted text */
+    --cj-branco:      #FDFAF7;   /* surface / card */
+    --cj-border:      #E0D9D1;   /* borders */
+    --cj-sucesso:     #2D7A4F;
+    --cj-aviso:       #C88A2D;
+
+    /* gradient */
+    --cj-grad: linear-gradient(135deg, #2D6A52 0%, #1F4E3D 60%, #3D8B6E 100%);
+    --cj-grad-warm: linear-gradient(135deg, #3D8B6E 0%, #2D6A52 50%, #1F4E3D 100%);
+    --cj-grad-card: linear-gradient(145deg, #EAF4EF 0%, #F5EFE6 100%);
+
+    --font-main: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
+    --font-display: 'DM Serif Display', Georgia, serif;
+
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 22px;
+    --radius-xl: 32px;
+    --shadow-sm: 0 1px 4px rgba(44,68,52,.07), 0 2px 12px rgba(44,68,52,.06);
+    --shadow-md: 0 4px 20px rgba(44,68,52,.10), 0 1px 4px rgba(44,68,52,.06);
+    --shadow-lg: 0 12px 48px rgba(44,68,52,.14), 0 2px 8px rgba(44,68,52,.07);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-main);
+    background: var(--cj-areia);
+    color: var(--cj-terra);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Layout ── */
+  .page { max-width: 1100px; margin: 0 auto; padding: 60px 28px 100px; }
+
+  .section { margin-bottom: 90px; }
+
+  .section-eyebrow {
+    font-family: var(--font-main);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--cj-verde-light);
+    margin-bottom: 10px;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 400;
+    color: var(--cj-terra);
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+
+  .section-sub {
+    font-size: 15px;
+    color: var(--cj-cinza);
+    max-width: 640px;
+    margin-bottom: 36px;
+    line-height: 1.65;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--cj-border);
+    margin: 52px 0;
+  }
+
+  /* ── Cover ── */
+  .cover {
+    background: var(--cj-grad);
+    border-radius: var(--radius-xl);
+    padding: 72px 56px 64px;
+    margin-bottom: 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    right: -80px; top: -80px;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.05);
+    pointer-events: none;
+  }
+
+  .cover::after {
+    content: '';
+    position: absolute;
+    left: -60px; bottom: -100px;
+    width: 340px; height: 340px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+
+  .cover-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.6);
+    margin-bottom: 18px;
+  }
+
+  .cover-title {
+    font-family: var(--font-display);
+    font-size: clamp(34px, 5vw, 52px);
+    font-weight: 400;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+
+  .cover-title em { font-style: italic; color: rgba(255,255,255,.75); }
+
+  .cover-desc {
+    font-size: 16px;
+    color: rgba(255,255,255,.72);
+    max-width: 520px;
+    line-height: 1.65;
+    margin-bottom: 36px;
+  }
+
+  .cover-meta {
+    display: flex; gap: 36px; flex-wrap: wrap;
+  }
+
+  .cover-meta-item {
+    font-size: 12px;
+    color: rgba(255,255,255,.55);
+    letter-spacing: .04em;
+  }
+
+  .cover-meta-item strong {
+    display: block;
+    font-size: 14px;
+    color: rgba(255,255,255,.9);
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--cj-branco);
+    border-radius: var(--radius-lg);
+    padding: 32px 28px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--cj-border);
+  }
+
+  .card-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .card-grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+
+  @media (max-width: 720px) {
+    .card-grid-2, .card-grid-3 { grid-template-columns: 1fr; }
+    .cover { padding: 44px 28px; }
+  }
+
+  /* ── Audit section ── */
+  .audit-competitor {
+    background: var(--cj-branco);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--cj-border);
+    padding: 28px 28px 24px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .audit-competitor + .audit-competitor { margin-top: 18px; }
+
+  .competitor-header {
+    display: flex; align-items: flex-start; gap: 14px; margin-bottom: 18px;
+  }
+
+  .competitor-badge {
+    width: 42px; height: 42px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; color: #fff;
+    flex-shrink: 0;
+  }
+
+  .competitor-name { font-size: 16px; font-weight: 600; color: var(--cj-terra); }
+  .competitor-type { font-size: 12px; color: var(--cj-cinza); margin-top: 2px; }
+
+  .audit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .audit-item label {
+    display: block; font-size: 10px; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: var(--cj-cinza); margin-bottom: 5px;
+  }
+
+  .audit-item p { font-size: 13.5px; line-height: 1.55; color: var(--cj-terra); }
+
+  .avoid-tag {
+    display: inline-block;
+    background: #FFF3EE;
+    border: 1px solid #F5C9B4;
+    color: var(--cj-terracota);
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    margin: 2px 2px 2px 0;
+  }
+
+  .gap-callout {
+    background: var(--cj-verde-pale);
+    border-left: 3px solid var(--cj-verde);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 20px 22px;
+    margin-top: 26px;
+  }
+
+  .gap-callout strong { color: var(--cj-verde); font-size: 13px; display: block; margin-bottom: 6px; letter-spacing: .04em; }
+  .gap-callout p { font-size: 14px; color: var(--cj-terra); line-height: 1.6; }
+
+  /* ── Brand foundations ── */
+  .trait-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: var(--cj-verde-pale);
+    border: 1px solid rgba(45,106,82,.2);
+    border-radius: 999px;
+    padding: 7px 16px;
+    font-size: 13.5px; font-weight: 500;
+    color: var(--cj-verde);
+    margin: 4px;
+  }
+
+  .trait-pill .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--cj-verde-light);
+  }
+
+  .archetype-card {
+    background: var(--cj-grad);
+    border-radius: var(--radius-lg);
+    padding: 36px 32px;
+    color: #fff;
+  }
+
+  .archetype-card h3 { font-family: var(--font-display); font-size: 28px; font-weight: 400; margin-bottom: 12px; }
+  .archetype-card p { font-size: 14.5px; line-height: 1.65; color: rgba(255,255,255,.8); }
+
+  .keyword-grid {
+    display: flex; flex-wrap: wrap; gap: 10px;
+  }
+
+  .keyword {
+    background: var(--cj-branco);
+    border: 1px solid var(--cj-border);
+    border-radius: var(--radius-sm);
+    padding: 8px 16px;
+    font-size: 13px; font-weight: 500;
+    color: var(--cj-terra);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* ── Creative direction ── */
+  .direction-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  }
+
+  @media (max-width: 720px) { .direction-row { grid-template-columns: 1fr; } }
+
+  .direction-card {
+    background: var(--cj-branco);
+    border-radius: var(--radius-lg);
+    padding: 28px 24px;
+    border: 1px solid var(--cj-border);
+  }
+
+  .direction-card h4 {
+    font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--cj-verde); margin-bottom: 12px;
+  }
+
+  .direction-card p { font-size: 14px; line-height: 1.65; color: var(--cj-terra); }
+
+  /* ── Color swatches ── */
+  .swatch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 14px;
+  }
+
+  .swatch {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--cj-border);
+  }
+
+  .swatch-color {
+    height: 80px;
+    display: flex; align-items: flex-end; padding: 8px 10px;
+  }
+
+  .swatch-hex {
+    font-family: 'Courier New', monospace;
+    font-size: 11px; font-weight: 700;
+    background: rgba(255,255,255,.18);
+    backdrop-filter: blur(4px);
+    border-radius: 4px;
+    padding: 2px 7px;
+    color: rgba(255,255,255,.92);
+  }
+
+  .swatch-hex.dark { color: rgba(0,0,0,.6); background: rgba(0,0,0,.08); }
+
+  .swatch-info { padding: 12px 12px 14px; background: var(--cj-branco); }
+  .swatch-name { font-size: 12px; font-weight: 600; color: var(--cj-terra); }
+  .swatch-use { font-size: 11px; color: var(--cj-cinza); margin-top: 3px; line-height: 1.4; }
+
+  /* ── Logo presentation ── */
+  .logo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 720px) { .logo-grid { grid-template-columns: 1fr; } }
+
+  .logo-tile {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+  }
+
+  .logo-tile-header {
+    padding: 6px 16px;
+    background: var(--cj-terra);
+    font-size: 10px; font-weight: 600;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: rgba(255,255,255,.55);
+  }
+
+  .logo-stage {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 180px;
+    padding: 40px 32px;
+  }
+
+  .logo-stage.on-white { background: #ffffff; }
+  .logo-stage.on-light { background: var(--cj-areia); }
+  .logo-stage.on-dark  { background: #1A2E26; }
+  .logo-stage.on-grad  { background: var(--cj-grad); }
+  .logo-stage.on-pale  { background: var(--cj-verde-pale); }
+  .logo-stage.on-terracota { background: #C8623A; }
+
+  .logo-caption {
+    background: var(--cj-branco);
+    padding: 12px 16px;
+    font-size: 11.5px;
+    color: var(--cj-cinza);
+    border-top: 1px solid var(--cj-border);
+  }
+
+  /* ── Typography showcase ── */
+  .type-row {
+    background: var(--cj-branco);
+    border-radius: var(--radius-lg);
+    padding: 28px 28px;
+    border: 1px solid var(--cj-border);
+    margin-bottom: 14px;
+  }
+
+  .type-label {
+    font-size: 10px; font-weight: 600; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--cj-cinza);
+    margin-bottom: 8px;
+  }
+
+  .type-spec {
+    font-size: 11px; color: var(--cj-cinza);
+    margin-top: 6px; font-family: 'Courier New', monospace;
+  }
+
+  /* ── Code blocks ── */
+  .code-block {
+    background: #1A2E26;
+    border-radius: var(--radius-md);
+    padding: 24px 22px;
+    overflow-x: auto;
+    margin: 14px 0;
+  }
+
+  .code-block pre {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    color: #A8D5BF;
+    white-space: pre;
+  }
+
+  .code-block pre .comment { color: rgba(168,213,191,.45); }
+  .code-block pre .tag     { color: #7EC8A0; }
+  .code-block pre .attr    { color: #C8E8D8; }
+  .code-block pre .val     { color: #F5C88A; }
+
+  .export-file-label {
+    display: inline-block;
+    background: var(--cj-verde-pale);
+    border: 1px solid rgba(45,106,82,.25);
+    color: var(--cj-verde);
+    border-radius: 6px;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: .04em;
+    padding: 4px 12px;
+    margin-bottom: 10px;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* ── Size table ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--cj-branco);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--cj-border);
+  }
+
+  th {
+    background: var(--cj-verde);
+    color: #fff;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: .08em; text-transform: uppercase;
+    padding: 12px 20px;
+    text-align: left;
+  }
+
+  td {
+    padding: 12px 20px;
+    font-size: 13.5px;
+    border-top: 1px solid var(--cj-border);
+    color: var(--cj-terra);
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: rgba(45,106,82,.03); }
+
+  /* ── Guidelines ── */
+  .do-dont {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  }
+
+  @media (max-width: 600px) { .do-dont { grid-template-columns: 1fr; } }
+
+  .do-card, .dont-card {
+    border-radius: var(--radius-md);
+    padding: 20px 20px;
+    border: 1px solid;
+  }
+
+  .do-card { background: #F0FAF5; border-color: rgba(45,106,82,.25); }
+  .dont-card { background: #FFF5F0; border-color: rgba(200,98,58,.25); }
+
+  .do-card .badge { color: var(--cj-verde); font-size: 12px; font-weight: 700; letter-spacing: .06em; margin-bottom: 10px; }
+  .dont-card .badge { color: var(--cj-terracota); font-size: 12px; font-weight: 700; letter-spacing: .06em; margin-bottom: 10px; }
+
+  .do-card li, .dont-card li {
+    font-size: 13.5px; line-height: 1.55; margin-bottom: 7px; padding-left: 16px;
+    position: relative; list-style: none;
+  }
+
+  .do-card li::before { content: '✓'; position: absolute; left: 0; color: var(--cj-verde); font-weight: 700; font-size: 12px; }
+  .dont-card li::before { content: '✗'; position: absolute; left: 0; color: var(--cj-terracota); font-weight: 700; font-size: 12px; }
+
+  /* ── Tone voice ── */
+  .tone-rule {
+    display: flex; gap: 16px; align-items: flex-start;
+    padding: 18px 20px;
+    background: var(--cj-branco);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--cj-border);
+    margin-bottom: 10px;
+  }
+
+  .tone-number {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--cj-verde);
+    color: #fff; font-weight: 600; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .tone-rule h4 { font-size: 14px; font-weight: 600; color: var(--cj-terra); margin-bottom: 4px; }
+  .tone-rule p { font-size: 13px; color: var(--cj-cinza); line-height: 1.5; }
+
+  /* ── Positioning statement ── */
+  .positioning {
+    background: var(--cj-branco);
+    border-radius: var(--radius-lg);
+    padding: 36px 32px;
+    border: 2px solid var(--cj-verde);
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 28px;
+    box-shadow: var(--shadow-md);
+  }
+
+  .positioning p {
+    font-family: var(--font-display);
+    font-size: clamp(18px, 2.5vw, 24px);
+    line-height: 1.45;
+    color: var(--cj-terra);
+    font-style: italic;
+  }
+
+  /* ── Mini sidebar preview ── */
+  .sidebar-demo {
+    background: #1A2E26;
+    border-radius: var(--radius-md);
+    padding: 16px 14px;
+    width: 200px;
+  }
+
+  .sidebar-demo-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; border-radius: 8px;
+    font-size: 12px; color: rgba(255,255,255,.6);
+    margin-bottom: 4px;
+    cursor: default;
+  }
+
+  .sidebar-demo-item.active {
+    background: rgba(255,255,255,.1);
+    color: #fff;
+  }
+
+  .sidebar-demo-item .icon-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: rgba(255,255,255,.3);
+    flex-shrink: 0;
+  }
+
+  .sidebar-demo-item.active .icon-dot { background: var(--cj-cobre); }
+
+  /* ── Emergency card ── */
+  .emergency-card {
+    background: #fff;
+    border: 2px solid var(--cj-terra);
+    border-radius: 14px;
+    padding: 20px 22px;
+    width: 320px;
+    box-shadow: var(--shadow-md);
+    font-family: var(--font-main);
+  }
+
+  .emergency-card .ec-header {
+    display: flex; align-items: center; gap: 10px;
+    border-bottom: 1.5px solid var(--cj-border);
+    padding-bottom: 12px; margin-bottom: 12px;
+  }
+
+  .emergency-card .ec-title { font-size: 11px; font-weight: 700; color: var(--cj-terra); text-transform: uppercase; letter-spacing: .07em; }
+  .emergency-card .ec-sub { font-size: 10px; color: var(--cj-cinza); }
+
+  .emergency-card .ec-field { margin-bottom: 8px; }
+  .emergency-card .ec-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--cj-cinza); }
+  .emergency-card .ec-value { font-size: 12.5px; font-weight: 500; color: var(--cj-terra); }
+
+  .ec-accent { color: var(--cj-verde); font-weight: 600; }
+
+  /* misc */
+  .flex-center { display: flex; align-items: center; justify-content: center; }
+  .mt-24 { margin-top: 24px; }
+  .mt-16 { margin-top: 16px; }
+  .full-width { grid-column: 1 / -1; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ══════════════════════════════════════════════
+       COVER
+  ══════════════════════════════════════════════ -->
+  <div class="cover">
+    <div class="cover-eyebrow">Brand Identity System · 2025</div>
+    <h1 class="cover-title">CuidarJuntos<br><em>Visual Identity</em></h1>
+    <p class="cover-desc">A complete logo system, creative strategy, and design foundation for Portugal's family care organiser — from market audit to export-ready SVG assets.</p>
+    <div class="cover-meta">
+      <div class="cover-meta-item"><strong>Brand</strong>CuidarJuntos</div>
+      <div class="cover-meta-item"><strong>Market</strong>Portugal</div>
+      <div class="cover-meta-item"><strong>Sector</strong>Family Care Tech</div>
+      <div class="cover-meta-item"><strong>Audience</strong>Families 30–60</div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       PHASE 1 — AUDIT
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-eyebrow">Phase 1 — Market Audit</div>
+    <h2 class="section-title">Website & Competitive Analysis</h2>
+    <p class="section-sub">Reviewing the live CuidarJuntos product and mapping the visual territory across Portuguese care providers and international caregiver apps to identify where the brand must go.</p>
+
+    <!-- Current site audit -->
+    <div class="audit-competitor">
+      <div class="competitor-header">
+        <div class="competitor-badge" style="background: var(--cj-verde);">CJ</div>
+        <div>
+          <div class="competitor-name">CuidarJuntos — Current State</div>
+          <div class="competitor-type">cuidar-juntos-nine.vercel.app · Live Product Audit</div>
+        </div>
+      </div>
+      <div class="audit-grid">
+        <div class="audit-item">
+          <label>Visual Style</label>
+          <p>Functional React UI with a clean card-based layout. Practical and organised, but currently lacks a distinct visual personality. The UI is competent but anonymous — it could belong to any SaaS tool.</p>
+        </div>
+        <div class="audit-item">
+          <label>Colour Direction</label>
+          <p>Currently uses a default blue-ish palette common to health and productivity apps. Functional but not ownable or emotionally resonant with the Portuguese family context.</p>
+        </div>
+        <div class="audit-item">
+          <label>Typography</label>
+          <p>System sans-serif — readable but plain. No typographic personality to distinguish the brand from generic dashboard products.</p>
+        </div>
+        <div class="audit-item">
+          <label>What the Logo Must Fix</label>
+          <p>The product needs an anchor — a symbol system that communicates care, family, and organisation before a single word is read. The current state has no logo identity to speak of.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Competitor 1 -->
+    <div class="audit-competitor" style="margin-top:18px">
+      <div class="competitor-header">
+        <div class="competitor-badge" style="background:#3B6FD4;">LH</div>
+        <div>
+          <div class="competitor-name">Lotsa Helping Hands</div>
+          <div class="competitor-type">International · Family care coordination app</div>
+        </div>
+      </div>
+      <div class="audit-grid">
+        <div class="audit-item">
+          <label>Colours & Logo</label>
+          <p>Mid-range corporate blue with rounded lettering. Friendly but unmemorable — blends into the broader health-app visual landscape.</p>
+        </div>
+        <div class="audit-item">
+          <label>Emotional Positioning</label>
+          <p>Community-oriented and earnest. Leans into volunteer care networks rather than the intimacy of a family unit. Feels US-centric and slightly institutional.</p>
+        </div>
+        <div class="audit-item">
+          <label>What to Avoid</label>
+          <p><span class="avoid-tag">Corporate blue</span><span class="avoid-tag">Hand/heart icon</span><span class="avoid-tag">Generic roundel</span></p>
+        </div>
+        <div class="audit-item">
+          <label>Differentiation for CuidarJuntos</label>
+          <p>Warmer palette, Portuguese cultural rootedness, and a more intimate family-first (not community-first) message.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Competitor 2 -->
+    <div class="audit-competitor" style="margin-top:18px">
+      <div class="competitor-header">
+        <div class="competitor-badge" style="background:#1A8F6C;">Ca</div>
+        <div>
+          <div class="competitor-name">Carely</div>
+          <div class="competitor-type">International · Tag-team caregiving coordination</div>
+        </div>
+      </div>
+      <div class="audit-grid">
+        <div class="audit-item">
+          <label>Colours & Logo</label>
+          <p>Teal-dominant with a simple wordmark. Attempts warmth but remains in clinical territory. Typography is generic rounded sans.</p>
+        </div>
+        <div class="audit-item">
+          <label>Emotional Positioning</label>
+          <p>Aims for "modern but caring" but struggles to escape the healthcare-app cliché. The name and logo are forgettable in the Portuguese context.</p>
+        </div>
+        <div class="audit-item">
+          <label>What to Avoid</label>
+          <p><span class="avoid-tag">Flat teal</span><span class="avoid-tag">Generic sans wordmark only</span><span class="avoid-tag">No cultural anchor</span></p>
+        </div>
+        <div class="audit-item">
+          <label>Differentiation for CuidarJuntos</label>
+          <p>A distinct monogram symbol, richer cultural palette, and Portuguese-first copy that speaks to family bonds rather than task coordination.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Competitor 3 -->
+    <div class="audit-competitor" style="margin-top:18px">
+      <div class="competitor-header">
+        <div class="competitor-badge" style="background:#7A3B8F;">CB</div>
+        <div>
+          <div class="competitor-name">CaringBridge</div>
+          <div class="competitor-type">International · Health journey sharing & coordination</div>
+        </div>
+      </div>
+      <div class="audit-grid">
+        <div class="audit-item">
+          <label>Colours & Logo</label>
+          <p>Purple-dominant with a bridge icon. Emotionally earnest but visually dated. The bridge metaphor is literal and heavy.</p>
+        </div>
+        <div class="audit-item">
+          <label>Emotional Positioning</label>
+          <p>Leans into illness and end-of-life care. Heavy emotional register — not the calm, organised, daily-care energy CuidarJuntos needs.</p>
+        </div>
+        <div class="audit-item">
+          <label>What to Avoid</label>
+          <p><span class="avoid-tag">Illness-focused tone</span><span class="avoid-tag">Heavy emotional weight</span><span class="avoid-tag">Crisis-care identity</span></p>
+        </div>
+        <div class="audit-item">
+          <label>Differentiation for CuidarJuntos</label>
+          <p>Daily organisation rather than crisis support. Calm routine, not emergency emotion. The identity should feel like a warm home tool, not a hospital companion.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Competitor 4: Portuguese -->
+    <div class="audit-competitor" style="margin-top:18px">
+      <div class="competitor-header">
+        <div class="competitor-badge" style="background:#C8623A;">PT</div>
+        <div>
+          <div class="competitor-name">cuidar.com.pt & FamilyCare.pt</div>
+          <div class="competitor-type">Portugal · Home-care service providers</div>
+        </div>
+      </div>
+      <div class="audit-grid">
+        <div class="audit-item">
+          <label>Colours & Logo</label>
+          <p>Either muted blues or dated warm-red palettes. Logo systems tend toward literal imagery: hands, houses, elderly figures. Typography choices are conservative and print-era.</p>
+        </div>
+        <div class="audit-item">
+          <label>Emotional Positioning</label>
+          <p>Trust through familiarity — which reads as "traditional" but rarely "modern". The digital experience doesn't match the warmth of the messaging.</p>
+        </div>
+        <div class="audit-item">
+          <label>What to Avoid</label>
+          <p><span class="avoid-tag">Literal house/hand icons</span><span class="avoid-tag">Dated print-era type</span><span class="avoid-tag">Warm-red first-aid palette</span></p>
+        </div>
+        <div class="audit-item">
+          <label>Differentiation for CuidarJuntos</label>
+          <p>Modern, app-first visual system that still carries Portuguese warmth. Feels like a tech product designed <em>by</em> Portuguese families, not <em>for</em> them by a corporation.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="gap-callout">
+      <strong>Strategic Gap — The White Space CuidarJuntos Can Own</strong>
+      <p>Every competitor occupies one of two poles: cold health-tech (institutional blue, clinical aesthetics) or dated care-service (house icons, literal warmth). No one in the Portuguese or Iberian market offers a modern, premium-light, warmly organised visual identity rooted in family connection. CuidarJuntos can own the intersection of <strong>contemporary Portuguese craft</strong> and <strong>calm digital care</strong> — the visual language of a well-designed home, not a hospital or a brochure.</p>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       PHASE 2 — BRAND FOUNDATIONS
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-eyebrow">Phase 2 — Brand Foundations</div>
+    <h2 class="section-title">Strategy & Positioning</h2>
+    <p class="section-sub">The strategic scaffold that every visual decision is built upon.</p>
+
+    <div class="card-grid-2" style="margin-bottom:20px">
+      <div class="card">
+        <div class="section-eyebrow" style="margin-bottom:16px">Brand Personality</div>
+        <div>
+          <span class="trait-pill"><span class="dot"></span>Sereno</span>
+          <span class="trait-pill"><span class="dot"></span>Organizado</span>
+          <span class="trait-pill"><span class="dot"></span>Próximo</span>
+          <span class="trait-pill"><span class="dot"></span>Moderno</span>
+          <span class="trait-pill"><span class="dot"></span>Fiável</span>
+        </div>
+        <p style="margin-top:16px;font-size:13.5px;color:var(--cj-cinza);line-height:1.6">Calm without being cold. Organised without being clinical. Close to the family without being sentimental. Modern without feeling foreign. Reliable without feeling corporate.</p>
+      </div>
+
+      <div class="archetype-card">
+        <div class="section-eyebrow" style="color:rgba(255,255,255,.55);margin-bottom:8px">Brand Archetype</div>
+        <h3>O Cuidador<br><em style="font-size:18px;opacity:.7">The Caregiver</em></h3>
+        <p>CuidarJuntos is fundamentally a Caregiver archetype — it protects, organises, and nurtures. Unlike the Hero (which conquers) or the Sage (which teaches), the Caregiver quietly enables others to show up better for the people they love. This archetype justifies the calm palette, the warm typography, and the gentle symbol — it should never shout.</p>
+      </div>
+    </div>
+
+    <div class="positioning">
+      <p>"CuidarJuntos é a ferramenta de organização familiar que ajuda famílias portuguesas a cuidar dos seus entes queridos com mais calma, clareza e união."</p>
+    </div>
+
+    <div class="card-grid-3" style="margin-bottom:24px">
+      <div class="card">
+        <div class="section-eyebrow" style="margin-bottom:10px">Emotional Tone</div>
+        <p style="font-size:14px;line-height:1.65">Families using CuidarJuntos should feel <strong>relieved</strong> — like they've handed a difficult coordination burden to a calm, capable system. Not anxious, not overwhelmed. Quietly in control.</p>
+      </div>
+      <div class="card">
+        <div class="section-eyebrow" style="margin-bottom:10px">Value Perception</div>
+        <p style="font-size:14px;line-height:1.65"><strong>Premium-light</strong> — modern and considered, but not exclusive or intimidating. Accessible to a 55-year-old adult child managing care for an 80-year-old parent. Feels trustworthy, not expensive.</p>
+      </div>
+      <div class="card">
+        <div class="section-eyebrow" style="margin-bottom:10px">Cultural Anchor</div>
+        <p style="font-size:14px;line-height:1.65">Rooted in Portuguese visual sensibility — earthy warmth, calm restraint, the Azulejo tradition of beautiful organisation. Not generically "European health-tech."</p>
+      </div>
+    </div>
+
+    <div class="section-eyebrow" style="margin-bottom:14px">10 Brand Keywords</div>
+    <div class="keyword-grid">
+      <div class="keyword">Família</div>
+      <div class="keyword">Organização</div>
+      <div class="keyword">Calma</div>
+      <div class="keyword">Confiança</div>
+      <div class="keyword">Juntos</div>
+      <div class="keyword">Cuidado</div>
+      <div class="keyword">Continuidade</div>
+      <div class="keyword">Clareza</div>
+      <div class="keyword">Proteção Suave</div>
+      <div class="keyword">Digital-Humano</div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       PHASE 3 — CREATIVE DIRECTION
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-eyebrow">Phase 3 — Creative Direction</div>
+    <h2 class="section-title">The Design Decision</h2>
+    <p class="section-sub">One opinionated creative direction chosen to stand apart from every competitor identified in the audit.</p>
+
+    <div class="direction-row" style="margin-bottom:20px">
+      <div class="direction-card">
+        <h4>Typography Direction</h4>
+        <p><strong>DM Sans</strong> — a humanist geometric sans-serif with warm, slightly optical corrections. It reads at small sizes (app labels, dashboard numbers) while carrying enough personality to feel like a brand choice, not a default. Paired with <strong>DM Serif Display</strong> (italic) for heading moments that need warmth. The combination is modern without clinical sterility, and warm without being childish. Both are free, Portuguese-legible, and web-optimised.</p>
+      </div>
+      <div class="direction-card">
+        <h4>Colour Direction</h4>
+        <p><strong>Forest green as primary</strong> — not clinical, not corporate, not cold. The green of the Portuguese Serra, of aloe vera, of a kitchen garden. It reads as calm, organic, and trustworthy. Offset with a warm <strong>Azulejo terracota</strong> accent — the warmth of Portuguese tiles. Background in <strong>areia</strong> (warm off-white), not sterile white. Together, this palette is completely unoccupied in the care-tech market.</p>
+      </div>
+      <div class="direction-card">
+        <h4>Symbol Direction</h4>
+        <p>The icon is a <strong>care circle monogram</strong> — a stylised "CJ" where the C opens gently around a soft inner arc representing continuity, togetherness, and the quiet enclosure of family care. It reads as: a circle (wholeness, family), a C (brand initial), and an arc inside (J initial, inner protection). At small sizes it reads as a calm, geometric app icon. It deliberately avoids hands, hearts, crosses, houses, and stick figures.</p>
+      </div>
+      <div class="direction-card">
+        <h4>Differentiation</h4>
+        <p>No competitor uses forest green + terracota + warm areia together. No Portuguese care brand has a monogram-led icon instead of literal imagery. No international app speaks with this cultural specificity. The identity will be immediately recognisable as belonging to the Portuguese family context while being modern enough to sit in an app store next to European health-tech products.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       PHASE 4 — LOGO SYSTEM
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-eyebrow">Phase 4 — Logo System</div>
+    <h2 class="section-title">Visual Identity Assets</h2>
+    <p class="section-sub">Complete logo system across all contexts — from website header to emergency card.</p>
+
+    <div class="logo-grid">
+
+      <!-- A: Primary on white -->
+      <div class="logo-tile">
+        <div class="logo-tile-header">A — Primary Wordmark · Light Background</div>
+        <div class="logo-stage on-white">
+          <svg viewBox="0 0 320 72" width="280" xmlns="http://www.w3.org/2000/svg" aria-label="CuidarJuntos logo">
+            <!-- Icon mark -->
+            <g transform="translate(0,4)">
+              <!-- Outer C arc -->
+              <path d="M32 4 A28 28 0 1 0 32 60" fill="none" stroke="#2D6A52" stroke-width="5.5" stroke-linecap="round"/>
+              <!-- Inner J arc -->
+              <path d="M32 18 A14 14 0 1 0 32 46" fill="none" stroke="#3D8B6E" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+              <!-- Centre dot -->
+              <circle cx="32" cy="32" r="3.5" fill="#C8623A"/>
+            </g>
+            <!-- Wordmark -->
+            <text x="76" y="30" font-family="'DM Sans','Helvetica Neue',Arial,sans-serif" font-size="22" font-weight="600" fill="#3C2E28" letter-spacing="-0.3">Cuidar</text>
+            <text x="76" y="56" font-family="'DM Sans','Helvetica Neue',Arial,sans-serif" font-size="22" font-weight="300" fill="#2D6A52" letter-spacing="-0.3">Juntos</text>
+          </svg>
+        </div>
+        <div class="logo-caption">Primary usage — website header, documents, light surfaces</div>
+      </div>
+
+      <!-- B: Dark background -->
+      <div class="logo-tile">
+        <div class="logo-tile-header">B — Primary Wordmark · Dark Background</div>
+        <div class="logo-stage on-dark">
+          <svg viewBox="0 0 320 72" width="280" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(0,4)">
+              <path d="M32 4 A28 28 0 1 0 32 60" fill="none" stroke="#A8D5BF" stroke-width="5.5" stroke-linecap="round"/>
+              <path d="M32 18 A14 14 0 1 0 32 46" fill="none" stroke="#7EC8A0" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+              <circle cx="32" cy="32" r="3.5" fill="#D4845A"/>
+            </g>
+            <text x="76" y="30" font-family="'DM Sans','Helvetica Neue',Arial,sans-serif" font-size="22" font-weight="600" fill="#FDFAF7" letter-spacing="-0.3">Cuidar</text>
+            <text x="76" y="56" font-family="'DM Sans','Helvetica Neue',Arial,sans-serif" font-size="22" font-weight="300" fill="#A8D5BF" letter-spacing="-0.3">Juntos</text>
+          </svg>
+        </div>
+        <div class="logo-caption">Dashboard sidebar, dark mode, dark print backgrounds</div>
+      </div>
+
+      <!-- C: Gradient -->
+      <div class="logo-tile">
+        <div class="logo-tile-header">C — Wordmark on Brand Gradient</div>
+        <div class="logo-stage on-grad">
+          <svg viewBox="0 0 320 72" width="280" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(0,4)">
+              <path d="M32 4 A28 28 0 1 0 32 60" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="5.5" stroke-linecap="round"/>
+              <path d="M32 18 A14 14 0 1 0 32 46" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="4" stroke-linecap="round"/>
+              <circle cx="32" cy="32" r="3.5" fill="#F5C88A"/>
+            </g>
+            <text x="76" y="30" font-family="'DM Sans','Helvetica Neue',Arial,sans-serif" font-size="22" font-weight="600" fill="#ffffff" letter-spacing="-0.3">Cuidar</text>
+            <text x="76" y="56" font-family="'DM Sans','Helvetica Neue',Arial,sans-serif" font-size="22" font-weight="300" fill="rgba(255,255,255,0.75)" letter-spacing="-0.3">Juntos</text>
+          </svg>
+        </div>
+        <div class="logo-caption">Marketing materials, landing page hero, social media</div>
+      </div>
+
+      <!-- D: Full lockup horizontal -->
+      <div class="logo-tile">
+        <div class="logo-tile-header">D — Combined Lockup · Horizontal</div>
+        <div class="logo-stage on-light" style="flex-direction:column;gap:20px">
+          <svg viewBox="0 0 360 52" width="300" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(0,0)">
+              <path d="M26 2 A24 24 0 1 0 26 50" fill="none" stroke="#2D6A52" stroke-width="5" stroke-linecap="round"/>
+              <path d="M26 13 A13 13 0 1 0 26 39" fill="none" stroke="#3D8B6E" stroke-width="3.5" stroke-linecap="round" opacity="0.65"/>
+              <circle cx="26" cy="26" r="3" fill="#C8623A"/>
+            </g>
+            <line x1="62" y1="8" x2="62" y2="44" stroke="#E0D9D1" stroke-width="1"/>
+            <text x="74" y="24" font-family="'DM Sans','Helvetica Neue',Arial,sans-serif" font-size="16" font-weight="600" fill="#3C2E28" letter-spacing="-0.2">Cuidar</text>
+            <text x="74" y="43" font-family="'DM Sans','Helvetica Neue',Arial,sans-serif" font-size="16" font-weight="300" fill="#2D6A52" letter-spacing="-0.2">Juntos</text>
+            <text x="158" y="33" font-family="'DM Sans','Helvetica Neue',Arial,sans-serif" font-size="10.5" font-weight="400" fill="#6B6560" letter-spacing="0.04em">organizar · cuidar · juntos</text>
+          </svg>
+        </div>
+        <div class="logo-caption">Email signatures, letterheads, co-branded materials</div>
+      </div>
+
+      <!-- E: Icon only -->
+      <div class="logo-tile">
+        <div class="logo-tile-header">E — App Icon · Square Rounded</div>
+        <div class="logo-stage on-white" style="gap:24px">
+          <!-- Large app icon -->
+          <div style="background:var(--cj-grad);border-radius:22px;width:96px;height:96px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-md)">
+            <svg viewBox="0 0 64 64" width="60" xmlns="http://www.w3.org/2000/svg">
+              <path d="M32 5 A27 27 0 1 0 32 59" fill="none" stroke="rgba(255,255,255,0.92)" stroke-width="5.5" stroke-linecap="round"/>
+              <path d="M32 16 A16 16 0 1 0 32 48" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="3.5" stroke-linecap="round"/>
+              <circle cx="32" cy="32" r="4" fill="#F5C88A"/>
+            </svg>
+          </div>
+          <!-- Medium -->
+          <div style="background:var(--cj-grad);border-radius:12px;width:56px;height:56px;display:flex;align-items:center;justify-content:center;">
+            <svg viewBox="0 0 64 64" width="40" xmlns="http://www.w3.org/2000/svg">
+              <path d="M32 5 A27 27 0 1 0 32 59" fill="none" stroke="rgba(255,255,255,0.92)" stroke-width="6" stroke-linecap="round"/>
+              <path d="M32 16 A16 16 0 1 0 32 48" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="4" stroke-linecap="round"/>
+              <circle cx="32" cy="32" r="4" fill="#F5C88A"/>
+            </svg>
+          </div>
+          <!-- Small -->
+          <div style="background:var(--cj-verde);border-radius:7px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;">
+            <svg viewBox="0 0 64 64" width="24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M32 5 A27 27 0 1 0 32 59" fill="none" stroke="rgba(255,255,255,0.92)" stroke-width="7" stroke-linecap="round"/>
+              <path d="M32 16 A16 16 0 1 0 32 48" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="4.5" stroke-linecap="round"/>
+              <circle cx="32" cy="32" r="5" fill="#F5C88A"/>
+            </svg>
+          </div>
+        </div>
+        <div class="logo-caption">App store icon (512px), home screen, notification badge</div>
+      </div>
+
+      <!-- F: Favicon -->
+      <div class="logo-tile">
+        <div class="logo-tile-header">F — Favicon · 32×32</div>
+        <div class="logo-stage on-white" style="gap:20px">
+          <div style="display:flex;gap:16px;align-items:center">
+            <!-- 32px favicon simulation -->
+            <div>
+              <div style="background:var(--cj-verde);border-radius:4px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.15)">
+                <svg viewBox="0 0 64 64" width="22" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M32 5 A27 27 0 1 0 32 59" fill="none" stroke="rgba(255,255,255,0.95)" stroke-width="8" stroke-linecap="round"/>
+                  <circle cx="32" cy="32" r="5" fill="#F5C88A"/>
+                </svg>
+              </div>
+              <div style="font-size:10px;color:var(--cj-cinza);margin-top:6px;text-align:center">32px</div>
+            </div>
+            <!-- 16px -->
+            <div>
+              <div style="background:var(--cj-verde);border-radius:2px;width:16px;height:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.15)">
+                <svg viewBox="0 0 64 64" width="11" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M32 5 A27 27 0 1 0 32 59" fill="none" stroke="rgba(255,255,255,0.95)" stroke-width="9" stroke-linecap="round"/>
+                  <circle cx="32" cy="32" r="6" fill="#F5C88A"/>
+                </svg>
+              </div>
+              <div style="font-size:10px;color:var(--cj-cinza);margin-top:6px;text-align:center">16px</div>
+            </div>
+            <!-- Large preview -->
+            <div>
+              <div style="background:var(--cj-verde);border-radius:10px;width:64px;height:64px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-md)">
+                <svg viewBox="0 0 64 64" width="48" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M32 5 A27 27 0 1 0 32 59" fill="none" stroke="rgba(255,255,255,0.92)" stroke-width="6" stroke-linecap="round"/>
+                  <path d="M32 16 A16 16 0 1 0 32 48" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="4" stroke-linecap="round"/>
+                  <circle cx="32" cy="32" r="4.5" fill="#F5C88A"/>
+                </svg>
+              </div>
+              <div style="font-size:10px;color:var(--cj-cinza);margin-top:6px;text-align:center">Preview</div>
+            </div>
+          </div>
+        </div>
+        <div class="logo-caption">Favicon at 32×32, 16×16 — browser tab, bookmark bar</div>
+      </div>
+
+      <!-- G: One-color -->
+      <div class="logo-tile">
+        <div class="logo-tile-header">G — One-Colour Version</div>
+        <div class="logo-stage on-pale" style="gap:28px">
+          <!-- Forest green solid -->
+          <svg viewBox="0 0 200 72" width="180" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(0,4)">
+              <path d="M32 4 A28 28 0 1 0 32 60" fill="none" stroke="#2D6A52" stroke-width="5.5" stroke-linecap="round"/>
+              <path d="M32 18 A14 14 0 1 0 32 46" fill="none" stroke="#2D6A52" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+              <circle cx="32" cy="32" r="3.5" fill="#2D6A52"/>
+            </g>
+            <text x="76" y="30" font-family="'DM Sans','Helvetica Neue',Arial,sans-serif" font-size="22" font-weight="600" fill="#2D6A52" letter-spacing="-0.3">Cuidar</text>
+            <text x="76" y="56" font-family="'DM Sans','Helvetica Neue',Arial,sans-serif" font-size="22" font-weight="300" fill="#2D6A52" letter-spacing="-0.3">Juntos</text>
+          </svg>
+        </div>
+        <div class="logo-caption">Embroidery, single-colour print, stamps, embossing</div>
+      </div>
+
+      <!-- H: Sidebar small -->
+      <div class="logo-tile">
+        <div class="logo-tile-header">H — Dashboard Sidebar · Collapsed & Expanded</div>
+        <div class="logo-stage on-dark" style="gap:28px">
+          <!-- Collapsed sidebar -->
+          <div class="sidebar-demo" style="width:56px;padding:12px 8px">
+            <div style="display:flex;align-items:center;justify-content:center;margin-bottom:20px">
+              <svg viewBox="0 0 64 64" width="28" xmlns="http://www.w3.org/2000/svg">
+                <path d="M32 5 A27 27 0 1 0 32 59" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="7" stroke-linecap="round"/>
+                <path d="M32 16 A16 16 0 1 0 32 48" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="4.5" stroke-linecap="round"/>
+                <circle cx="32" cy="32" r="4.5" fill="#D4845A"/>
+              </svg>
+            </div>
+            <div style="width:20px;height:3px;background:rgba(255,255,255,.15);border-radius:2px;margin:8px auto"></div>
+            <div style="width:20px;height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin:8px auto"></div>
+            <div style="width:20px;height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin:8px auto"></div>
+          </div>
+          <!-- Expanded sidebar -->
+          <div class="sidebar-demo">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;padding:0 2px">
+              <svg viewBox="0 0 64 64" width="22" xmlns="http://www.w3.org/2000/svg">
+                <path d="M32 5 A27 27 0 1 0 32 59" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="7" stroke-linecap="round"/>
+                <circle cx="32" cy="32" r="4.5" fill="#D4845A"/>
+              </svg>
+              <span style="font-size:12px;font-weight:600;color:#fff;letter-spacing:-.2px">CuidarJuntos</span>
+            </div>
+            <div class="sidebar-demo-item active"><span class="icon-dot"></span>Início</div>
+            <div class="sidebar-demo-item"><span class="icon-dot"></span>Medicamentos</div>
+            <div class="sidebar-demo-item"><span class="icon-dot"></span>Consultas</div>
+            <div class="sidebar-demo-item"><span class="icon-dot"></span>Documentos</div>
+            <div class="sidebar-demo-item"><span class="icon-dot"></span>Família</div>
+          </div>
+        </div>
+        <div class="logo-caption">Collapsed (icon-only) and expanded sidebar states</div>
+      </div>
+
+      <!-- I: Emergency card (full width) -->
+      <div class="logo-tile full-width">
+        <div class="logo-tile-header">I — Emergency Card · Print Version</div>
+        <div class="logo-stage on-light" style="flex-direction:column;gap:8px">
+          <div class="emergency-card">
+            <div class="ec-header">
+              <svg viewBox="0 0 64 64" width="26" xmlns="http://www.w3.org/2000/svg">
+                <path d="M32 5 A27 27 0 1 0 32 59" fill="none" stroke="#2D6A52" stroke-width="6.5" stroke-linecap="round"/>
+                <path d="M32 16 A16 16 0 1 0 32 48" fill="none" stroke="#3D8B6E" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+                <circle cx="32" cy="32" r="4" fill="#C8623A"/>
+              </svg>
+              <div>
+                <div class="ec-title">CuidarJuntos</div>
+                <div class="ec-sub">Cartão de Emergência</div>
+              </div>
+            </div>
+            <div class="ec-field"><div class="ec-label">Nome</div><div class="ec-value">Maria Conceição Ferreira</div></div>
+            <div class="ec-field"><div class="ec-label">Data de Nascimento</div><div class="ec-value">12 de Março, 1944</div></div>
+            <div class="ec-field"><div class="ec-label">Contacto Familiar</div><div class="ec-value ec-accent">+351 912 345 678 (Filha — Ana)</div></div>
+            <div class="ec-field"><div class="ec-label">Medicação Crítica</div><div class="ec-value">Varfarina 5mg · Enalapril 10mg</div></div>
+            <div class="ec-field"><div class="ec-label">Alergias</div><div class="ec-value" style="color:var(--cj-terracota);font-weight:600">Penicilina · Aspirina</div></div>
+            <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--cj-border);font-size:10px;color:var(--cj-cinza)">cuidarjuntos.pt · Atualizado: Jun 2025</div>
+          </div>
+          <p style="font-size:12px;color:var(--cj-cinza);max-width:400px;text-align:center">85mm × 55mm print card — designed for legibility without magnification, two-colour printing compatibility, and lamination.</p>
+        </div>
+        <div class="logo-caption">Printable emergency contact card — included in PDF export feature</div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       PHASE 5 — ASSET EXPORT KIT
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-eyebrow">Phase 5 — Asset Export Kit</div>
+    <h2 class="section-title">Copyable SVG Assets</h2>
+    <p class="section-sub">Production-ready SVG code for each asset. Copy each block and save as the indicated filename. All paths are clean and optimised for export.</p>
+
+    <!-- Asset 1: Primary logo -->
+    <div class="export-file-label">cuidarjuntos-logo.svg</div>
+    <div class="code-block">
+      <pre><span class="comment">&lt;!-- CuidarJuntos Primary Logo SVG
+     Recommended size: 220×72px minimum
+     Clear space: 1× icon height on all sides --&gt;</span>
+<span class="tag">&lt;svg</span> <span class="attr">viewBox</span>=<span class="val">"0 0 320 72"</span> <span class="attr">xmlns</span>=<span class="val">"http://www.w3.org/2000/svg"</span> <span class="attr">role</span>=<span class="val">"img"</span>
+     <span class="attr">aria-label</span>=<span class="val">"CuidarJuntos"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;g</span> <span class="attr">transform</span>=<span class="val">"translate(0,4)"</span><span class="tag">&gt;</span>
+    <span class="comment">&lt;!-- Outer C arc --&gt;</span>
+    <span class="tag">&lt;path</span> <span class="attr">d</span>=<span class="val">"M32 4 A28 28 0 1 0 32 60"</span> <span class="attr">fill</span>=<span class="val">"none"</span>
+          <span class="attr">stroke</span>=<span class="val">"#2D6A52"</span> <span class="attr">stroke-width</span>=<span class="val">"5.5"</span> <span class="attr">stroke-linecap</span>=<span class="val">"round"</span><span class="tag">/&gt;</span>
+    <span class="comment">&lt;!-- Inner J arc --&gt;</span>
+    <span class="tag">&lt;path</span> <span class="attr">d</span>=<span class="val">"M32 18 A14 14 0 1 0 32 46"</span> <span class="attr">fill</span>=<span class="val">"none"</span>
+          <span class="attr">stroke</span>=<span class="val">"#3D8B6E"</span> <span class="attr">stroke-width</span>=<span class="val">"4"</span> <span class="attr">stroke-linecap</span>=<span class="val">"round"</span>
+          <span class="attr">opacity</span>=<span class="val">"0.7"</span><span class="tag">/&gt;</span>
+    <span class="comment">&lt;!-- Terracota centre dot --&gt;</span>
+    <span class="tag">&lt;circle</span> <span class="attr">cx</span>=<span class="val">"32"</span> <span class="attr">cy</span>=<span class="val">"32"</span> <span class="attr">r</span>=<span class="val">"3.5"</span> <span class="attr">fill</span>=<span class="val">"#C8623A"</span><span class="tag">/&gt;</span>
+  <span class="tag">&lt;/g&gt;</span>
+  <span class="comment">&lt;!-- Wordmark --&gt;</span>
+  <span class="tag">&lt;text</span> <span class="attr">x</span>=<span class="val">"76"</span> <span class="attr">y</span>=<span class="val">"30"</span>
+        <span class="attr">font-family</span>=<span class="val">"'DM Sans','Helvetica Neue',Arial,sans-serif"</span>
+        <span class="attr">font-size</span>=<span class="val">"22"</span> <span class="attr">font-weight</span>=<span class="val">"600"</span>
+        <span class="attr">fill</span>=<span class="val">"#3C2E28"</span> <span class="attr">letter-spacing</span>=<span class="val">"-0.3"</span><span class="tag">&gt;</span>Cuidar<span class="tag">&lt;/text&gt;</span>
+  <span class="tag">&lt;text</span> <span class="attr">x</span>=<span class="val">"76"</span> <span class="attr">y</span>=<span class="val">"56"</span>
+        <span class="attr">font-family</span>=<span class="val">"'DM Sans','Helvetica Neue',Arial,sans-serif"</span>
+        <span class="attr">font-size</span>=<span class="val">"22"</span> <span class="attr">font-weight</span>=<span class="val">"300"</span>
+        <span class="attr">fill</span>=<span class="val">"#2D6A52"</span> <span class="attr">letter-spacing</span>=<span class="val">"-0.3"</span><span class="tag">&gt;</span>Juntos<span class="tag">&lt;/text&gt;</span>
+<span class="tag">&lt;/svg&gt;</span></pre>
+    </div>
+
+    <!-- Asset 2: Icon only -->
+    <div class="export-file-label" style="margin-top:28px">cuidarjuntos-icon.svg</div>
+    <div class="code-block">
+      <pre><span class="comment">&lt;!-- CuidarJuntos Icon Mark — standalone
+     Use for app icons, favicons, profile images --&gt;</span>
+<span class="tag">&lt;svg</span> <span class="attr">viewBox</span>=<span class="val">"0 0 64 64"</span> <span class="attr">xmlns</span>=<span class="val">"http://www.w3.org/2000/svg"</span>
+     <span class="attr">role</span>=<span class="val">"img"</span> <span class="attr">aria-label</span>=<span class="val">"CuidarJuntos icon"</span><span class="tag">&gt;</span>
+  <span class="comment">&lt;!-- Outer C arc --&gt;</span>
+  <span class="tag">&lt;path</span> <span class="attr">d</span>=<span class="val">"M32 5 A27 27 0 1 0 32 59"</span> <span class="attr">fill</span>=<span class="val">"none"</span>
+        <span class="attr">stroke</span>=<span class="val">"#2D6A52"</span> <span class="attr">stroke-width</span>=<span class="val">"5.5"</span> <span class="attr">stroke-linecap</span>=<span class="val">"round"</span><span class="tag">/&gt;</span>
+  <span class="comment">&lt;!-- Inner J arc --&gt;</span>
+  <span class="tag">&lt;path</span> <span class="attr">d</span>=<span class="val">"M32 16 A16 16 0 1 0 32 48"</span> <span class="attr">fill</span>=<span class="val">"none"</span>
+        <span class="attr">stroke</span>=<span class="val">"#3D8B6E"</span> <span class="attr">stroke-width</span>=<span class="val">"4"</span> <span class="attr">stroke-linecap</span>=<span class="val">"round"</span>
+        <span class="attr">opacity</span>=<span class="val">"0.65"</span><span class="tag">/&gt;</span>
+  <span class="comment">&lt;!-- Centre accent dot --&gt;</span>
+  <span class="tag">&lt;circle</span> <span class="attr">cx</span>=<span class="val">"32"</span> <span class="attr">cy</span>=<span class="val">"32"</span> <span class="attr">r</span>=<span class="val">"4"</span> <span class="attr">fill</span>=<span class="val">"#C8623A"</span><span class="tag">/&gt;</span>
+<span class="tag">&lt;/svg&gt;</span></pre>
+    </div>
+
+    <!-- Asset 3: Favicon -->
+    <div class="export-file-label" style="margin-top:28px">favicon.svg</div>
+    <div class="code-block">
+      <pre><span class="comment">&lt;!-- CuidarJuntos Favicon SVG
+     Renders at 32×32 and 16×16
+     Simplified version — outer arc + dot only --&gt;</span>
+<span class="tag">&lt;svg</span> <span class="attr">viewBox</span>=<span class="val">"0 0 64 64"</span> <span class="attr">xmlns</span>=<span class="val">"http://www.w3.org/2000/svg"</span><span class="tag">&gt;</span>
+  <span class="comment">&lt;!-- Green background square --&gt;</span>
+  <span class="tag">&lt;rect</span> <span class="attr">width</span>=<span class="val">"64"</span> <span class="attr">height</span>=<span class="val">"64"</span> <span class="attr">rx</span>=<span class="val">"14"</span> <span class="attr">fill</span>=<span class="val">"#2D6A52"</span><span class="tag">/&gt;</span>
+  <span class="comment">&lt;!-- C arc — white on green --&gt;</span>
+  <span class="tag">&lt;path</span> <span class="attr">d</span>=<span class="val">"M32 9 A23 23 0 1 0 32 55"</span> <span class="attr">fill</span>=<span class="val">"none"</span>
+        <span class="attr">stroke</span>=<span class="val">"rgba(255,255,255,0.92)"</span> <span class="attr">stroke-width</span>=<span class="val">"7"</span>
+        <span class="attr">stroke-linecap</span>=<span class="val">"round"</span><span class="tag">/&gt;</span>
+  <span class="comment">&lt;!-- Terracota dot --&gt;</span>
+  <span class="tag">&lt;circle</span> <span class="attr">cx</span>=<span class="val">"32"</span> <span class="attr">cy</span>=<span class="val">"32"</span> <span class="attr">r</span>=<span class="val">"5"</span> <span class="attr">fill</span>=<span class="val">"#F5C88A"</span><span class="tag">/&gt;</span>
+<span class="tag">&lt;/svg&gt;</span></pre>
+    </div>
+
+    <!-- Asset 4: One-color -->
+    <div class="export-file-label" style="margin-top:28px">cuidarjuntos-logo-onecolor.svg</div>
+    <div class="code-block">
+      <pre><span class="comment">&lt;!-- CuidarJuntos One-Colour Logo
+     Single green version — embroidery, stamps, embossing
+     Change fill/stroke colour as needed for context --&gt;</span>
+<span class="tag">&lt;svg</span> <span class="attr">viewBox</span>=<span class="val">"0 0 320 72"</span> <span class="attr">xmlns</span>=<span class="val">"http://www.w3.org/2000/svg"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;g</span> <span class="attr">transform</span>=<span class="val">"translate(0,4)"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;path</span> <span class="attr">d</span>=<span class="val">"M32 4 A28 28 0 1 0 32 60"</span> <span class="attr">fill</span>=<span class="val">"none"</span>
+          <span class="attr">stroke</span>=<span class="val">"#2D6A52"</span> <span class="attr">stroke-width</span>=<span class="val">"5.5"</span> <span class="attr">stroke-linecap</span>=<span class="val">"round"</span><span class="tag">/&gt;</span>
+    <span class="tag">&lt;path</span> <span class="attr">d</span>=<span class="val">"M32 18 A14 14 0 1 0 32 46"</span> <span class="attr">fill</span>=<span class="val">"none"</span>
+          <span class="attr">stroke</span>=<span class="val">"#2D6A52"</span> <span class="attr">stroke-width</span>=<span class="val">"4"</span> <span class="attr">stroke-linecap</span>=<span class="val">"round"</span>
+          <span class="attr">opacity</span>=<span class="val">"0.5"</span><span class="tag">/&gt;</span>
+    <span class="tag">&lt;circle</span> <span class="attr">cx</span>=<span class="val">"32"</span> <span class="attr">cy</span>=<span class="val">"32"</span> <span class="attr">r</span>=<span class="val">"3.5"</span> <span class="attr">fill</span>=<span class="val">"#2D6A52"</span><span class="tag">/&gt;</span>
+  <span class="tag">&lt;/g&gt;</span>
+  <span class="tag">&lt;text</span> <span class="attr">x</span>=<span class="val">"76"</span> <span class="attr">y</span>=<span class="val">"30"</span>
+        <span class="attr">font-family</span>=<span class="val">"'DM Sans','Helvetica Neue',Arial,sans-serif"</span>
+        <span class="attr">font-size</span>=<span class="val">"22"</span> <span class="attr">font-weight</span>=<span class="val">"600"</span>
+        <span class="attr">fill</span>=<span class="val">"#2D6A52"</span><span class="tag">&gt;</span>Cuidar<span class="tag">&lt;/text&gt;</span>
+  <span class="tag">&lt;text</span> <span class="attr">x</span>=<span class="val">"76"</span> <span class="attr">y</span>=<span class="val">"56"</span>
+        <span class="attr">font-family</span>=<span class="val">"'DM Sans','Helvetica Neue',Arial,sans-serif"</span>
+        <span class="attr">font-size</span>=<span class="val">"22"</span> <span class="attr">font-weight</span>=<span class="val">"300"</span>
+        <span class="attr">fill</span>=<span class="val">"#2D6A52"</span><span class="tag">&gt;</span>Juntos<span class="tag">&lt;/text&gt;</span>
+<span class="tag">&lt;/svg&gt;</span></pre>
+    </div>
+
+    <!-- Asset 5: White logo -->
+    <div class="export-file-label" style="margin-top:28px">cuidarjuntos-logo-white.svg</div>
+    <div class="code-block">
+      <pre><span class="comment">&lt;!-- CuidarJuntos White Logo
+     Use on dark backgrounds and gradient backgrounds --&gt;</span>
+<span class="tag">&lt;svg</span> <span class="attr">viewBox</span>=<span class="val">"0 0 320 72"</span> <span class="attr">xmlns</span>=<span class="val">"http://www.w3.org/2000/svg"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;g</span> <span class="attr">transform</span>=<span class="val">"translate(0,4)"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;path</span> <span class="attr">d</span>=<span class="val">"M32 4 A28 28 0 1 0 32 60"</span> <span class="attr">fill</span>=<span class="val">"none"</span>
+          <span class="attr">stroke</span>=<span class="val">"rgba(255,255,255,0.92)"</span> <span class="attr">stroke-width</span>=<span class="val">"5.5"</span>
+          <span class="attr">stroke-linecap</span>=<span class="val">"round"</span><span class="tag">/&gt;</span>
+    <span class="tag">&lt;path</span> <span class="attr">d</span>=<span class="val">"M32 18 A14 14 0 1 0 32 46"</span> <span class="attr">fill</span>=<span class="val">"none"</span>
+          <span class="attr">stroke</span>=<span class="val">"rgba(255,255,255,0.55)"</span> <span class="attr">stroke-width</span>=<span class="val">"4"</span>
+          <span class="attr">stroke-linecap</span>=<span class="val">"round"</span><span class="tag">/&gt;</span>
+    <span class="tag">&lt;circle</span> <span class="attr">cx</span>=<span class="val">"32"</span> <span class="attr">cy</span>=<span class="val">"32"</span> <span class="attr">r</span>=<span class="val">"3.5"</span> <span class="attr">fill</span>=<span class="val">"#F5C88A"</span><span class="tag">/&gt;</span>
+  <span class="tag">&lt;/g&gt;</span>
+  <span class="tag">&lt;text</span> <span class="attr">x</span>=<span class="val">"76"</span> <span class="attr">y</span>=<span class="val">"30"</span>
+        <span class="attr">font-family</span>=<span class="val">"'DM Sans','Helvetica Neue',Arial,sans-serif"</span>
+        <span class="attr">font-size</span>=<span class="val">"22"</span> <span class="attr">font-weight</span>=<span class="val">"600"</span>
+        <span class="attr">fill</span>=<span class="val">"#ffffff"</span><span class="tag">&gt;</span>Cuidar<span class="tag">&lt;/text&gt;</span>
+  <span class="tag">&lt;text</span> <span class="attr">x</span>=<span class="val">"76"</span> <span class="attr">y</span>=<span class="val">"56"</span>
+        <span class="attr">font-family</span>=<span class="val">"'DM Sans','Helvetica Neue',Arial,sans-serif"</span>
+        <span class="attr">font-size</span>=<span class="val">"22"</span> <span class="attr">font-weight</span>=<span class="val">"300"</span>
+        <span class="attr">fill</span>=<span class="val">"rgba(255,255,255,0.78)"</span><span class="tag">&gt;</span>Juntos<span class="tag">&lt;/text&gt;</span>
+<span class="tag">&lt;/svg&gt;</span></pre>
+    </div>
+
+    <!-- Asset 6: App icon -->
+    <div class="export-file-label" style="margin-top:28px">cuidarjuntos-app-icon.svg</div>
+    <div class="code-block">
+      <pre><span class="comment">&lt;!-- CuidarJuntos App Icon
+     Export at 512×512px for app stores
+     Green gradient background with white icon --&gt;</span>
+<span class="tag">&lt;svg</span> <span class="attr">viewBox</span>=<span class="val">"0 0 512 512"</span> <span class="attr">xmlns</span>=<span class="val">"http://www.w3.org/2000/svg"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;defs&gt;</span>
+    <span class="tag">&lt;linearGradient</span> <span class="attr">id</span>=<span class="val">"appGrad"</span> <span class="attr">x1</span>=<span class="val">"0"</span> <span class="attr">y1</span>=<span class="val">"0"</span> <span class="attr">x2</span>=<span class="val">"1"</span> <span class="attr">y2</span>=<span class="val">"1"</span><span class="tag">&gt;</span>
+      <span class="tag">&lt;stop</span> <span class="attr">offset</span>=<span class="val">"0%"</span>   <span class="attr">stop-color</span>=<span class="val">"#3D8B6E"</span><span class="tag">/&gt;</span>
+      <span class="tag">&lt;stop</span> <span class="attr">offset</span>=<span class="val">"60%"</span>  <span class="attr">stop-color</span>=<span class="val">"#2D6A52"</span><span class="tag">/&gt;</span>
+      <span class="tag">&lt;stop</span> <span class="attr">offset</span>=<span class="val">"100%"</span> <span class="attr">stop-color</span>=<span class="val">"#1F4E3D"</span><span class="tag">/&gt;</span>
+    <span class="tag">&lt;/linearGradient&gt;</span>
+  <span class="tag">&lt;/defs&gt;</span>
+  <span class="comment">&lt;!-- Background --&gt;</span>
+  <span class="tag">&lt;rect</span> <span class="attr">width</span>=<span class="val">"512"</span> <span class="attr">height</span>=<span class="val">"512"</span> <span class="attr">rx</span>=<span class="val">"112"</span> <span class="attr">fill</span>=<span class="val">"url(#appGrad)"</span><span class="tag">/&gt;</span>
+  <span class="comment">&lt;!-- Outer C arc — centred in icon --&gt;</span>
+  <span class="tag">&lt;path</span> <span class="attr">d</span>=<span class="val">"M256 88 A168 168 0 1 0 256 424"</span> <span class="attr">fill</span>=<span class="val">"none"</span>
+        <span class="attr">stroke</span>=<span class="val">"rgba(255,255,255,0.92)"</span> <span class="attr">stroke-width</span>=<span class="val">"42"</span>
+        <span class="attr">stroke-linecap</span>=<span class="val">"round"</span><span class="tag">/&gt;</span>
+  <span class="comment">&lt;!-- Inner J arc --&gt;</span>
+  <span class="tag">&lt;path</span> <span class="attr">d</span>=<span class="val">"M256 176 A80 80 0 1 0 256 336"</span> <span class="attr">fill</span>=<span class="val">"none"</span>
+        <span class="attr">stroke</span>=<span class="val">"rgba(255,255,255,0.45)"</span> <span class="attr">stroke-width</span>=<span class="val">"28"</span>
+        <span class="attr">stroke-linecap</span>=<span class="val">"round"</span><span class="tag">/&gt;</span>
+  <span class="comment">&lt;!-- Warm centre dot --&gt;</span>
+  <span class="tag">&lt;circle</span> <span class="attr">cx</span>=<span class="val">"256"</span> <span class="attr">cy</span>=<span class="val">"256"</span> <span class="attr">r</span>=<span class="val">"28"</span> <span class="attr">fill</span>=<span class="val">"#F5C88A"</span><span class="tag">/&gt;</span>
+<span class="tag">&lt;/svg&gt;</span></pre>
+    </div>
+
+    <!-- PNG Export sizes -->
+    <div style="margin-top:40px">
+      <div class="section-eyebrow" style="margin-bottom:16px">Recommended PNG Export Sizes</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Use Case</th>
+            <th>File</th>
+            <th>Dimensions</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Browser Favicon</td><td>favicon.png</td><td>32×32 / 16×16</td><td>Export both sizes; also save as .ico</td></tr>
+          <tr><td>App Store Icon</td><td>cuidarjuntos-app-icon.png</td><td>512×512 (iOS: 1024×1024)</td><td>No transparency; rounded corners in OS</td></tr>
+          <tr><td>Social Profile Image</td><td>cuidarjuntos-social.png</td><td>1024×1024</td><td>Green background with icon; circle-safe zone</td></tr>
+          <tr><td>Dashboard Sidebar</td><td>cuidarjuntos-sidebar.png</td><td>128×128</td><td>Icon-only on transparent background</td></tr>
+          <tr><td>Email Signature</td><td>cuidarjuntos-email.png</td><td>320×88px</td><td>Full wordmark; 2× for retina</td></tr>
+          <tr><td>Website Header</td><td>cuidarjuntos-header.png</td><td>220×72px minimum</td><td>Full lockup; SVG preferred for web</td></tr>
+          <tr><td>Open Graph / Social Card</td><td>cuidarjuntos-og.png</td><td>1200×630px</td><td>Logo centred on gradient background</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+       PHASE 6 — DESIGN SYSTEM
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-eyebrow">Phase 6 — Design System</div>
+    <h2 class="section-title">Colour Palette</h2>
+    <p class="section-sub">A Portuguese family-care palette rooted in forest green and warm areia — completely unoccupied in the care-tech market.</p>
+
+    <div class="swatch-grid">
+      <div class="swatch">
+        <div class="swatch-color" style="background:#2D6A52"><span class="swatch-hex">#2D6A52</span></div>
+        <div class="swatch-info"><div class="swatch-name">Verde Serra</div><div class="swatch-use">Primary brand colour. Logo, CTA buttons, links, active states.</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#3D8B6E"><span class="swatch-hex">#3D8B6E</span></div>
+        <div class="swatch-info"><div class="swatch-name">Verde Claro</div><div class="swatch-use">Hover states, secondary buttons, icon highlights.</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#1F4E3D"><span class="swatch-hex">#1F4E3D</span></div>
+        <div class="swatch-info"><div class="swatch-name">Verde Fundo</div><div class="swatch-use">Dark sidebar, pressed states, gradient stop.</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#EAF4EF"><span class="swatch-hex swatch-hex dark">#EAF4EF</span></div>
+        <div class="swatch-info"><div class="swatch-name">Verde Pálido</div><div class="swatch-use">Surface tints, tag backgrounds, selected rows.</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#C8623A"><span class="swatch-hex">#C8623A</span></div>
+        <div class="swatch-info"><div class="swatch-name">Terracota</div><div class="swatch-use">Accent. Notifications, badges, emergency indicators.</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#D4845A"><span class="swatch-hex">#D4845A</span></div>
+        <div class="swatch-info"><div class="swatch-name">Cobre</div><div class="swatch-use">Accent light. Warm highlights, secondary alerts.</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#F5EFE6"><span class="swatch-hex swatch-hex dark">#F5EFE6</span></div>
+        <div class="swatch-info"><div class="swatch-name">Areia</div><div class="swatch-use">Page background. Warm off-white, never cold white.</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#FDFAF7"><span class="swatch-hex swatch-hex dark">#FDFAF7</span></div>
+        <div class="swatch-info"><div class="swatch-name">Branco Quente</div><div class="swatch-use">Card surfaces, modals, form fields.</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#3C2E28"><span class="swatch-hex">#3C2E28</span></div>
+        <div class="swatch-info"><div class="swatch-name">Terra</div><div class="swatch-use">Primary text. Rich dark brown, not cold black.</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#6B6560"><span class="swatch-hex">#6B6560</span></div>
+        <div class="swatch-info"><div class="swatch-name">Cinza Quente</div><div class="swatch-use">Muted text, captions, placeholders.</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#E0D9D1"><span class="swatch-hex swatch-hex dark">#E0D9D1</span></div>
+        <div class="swatch-info"><div class="swatch-name">Borda</div><div class="swatch-use">Borders, dividers, input outlines.</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#2D7A4F"><span class="swatch-hex">#2D7A4F</span></div>
+        <div class="swatch-info"><div class="swatch-name">Sucesso</div><div class="swatch-use">Positive states, confirmations, med-taken indicators.</div></div>
+      </div>
+    </div>
+
+    <!-- CSS Variables -->
+    <div style="margin-top:36px">
+      <div class="section-eyebrow" style="margin-bottom:14px">CSS Variables</div>
+      <div class="code-block">
+        <pre><span class="comment">/* CuidarJuntos Design Tokens — paste into :root */</span>
+<span class="tag">:root</span> {
+  <span class="comment">/* Colour */</span>
+  <span class="attr">--cj-verde:       </span><span class="val">#2D6A52</span>;
+  <span class="attr">--cj-verde-light: </span><span class="val">#3D8B6E</span>;
+  <span class="attr">--cj-verde-dark:  </span><span class="val">#1F4E3D</span>;
+  <span class="attr">--cj-verde-pale:  </span><span class="val">#EAF4EF</span>;
+  <span class="attr">--cj-terracota:   </span><span class="val">#C8623A</span>;
+  <span class="attr">--cj-cobre:       </span><span class="val">#D4845A</span>;
+  <span class="attr">--cj-areia:       </span><span class="val">#F5EFE6</span>;
+  <span class="attr">--cj-branco:      </span><span class="val">#FDFAF7</span>;
+  <span class="attr">--cj-terra:       </span><span class="val">#3C2E28</span>;
+  <span class="attr">--cj-cinza:       </span><span class="val">#6B6560</span>;
+  <span class="attr">--cj-border:      </span><span class="val">#E0D9D1</span>;
+  <span class="attr">--cj-sucesso:     </span><span class="val">#2D7A4F</span>;
+  <span class="attr">--cj-aviso:       </span><span class="val">#C88A2D</span>;
+
+  <span class="comment">/* Gradients */</span>
+  <span class="attr">--cj-grad:        </span><span class="val">linear-gradient(135deg, #3D8B6E 0%, #2D6A52 55%, #1F4E3D 100%)</span>;
+  <span class="attr">--cj-grad-warm:   </span><span class="val">linear-gradient(145deg, #EAF4EF 0%, #F5EFE6 100%)</span>;
+
+  <span class="comment">/* Typography */</span>
+  <span class="attr">--font-sans:      </span><span class="val">'DM Sans', 'Helvetica Neue', Arial, sans-serif</span>;
+  <span class="attr">--font-display:   </span><span class="val">'DM Serif Display', Georgia, 'Times New Roman', serif</span>;
+
+  <span class="comment">/* Spacing & Shape */</span>
+  <span class="attr">--radius-sm:  </span><span class="val">8px</span>;
+  <span class="attr">--radius-md:  </span><span class="val">14px</span>;
+  <span class="attr">--radius-lg:  </span><span class="val">22px</span>;
+  <span class="attr">--radius-xl:  </span><span class="val">32px</span>;
+  <span class="attr">--shadow-sm:  </span><span class="val">0 1px 4px rgba(44,68,52,.07), 0 2px 12px rgba(44,68,52,.06)</span>;
+  <span class="attr">--shadow-md:  </span><span class="val">0 4px 20px rgba(44,68,52,.10), 0 1px 4px rgba(44,68,52,.06)</span>;
+  <span class="attr">--shadow-lg:  </span><span class="val">0 12px 48px rgba(44,68,52,.14), 0 2px 8px rgba(44,68,52,.07)</span>;
+}</pre>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Typography System -->
+  <div class="section">
+    <div class="section-eyebrow">Phase 6 — Design System</div>
+    <h2 class="section-title">Typography System</h2>
+    <p class="section-sub">Two fonts. One warm sans, one humanist serif. Used with restraint so the type serves care, not chaos.</p>
+
+    <div class="card" style="margin-bottom:14px">
+      <div class="type-label">Google Fonts import</div>
+      <div style="background:#1A2E26;border-radius:8px;padding:12px 16px;margin-top:8px">
+        <pre style="font-family:'Courier New',monospace;font-size:12px;color:#A8D5BF;line-height:1.5">@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap');</pre>
+      </div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-label">Display / H1 — DM Serif Display Italic</div>
+      <div style="font-family:'DM Serif Display',Georgia,serif;font-size:clamp(28px,4vw,44px);font-style:italic;color:var(--cj-terra);line-height:1.15">Cuidar com calma.<br>Juntos.</div>
+      <div class="type-spec">font-family: 'DM Serif Display'; font-size: 44px; font-style: italic; line-height: 1.15; color: --cj-terra</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-label">H2 — DM Sans SemiBold</div>
+      <div style="font-family:'DM Sans',Arial,sans-serif;font-size:clamp(22px,3vw,30px);font-weight:600;color:var(--cj-terra);line-height:1.25">Organize medicamentos, consultas e documentos</div>
+      <div class="type-spec">font-family: 'DM Sans'; font-size: 30px; font-weight: 600; line-height: 1.25; color: --cj-terra</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-label">H3 — DM Sans Medium</div>
+      <div style="font-family:'DM Sans',Arial,sans-serif;font-size:20px;font-weight:500;color:var(--cj-terra)">Contactos de emergência da família</div>
+      <div class="type-spec">font-family: 'DM Sans'; font-size: 20px; font-weight: 500; color: --cj-terra</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-label">Body — DM Sans Regular</div>
+      <div style="font-family:'DM Sans',Arial,sans-serif;font-size:15px;font-weight:400;color:var(--cj-terra);line-height:1.65;max-width:560px">CuidarJuntos ajuda a sua família a organizar os cuidados dos seus entes queridos. Medicamentos, consultas, documentos e tarefas partilhadas — tudo num só lugar, acessível a toda a família.</div>
+      <div class="type-spec">font-family: 'DM Sans'; font-size: 15px; font-weight: 400; line-height: 1.65; color: --cj-terra</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-label">UI Label / Eyebrow — DM Sans SemiBold + tracking</div>
+      <div style="font-family:'DM Sans',Arial,sans-serif;font-size:11px;font-weight:600;color:var(--cj-verde);letter-spacing:.13em;text-transform:uppercase">Medicamentos · Próxima dose</div>
+      <div class="type-spec">font-size: 11px; font-weight: 600; letter-spacing: 0.13em; text-transform: uppercase; color: --cj-verde</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-label">Button — DM Sans Medium</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+        <button style="font-family:'DM Sans',Arial,sans-serif;font-size:14px;font-weight:500;background:var(--cj-verde);color:#fff;border:none;padding:11px 24px;border-radius:999px;cursor:pointer;letter-spacing:-.1px">Começar agora</button>
+        <button style="font-family:'DM Sans',Arial,sans-serif;font-size:14px;font-weight:500;background:transparent;color:var(--cj-verde);border:1.5px solid var(--cj-verde);padding:11px 24px;border-radius:999px;cursor:pointer">Saber mais</button>
+        <button style="font-family:'DM Sans',Arial,sans-serif;font-size:14px;font-weight:500;background:var(--cj-terracota);color:#fff;border:none;padding:11px 24px;border-radius:999px;cursor:pointer">Emergência</button>
+      </div>
+      <div class="type-spec">font-size: 14px; font-weight: 500; border-radius: 999px; padding: 11px 24px</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-label">Dashboard Number — DM Sans Light</div>
+      <div style="display:flex;gap:32px;flex-wrap:wrap;align-items:flex-end">
+        <div>
+          <div style="font-family:'DM Sans',Arial,sans-serif;font-size:36px;font-weight:300;color:var(--cj-verde);line-height:1">3</div>
+          <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--cj-cinza);margin-top:4px">Medicamentos hoje</div>
+        </div>
+        <div>
+          <div style="font-family:'DM Sans',Arial,sans-serif;font-size:36px;font-weight:300;color:var(--cj-terra);line-height:1">12</div>
+          <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--cj-cinza);margin-top:4px">Docs guardados</div>
+        </div>
+        <div>
+          <div style="font-family:'DM Sans',Arial,sans-serif;font-size:36px;font-weight:300;color:var(--cj-terracota);line-height:1">1</div>
+          <div style="font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--cj-cinza);margin-top:4px">Consulta amanhã</div>
+        </div>
+      </div>
+      <div class="type-spec">font-size: 36px; font-weight: 300; — large numerals for dashboard stats</div>
+    </div>
+  </div>
+
+
+  <!-- Logo Guidelines -->
+  <div class="section">
+    <div class="section-eyebrow">Phase 6 — Design System</div>
+    <h2 class="section-title">Logo Usage Guidelines</h2>
+    <p class="section-sub">Rules to protect the identity across all applications.</p>
+
+    <div class="card-grid-2" style="margin-bottom:20px">
+      <div class="card">
+        <div class="section-eyebrow" style="margin-bottom:12px">Clear Space</div>
+        <div style="background:var(--cj-verde-pale);border-radius:var(--radius-md);padding:28px;display:flex;align-items:center;justify-content:center;margin-bottom:14px">
+          <div style="position:relative;border:1.5px dashed rgba(45,106,82,.35);padding:20px;border-radius:6px">
+            <svg viewBox="0 0 200 52" width="160" xmlns="http://www.w3.org/2000/svg">
+              <g transform="translate(0,-2)">
+                <path d="M20 4 A17 17 0 1 0 20 38" fill="none" stroke="#2D6A52" stroke-width="3.5" stroke-linecap="round"/>
+                <path d="M20 11 A10 10 0 1 0 20 31" fill="none" stroke="#3D8B6E" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+                <circle cx="20" cy="21" r="2.5" fill="#C8623A"/>
+              </g>
+              <text x="47" y="20" font-family="'DM Sans',Arial,sans-serif" font-size="14" font-weight="600" fill="#3C2E28">Cuidar</text>
+              <text x="47" y="37" font-family="'DM Sans',Arial,sans-serif" font-size="14" font-weight="300" fill="#2D6A52">Juntos</text>
+            </svg>
+            <div style="position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--cj-verde);font-weight:600;white-space:nowrap">← X →</div>
+          </div>
+        </div>
+        <p style="font-size:13px;color:var(--cj-cinza);line-height:1.6">Minimum clear space = the height of the "C" arc on all sides. Never crowd the logo with other elements. On small formats (sidebar, favicon), use the icon-only mark.</p>
+      </div>
+
+      <div class="card">
+        <div class="section-eyebrow" style="margin-bottom:12px">Minimum Size</div>
+        <div style="display:flex;gap:20px;align-items:flex-end;margin-bottom:14px">
+          <div>
+            <svg viewBox="0 0 200 52" width="120" xmlns="http://www.w3.org/2000/svg">
+              <g transform="translate(0,-2)"><path d="M20 4 A17 17 0 1 0 20 38" fill="none" stroke="#2D6A52" stroke-width="3.5" stroke-linecap="round"/><circle cx="20" cy="21" r="2.5" fill="#C8623A"/></g>
+              <text x="47" y="20" font-family="'DM Sans',Arial,sans-serif" font-size="14" font-weight="600" fill="#3C2E28">Cuidar</text>
+              <text x="47" y="37" font-family="'DM Sans',Arial,sans-serif" font-size="14" font-weight="300" fill="#2D6A52">Juntos</text>
+            </svg>
+            <div style="font-size:10px;color:var(--cj-cinza);text-align:center;margin-top:4px">120px — min print</div>
+          </div>
+          <div>
+            <svg viewBox="0 0 200 52" width="80" xmlns="http://www.w3.org/2000/svg">
+              <g transform="translate(0,-2)"><path d="M20 4 A17 17 0 1 0 20 38" fill="none" stroke="#2D6A52" stroke-width="3.5" stroke-linecap="round"/><circle cx="20" cy="21" r="2.5" fill="#C8623A"/></g>
+              <text x="47" y="20" font-family="'DM Sans',Arial,sans-serif" font-size="14" font-weight="600" fill="#3C2E28">Cuidar</text>
+              <text x="47" y="37" font-family="'DM Sans',Arial,sans-serif" font-size="14" font-weight="300" fill="#2D6A52">Juntos</text>
+            </svg>
+            <div style="font-size:10px;color:var(--cj-terracota);text-align:center;margin-top:4px">80px — too small</div>
+          </div>
+        </div>
+        <p style="font-size:13px;color:var(--cj-cinza);line-height:1.6">Minimum wordmark: 120px wide (print: 30mm). Below this, use icon-only mark. Digital minimum for icon: 20px × 20px.</p>
+      </div>
+    </div>
+
+    <div class="do-dont">
+      <div class="do-card">
+        <div class="badge">✓ SIM — Faça isto</div>
+        <ul>
+          <li>Use the wordmark on white, warm off-white, or forest green backgrounds</li>
+          <li>Use the white version on the brand gradient and dark backgrounds</li>
+          <li>Use the icon-only mark for app icons, favicons, and sidebar collapsed states</li>
+          <li>Maintain the two-line wordmark split: "Cuidar" bold, "Juntos" light</li>
+          <li>Use the terracota dot as it appears — never recolour it to green</li>
+          <li>Allow the Portuguese script conventions to inform spacing</li>
+        </ul>
+      </div>
+      <div class="dont-card">
+        <div class="badge">✗ NÃO — Evite isto</div>
+        <ul>
+          <li>Do not place the logo on busy photographic backgrounds</li>
+          <li>Do not stretch, squash, or rotate the logo</li>
+          <li>Do not add drop shadows or decorative effects to the logo</li>
+          <li>Do not use the wordmark smaller than 120px wide</li>
+          <li>Do not recolour the icon to terracota or change the arc colours</li>
+          <li>Do not place the dark wordmark on the forest green background — use white version</li>
+          <li>Do not recreate the logo in text — always use the SVG</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Tone of Voice -->
+  <div class="section">
+    <div class="section-eyebrow">Phase 6 — Design System</div>
+    <h2 class="section-title">Tom de Voz</h2>
+    <p class="section-sub">Cinco regras para o copy português — para que a marca soe tão bem quanto parece.</p>
+
+    <div class="tone-rule">
+      <div class="tone-number">1</div>
+      <div>
+        <h4>Fale com calma e clareza</h4>
+        <p>Use português direto e contemporâneo. Sem jargão médico, sem linguagem técnica desnecessária. "Adicione os medicamentos do seu pai" — não "Registe a terapêutica do utente". A família é o utilizador, não o profissional.</p>
+      </div>
+    </div>
+    <div class="tone-rule">
+      <div class="tone-number">2</div>
+      <div>
+        <h4>Não use medo como motivação</h4>
+        <p>Evite formulações baseadas em ansiedade ou urgência negativa. Não: "Não perca os medicamentos do seu pai." Sim: "Tenha sempre em dia os medicamentos de quem ama." O tom é calmo e encorajador — nunca alarmista.</p>
+      </div>
+    </div>
+    <div class="tone-rule">
+      <div class="tone-number">3</div>
+      <div>
+        <h4>Fale para a família, não apenas para o cuidador</h4>
+        <p>O utilizador principal pode ser a filha, o filho, o neto ou o cônjuge. Use "a sua família", "todos juntos", "partilhem". A aplicação é uma ferramenta de coordenação colectiva — não um diário privado.</p>
+      </div>
+    </div>
+    <div class="tone-rule">
+      <div class="tone-number">4</div>
+      <div>
+        <h4>Seja concreto — números e acções, não adjectivos</h4>
+        <p>Não: "Uma solução completa e intuitiva para gestão de cuidados." Sim: "3 medicamentos hoje. 1 consulta amanhã. Toda a família informada." O copy deve refletir a utilidade real do produto em linguagem familiar.</p>
+      </div>
+    </div>
+    <div class="tone-rule">
+      <div class="tone-number">5</div>
+      <div>
+        <h4>Nunca pareça um hospital</h4>
+        <p>Evite: "registo clínico", "historial médico", "plataforma de saúde", "prescrição". Prefira: "notas de cuidados", "informação da família", "fichas do seu familiar", "agenda de consultas". A linguagem deve ser doméstica e calorosa — não clínica.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Footer -->
+  <div style="border-top:1px solid var(--cj-border);padding-top:40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px">
+    <div style="display:flex;align-items:center;gap:14px">
+      <svg viewBox="0 0 64 64" width="32" xmlns="http://www.w3.org/2000/svg">
+        <path d="M32 5 A27 27 0 1 0 32 59" fill="none" stroke="#2D6A52" stroke-width="6.5" stroke-linecap="round"/>
+        <path d="M32 16 A16 16 0 1 0 32 48" fill="none" stroke="#3D8B6E" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+        <circle cx="32" cy="32" r="4" fill="#C8623A"/>
+      </svg>
+      <div>
+        <div style="font-weight:600;font-size:14px;color:var(--cj-terra)">CuidarJuntos</div>
+        <div style="font-size:11px;color:var(--cj-cinza)">cuidarjuntos.pt</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--cj-cinza);line-height:1.6;text-align:right">
+      Brand Identity System · 2025<br>
+      DM Sans + DM Serif Display · Verde Serra + Terracota<br>
+      <em>For a warmer, calmer Portugal.</em>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

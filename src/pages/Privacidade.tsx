@@ -1,13 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import CuidarJuntosLogo from '../components/brand/CuidarJuntosLogo';
 
 const Privacidade: React.FC = () => {
   return (
-    <div className="bg-surface text-on-surface min-h-screen">
-      <header className="border-b border-surface-variant bg-surface/80 backdrop-blur-md">
+    <div className="bg-background text-on-surface min-h-screen">
+      <header className="border-b border-cj-border bg-cj-branco/90 backdrop-blur-md">
         <nav className="max-w-[800px] mx-auto flex justify-between items-center px-container-padding-mobile md:px-container-padding-desktop h-16">
-          <Link to="/" className="font-headline-md font-bold text-primary">
-            CuidarJuntos
+          <Link to="/">
+            <CuidarJuntosLogo variant="default" size="sm" />
           </Link>
           <Link
             to="/dashboard"

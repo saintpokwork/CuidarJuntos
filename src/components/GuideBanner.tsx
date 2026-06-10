@@ -24,7 +24,7 @@ const GuideBanner: React.FC = () => {
   if (!visible) return null;
 
   return (
-    <div className="bg-secondary-container/40 border-b border-secondary/20 px-container-padding-mobile md:px-container-padding-desktop py-4">
+    <div className="bg-cj-verde-pale border-b border-cj-border px-container-padding-mobile md:px-container-padding-desktop py-4">
       <div className="max-w-[1200px] mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <p className="text-label-md font-bold text-on-surface mb-1">Novo no CuidarJuntos?</p>

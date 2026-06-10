@@ -1,5 +1,6 @@
 import React from 'react';
 import { caregiver } from '../data/initialData';
+import CuidarJuntosLogo from './brand/CuidarJuntosLogo';
 
 interface DashboardPageHeaderProps {
   title?: string;
@@ -20,8 +21,8 @@ const DashboardPageHeader: React.FC<DashboardPageHeaderProps> = ({
             {title}
           </h1>
         ) : (
-          <span className="text-headline-md font-headline-md font-bold text-primary lg:hidden">
-            CuidarJuntos
+          <span className="hidden md:inline-flex">
+            <CuidarJuntosLogo variant="default" size="sm" />
           </span>
         )}
       </div>

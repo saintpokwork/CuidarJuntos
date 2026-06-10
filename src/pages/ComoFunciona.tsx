@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import CuidarJuntosLogo from '../components/brand/CuidarJuntosLogo';
 
 const steps = [
   {
@@ -48,11 +49,11 @@ const steps = [
 
 const ComoFunciona: React.FC = () => {
   return (
-    <div className="bg-surface text-on-surface min-h-screen">
-      <header className="border-b border-surface-variant bg-surface/80 backdrop-blur-md sticky top-0 z-50">
+    <div className="bg-background text-on-surface min-h-screen">
+      <header className="border-b border-cj-border bg-cj-branco/90 backdrop-blur-md sticky top-0 z-50">
         <nav className="max-w-[900px] mx-auto flex justify-between items-center px-container-padding-mobile md:px-container-padding-desktop h-16">
-          <Link to="/" className="font-headline-md font-bold text-primary">
-            CuidarJuntos
+          <Link to="/">
+            <CuidarJuntosLogo variant="default" size="sm" />
           </Link>
           <Link
             to="/dashboard"
@@ -65,7 +66,7 @@ const ComoFunciona: React.FC = () => {
 
       <main className="max-w-[900px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-12">
         <section className="text-center mb-12">
-          <h1 className="text-headline-xl font-headline-xl text-on-surface mb-4">
+          <h1 className="font-display italic text-headline-xl text-on-surface mb-4">
             Como usar o CuidarJuntos
           </h1>
           <p className="text-body-lg text-on-surface-variant max-w-2xl mx-auto">
@@ -94,7 +95,7 @@ const ComoFunciona: React.FC = () => {
           ))}
         </div>
 
-        <div className="p-4 bg-error-container/20 border-l-4 border-error rounded-r-xl mb-8">
+        <div className="p-4 bg-cj-verde-pale border-l-4 border-cj-verde rounded-r-xl mb-8">
           <p className="text-body-md text-on-surface-variant">
             CuidarJuntos não substitui médicos, hospitais, farmácias, o SNS ou serviços de emergência.
             Em caso de emergência, ligue <strong className="text-on-surface">112</strong>.

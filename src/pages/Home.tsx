@@ -1,13 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import CuidarJuntosLogo from '../components/brand/CuidarJuntosLogo';
 
 const Home: React.FC = () => {
   return (
-    <div className="bg-surface text-on-surface font-body-md selection:bg-primary/20">
-      <header className="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md shadow-sm">
+    <div className="bg-background text-on-surface font-body-md selection:bg-primary/20">
+      <header className="fixed top-0 w-full z-50 bg-cj-branco/90 backdrop-blur-md shadow-cj-sm border-b border-cj-border">
         <nav className="max-w-[1200px] mx-auto flex justify-between items-center px-container-padding-mobile md:px-container-padding-desktop h-20">
-          <Link className="font-headline-md text-headline-md font-bold text-primary" to="/">
-            CuidarJuntos
+          <Link to="/">
+            <CuidarJuntosLogo variant="default" size="md" />
           </Link>
           <div className="hidden md:flex items-center gap-8">
             <Link
@@ -47,13 +48,14 @@ const Home: React.FC = () => {
       </header>
 
       <main className="pt-20">
-        <section className="relative overflow-hidden py-16 md:py-24">
-          <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop flex flex-col md:flex-row items-center gap-16">
+        <section className="relative overflow-hidden py-16 md:py-24 bg-cj-grad-card">
+          <div className="absolute inset-0 bg-cj-grad opacity-[0.04] pointer-events-none" />
+          <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop flex flex-col md:flex-row items-center gap-16 relative">
             <div className="flex-1 text-center md:text-left z-10">
-              <span className="inline-block px-4 py-1.5 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-sm mb-6">
+              <span className="inline-block px-4 py-1.5 bg-cj-verde-pale text-cj-verde border border-cj-verde/20 rounded-full font-label-md text-label-sm mb-6">
                 Organização para famílias cuidadoras
               </span>
-              <h1 className="font-headline-xl text-headline-xl md:text-[48px] md:leading-[56px] text-on-surface mb-6">
+              <h1 className="font-display italic text-headline-xl md:text-[48px] md:leading-[56px] text-on-surface mb-6">
                 Cuide melhor dos seus pais, com toda a família organizada num só lugar.
               </h1>
               <p className="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-xl">
@@ -68,7 +70,7 @@ const Home: React.FC = () => {
                   Começar gratuitamente
                 </Link>
                 <Link
-                  className="bg-surface-container-low text-primary px-8 py-4 rounded-full font-headline-md text-[18px] hover:bg-surface-container-high transition-colors text-center"
+                  className="bg-cj-branco text-primary border border-cj-border px-8 py-4 rounded-full font-headline-md text-[18px] hover:bg-cj-verde-pale transition-colors text-center"
                   to="/como-funciona"
                 >
                   Ver como funciona
@@ -89,13 +91,13 @@ const Home: React.FC = () => {
                   <span className="material-symbols-outlined text-on-secondary-container">done_all</span>
                 </div>
               </div>
-              <div className="absolute -top-20 -right-20 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
-              <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-secondary/5 rounded-full blur-3xl" />
+              <div className="absolute -top-20 -right-20 w-80 h-80 bg-cj-verde/10 rounded-full blur-3xl" />
+              <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-cj-terracota/10 rounded-full blur-3xl" />
             </div>
           </div>
         </section>
 
-        <section className="py-20 bg-surface-container-lowest">
+        <section className="py-20 bg-cj-branco">
           <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="font-headline-lg text-headline-lg md:text-headline-xl text-on-surface mb-4">
@@ -117,9 +119,9 @@ const Home: React.FC = () => {
               ].map((item) => (
                 <div
                   key={item.title}
-                  className="bg-surface p-8 rounded-2xl border border-outline-variant/30 soft-shadow-hover transition-all"
+                  className="bg-cj-branco p-8 rounded-2xl border border-cj-border soft-shadow-hover transition-all"
                 >
-                  <span className="material-symbols-outlined text-error mb-4 text-3xl">{item.icon}</span>
+                  <span className="material-symbols-outlined text-cj-terracota mb-4 text-3xl">{item.icon}</span>
                   <h3 className="font-headline-md text-headline-md mb-2">{item.title}</h3>
                   <p className="text-on-surface-variant">{item.text}</p>
                 </div>
@@ -128,7 +130,7 @@ const Home: React.FC = () => {
           </div>
         </section>
 
-        <section className="py-24 bg-surface" id="funcionalidades">
+        <section className="py-24 bg-background" id="funcionalidades">
           <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop">
             <div className="text-center mb-16">
               <h2 className="font-headline-lg text-headline-lg md:text-headline-xl mb-4">
@@ -139,14 +141,14 @@ const Home: React.FC = () => {
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-6 auto-rows-[240px]">
-              <div className="md:col-span-3 lg:col-span-4 row-span-2 bg-primary-container text-on-primary-container p-8 rounded-2xl flex flex-col justify-between soft-shadow relative overflow-hidden group">
+              <div className="md:col-span-3 lg:col-span-4 row-span-2 bg-cj-grad text-white p-8 rounded-2xl flex flex-col justify-between soft-shadow relative overflow-hidden group">
                 <div>
                   <span className="material-symbols-outlined text-4xl mb-6">medication</span>
                   <h3 className="font-headline-md text-headline-md mb-3">Medicamentos e horários</h3>
                   <p className="opacity-90">Controlo rigoroso de stock e alertas de toma para nunca falhar uma dose.</p>
                 </div>
               </div>
-              <div className="md:col-span-3 lg:col-span-8 bg-surface-container-low p-8 rounded-2xl flex flex-col justify-between soft-shadow-hover transition-all">
+              <div className="md:col-span-3 lg:col-span-8 bg-cj-verde-pale p-8 rounded-2xl flex flex-col justify-between soft-shadow-hover transition-all border border-cj-border">
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="font-headline-md text-headline-md mb-2">Consultas e exames</h3>
@@ -175,7 +177,7 @@ const Home: React.FC = () => {
                   </p>
                 </div>
               </div>
-              <div className="md:col-span-6 lg:col-span-4 bg-secondary p-8 rounded-2xl text-on-secondary flex flex-col justify-between soft-shadow relative overflow-hidden">
+              <div className="md:col-span-6 lg:col-span-4 bg-cj-terracota p-8 rounded-2xl text-white flex flex-col justify-between soft-shadow relative overflow-hidden">
                 <div>
                   <span className="material-symbols-outlined text-3xl mb-4">contact_phone</span>
                   <h3 className="font-headline-md text-headline-md mb-2">Contactos de emergência</h3>
@@ -188,7 +190,7 @@ const Home: React.FC = () => {
           </div>
         </section>
 
-        <section className="py-24 bg-surface-container-lowest" id="como-funciona">
+        <section className="py-24 bg-cj-verde-pale" id="como-funciona">
           <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop">
             <div className="text-center mb-20">
               <h2 className="font-headline-lg text-headline-lg md:text-headline-xl">
@@ -203,7 +205,7 @@ const Home: React.FC = () => {
                 { step: '4', title: 'Receba alertas', text: 'Mantenha todos atualizados com notificações automáticas.' },
               ].map((item) => (
                 <div key={item.step} className="text-center">
-                  <div className="w-16 h-16 bg-primary-container text-on-primary-container rounded-full flex items-center justify-center mx-auto mb-6 text-xl font-bold">
+                  <div className="w-16 h-16 bg-primary text-on-primary rounded-full flex items-center justify-center mx-auto mb-6 text-xl font-bold">
                     {item.step}
                   </div>
                   <h4 className="font-headline-md text-headline-md mb-3">{item.title}</h4>
@@ -214,7 +216,7 @@ const Home: React.FC = () => {
           </div>
         </section>
 
-        <section className="py-24 bg-surface" id="precos">
+        <section className="py-24 bg-cj-branco" id="precos">
           <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop">
             <div className="text-center mb-16">
               <h2 className="font-headline-lg text-headline-lg md:text-headline-xl mb-4">
@@ -251,7 +253,7 @@ const Home: React.FC = () => {
                 </Link>
               </div>
               <div className="bg-primary text-on-primary p-8 rounded-2xl soft-shadow scale-105 flex flex-col z-10 relative">
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary text-on-secondary px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-cj-cobre text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
                   Mais Popular
                 </div>
                 <h3 className="font-headline-md text-headline-md mb-2">Família</h3>
@@ -314,23 +316,23 @@ const Home: React.FC = () => {
           </div>
         </section>
 
-        <section className="py-24 bg-surface overflow-hidden relative">
+        <section className="py-24 bg-background overflow-hidden relative">
           <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop">
-            <div className="bg-surface-container-highest p-12 md:p-20 rounded-[3rem] text-center relative z-10">
-              <h2 className="font-headline-xl text-headline-xl mb-6">
+            <div className="bg-cj-grad p-12 md:p-20 rounded-[3rem] text-center relative z-10 text-white">
+              <h2 className="font-display italic text-headline-xl mb-6">
                 Comece a organizar os cuidados da sua família hoje.
               </h2>
-              <p className="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-2xl mx-auto">
+              <p className="font-body-lg text-body-lg text-white/80 mb-10 max-w-2xl mx-auto">
                 Junte-se a milhares de famílias portuguesas que já encontraram o equilíbrio no cuidado
                 familiar.
               </p>
               <Link
-                className="inline-block bg-primary text-on-primary px-10 py-5 rounded-full font-headline-md text-xl shadow-xl hover:scale-105 active:scale-95 transition-all"
+                className="inline-block bg-cj-terracota text-white px-10 py-5 rounded-full font-headline-md text-xl shadow-xl hover:scale-105 active:scale-95 transition-all"
                 to="/dashboard"
               >
                 Começar gratuitamente agora
               </Link>
-              <p className="mt-6 text-label-sm text-on-surface-variant">
+              <p className="mt-6 text-label-sm text-white/70">
                 Versão demo — não é necessário criar conta.
               </p>
               <div className="mt-12 flex flex-wrap justify-center gap-8 opacity-60 grayscale hover:grayscale-0 transition-all">
@@ -359,11 +361,13 @@ const Home: React.FC = () => {
         </section>
       </main>
 
-      <footer className="bg-surface-container-lowest border-t border-surface-variant py-16">
+      <footer className="bg-cj-branco border-t border-cj-border py-16">
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop">
           <div className="flex flex-col md:flex-row justify-between items-start gap-12 mb-12">
             <div className="max-w-xs">
-              <h2 className="font-headline-md text-headline-md font-bold text-primary mb-4">CuidarJuntos</h2>
+              <div className="mb-4">
+                <CuidarJuntosLogo variant="default" size="md" />
+              </div>
               <p className="text-on-surface-variant font-label-md">
                 O porto de abrigo digital para a sua família. Organização, segurança e carinho em cada
                 detalhe.

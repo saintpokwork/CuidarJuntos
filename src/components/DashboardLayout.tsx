@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { caregiver } from '../data/initialData';
 import { useCareData } from '../context/CareDataContext';
 import GuideBanner from './GuideBanner';
+import CuidarJuntosLogo from './brand/CuidarJuntosLogo';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -59,12 +60,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
   return (
     <div className="flex min-h-screen bg-background overflow-x-hidden">
-      <aside className="h-screen w-64 hidden lg:flex flex-col sticky left-0 top-0 bg-surface-container shadow-sm py-stack-md px-base shrink-0">
+      <aside className="h-screen w-64 hidden lg:flex flex-col sticky left-0 top-0 bg-cj-sidebar shadow-cj-md py-stack-md px-base shrink-0">
         <div className="px-4 mb-stack-lg">
-          <Link to="/" className="text-headline-md font-headline-md font-bold text-primary">
-            CuidarJuntos
+          <Link to="/dashboard" className="block">
+            <CuidarJuntosLogo variant="white" size="md" />
           </Link>
-          <p className="text-on-surface-variant text-label-sm">{caregiver.funcao}</p>
+          <p className="text-white/50 text-label-sm mt-3">{caregiver.funcao}</p>
         </div>
         <nav className="flex-1 space-y-1 overflow-y-auto">
           {menuItems.map((item) => {
@@ -75,8 +76,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 to={item.path}
                 className={`flex items-center px-4 py-3 rounded-lg transition-colors ${
                   active
-                    ? 'text-primary font-bold border-r-4 border-primary bg-surface-container-high'
-                    : 'text-on-surface-variant hover:bg-surface-container-highest'
+                    ? 'text-white font-bold border-r-4 border-cj-cobre bg-white/10'
+                    : 'text-white/60 hover:bg-white/5 hover:text-white/90'
                 }`}
               >
                 <span className="material-symbols-outlined mr-3">{item.icon}</span>
@@ -86,20 +87,29 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           })}
         </nav>
         <div className="px-4 mt-auto">
-          <div className="flex items-center gap-3 p-2 rounded-xl bg-surface-container-high">
+          <div className="flex items-center gap-3 p-2 rounded-xl bg-white/10">
             <img alt={caregiver.nome} className="w-10 h-10 rounded-full object-cover" src={caregiver.avatar} />
             <div className="overflow-hidden">
-              <p className="text-label-md font-bold text-on-surface truncate">{caregiver.nome}</p>
-              <p className="text-[10px] text-on-surface-variant uppercase">{caregiver.funcao}</p>
+              <p className="text-label-md font-bold text-white truncate">{caregiver.nome}</p>
+              <p className="text-[10px] text-white/50 uppercase">{caregiver.funcao}</p>
             </div>
           </div>
         </div>
       </aside>
 
       <div className="flex-1 flex flex-col relative min-w-0 overflow-x-hidden">
+        <div className="lg:hidden bg-cj-sidebar px-container-padding-mobile py-3 flex items-center justify-between no-print">
+          <Link to="/dashboard">
+            <CuidarJuntosLogo variant="white" size="sm" />
+          </Link>
+          <Link to="/" className="text-label-sm text-white/60 hover:text-white">
+            Início
+          </Link>
+        </div>
+
         <GuideBanner />
 
-        <div className="bg-primary-fixed/40 border-b border-primary/10 px-container-padding-mobile md:px-container-padding-desktop py-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-label-sm text-on-surface-variant">
+        <div className="bg-cj-verde-pale border-b border-cj-border px-container-padding-mobile md:px-container-padding-desktop py-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-label-sm text-on-surface-variant">
           <p className="flex items-center gap-2">
             <span className="material-symbols-outlined text-primary text-base">info</span>
             Está a utilizar uma versão demo. Os dados ficam guardados apenas neste navegador.
@@ -115,7 +125,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
         <div className="flex-1 pb-28 lg:pb-0">{children}</div>
 
-        <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center px-2 py-2 bg-surface shadow-[0_-4px_24px_rgba(0,93,172,0.04)] rounded-t-xl safe-bottom">
+        <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center px-2 py-2 bg-cj-branco shadow-[0_-4px_24px_rgba(45,106,82,0.08)] rounded-t-xl border-t border-cj-border safe-bottom">
           {mobileNavItems.map((item) => {
             const active = isActive(location.pathname, item.path, item.exact, item.maisGroup);
             return (
@@ -124,7 +134,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 to={item.path}
                 className={`flex flex-col items-center justify-center min-w-[56px] p-2 rounded-xl transition-all ${
                   active
-                    ? 'bg-primary-container text-on-primary-container px-3 py-1 shadow-md'
+                    ? 'bg-primary text-on-primary px-3 py-1 shadow-cj-sm'
                     : 'text-on-surface-variant'
                 }`}
               >
