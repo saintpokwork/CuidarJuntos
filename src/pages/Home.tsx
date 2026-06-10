@@ -316,7 +316,11 @@ const Home: React.FC = () => {
               <div>
                 <h4 className="font-label-md text-primary mb-4">{t('footer.support')}</h4>
                 <ul className="space-y-2">
-                  <li><span className="text-on-surface-variant text-label-md">{t('footer.help')}</span></li>
+                  <li>
+                    <Link className="text-on-surface-variant hover:text-primary transition-all text-label-md" to="/blog">
+                      {t('footer.blog')}
+                    </Link>
+                  </li>
                   <li>
                     <a
                       className="text-on-surface-variant hover:text-primary transition-all text-label-md"
@@ -325,7 +329,16 @@ const Home: React.FC = () => {
                       {t('footer.contact')}
                     </a>
                   </li>
-                  <li><span className="text-on-surface-variant text-label-md">{t('footer.blog')}</span></li>
+                  <li>
+                    <a
+                      className="text-on-surface-variant hover:text-primary transition-all text-label-md"
+                      href="https://www.nebulacraftdesign.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Nebula Craft Design
+                    </a>
+                  </li>
                 </ul>
               </div>
               <div>
@@ -345,17 +358,22 @@ const Home: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 pt-12 border-t border-surface-variant">
-            <p className="text-label-md text-on-surface-variant opacity-70">
-              {t('footer.copyright')}
+          <div className="flex flex-col gap-3 pt-12 border-t border-surface-variant">
+            <p className="text-label-sm text-on-surface-variant max-w-3xl">
+              <strong>{t('safety.disclaimer')}</strong>
             </p>
-            <div className="flex gap-6">
-              <span className="text-on-surface-variant">
-                <span className="material-symbols-outlined">language</span>
-              </span>
-              <span className="text-on-surface-variant">
-                <span className="material-symbols-outlined">share</span>
-              </span>
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6 pt-3">
+              <p className="text-label-md text-on-surface-variant opacity-70">
+                {t('footer.copyright')} ·{' '}
+                <a
+                  className="text-primary hover:underline"
+                  href="https://www.nebulacraftdesign.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  nebulacraftdesign.com
+                </a>
+              </p>
             </div>
           </div>
         </div>
