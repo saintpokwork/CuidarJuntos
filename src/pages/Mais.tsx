@@ -2,26 +2,28 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const maisLinks = [
-  { path: '/dashboard/guia', label: 'Guia rápido', descricao: 'Como usar o CuidarJuntos', icon: 'menu_book' },
-  { path: '/dashboard/perfil', label: 'Perfil', descricao: 'Dados do familiar ao cuidado', icon: 'person' },
-  { path: '/dashboard/documentos', label: 'Documentos', descricao: 'Receitas, exames e ficheiros', icon: 'description' },
-  { path: '/dashboard/emergencia', label: 'Emergência', descricao: 'Ficha de emergência rápida', icon: 'emergency' },
-  { path: '/dashboard/familia', label: 'Família', descricao: 'Círculo de cuidadores', icon: 'group' },
-  { path: '/dashboard/notas', label: 'Notas', descricao: 'Notas de cuidado partilhadas', icon: 'event_note' },
-  { path: '/dashboard/definicoes', label: 'Definições', descricao: 'Conta, privacidade e dados', icon: 'settings' },
+  { path: '/dashboard/guia', labelKey: 'quickGuide', descKey: 'quickGuideDesc', icon: 'menu_book' },
+  { path: '/dashboard/perfil', labelKey: 'profile', descKey: 'profileDesc', icon: 'person' },
+  { path: '/dashboard/documentos', labelKey: 'documents', descKey: 'documentsDesc', icon: 'description' },
+  { path: '/dashboard/emergencia', labelKey: 'emergency', descKey: 'emergencyDesc', icon: 'emergency' },
+  { path: '/dashboard/familia', labelKey: 'family', descKey: 'familyDesc', icon: 'group' },
+  { path: '/dashboard/notas', labelKey: 'notes', descKey: 'notesDesc', icon: 'event_note' },
+  { path: '/dashboard/definicoes', labelKey: 'settings', descKey: 'settingsDesc', icon: 'settings' },
 ];
 
 const Mais: React.FC = () => {
+  const { t } = useLanguage();
   return (
     <DashboardLayout>
       <main className="flex-1 w-full relative ">
-        <DashboardPageHeader title="Mais opções" showSearch={false} />
+        <DashboardPageHeader title={t('pages.more.title')} showSearch={false} />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
           <p className="text-body-lg text-on-surface-variant mb-stack-lg">
-            Acesso rápido às restantes secções do painel.
+            {t('pages.more.description')}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {maisLinks.map((item) => (
@@ -35,9 +37,9 @@ const Mais: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-headline-md font-headline-md text-on-surface group-hover:text-primary transition-colors">
-                    {item.label}
+                    {t(`pages.more.links.${item.labelKey}`)}
                   </p>
-                  <p className="text-label-md text-on-surface-variant">{item.descricao}</p>
+                  <p className="text-label-md text-on-surface-variant">{t(`pages.more.links.${item.descKey}`)}</p>
                 </div>
                 <span className="material-symbols-outlined text-on-surface-variant ml-auto group-hover:text-primary">
                   chevron_right
