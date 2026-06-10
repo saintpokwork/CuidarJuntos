@@ -195,35 +195,43 @@ create index if not exists idx_emergency_contacts_profile on public.emergency_co
 -- 5. UPDATED-AT TRIGGERS
 -- ============================================================================
 
-create trigger if not exists trg_profiles_updated_at
+drop trigger if exists trg_profiles_updated_at on public.profiles;
+create trigger trg_profiles_updated_at
   before update on public.profiles
   for each row execute function public.set_updated_at();
 
-create trigger if not exists trg_care_profiles_updated_at
+drop trigger if exists trg_care_profiles_updated_at on public.care_profiles;
+create trigger trg_care_profiles_updated_at
   before update on public.care_profiles
   for each row execute function public.set_updated_at();
 
-create trigger if not exists trg_care_profile_members_updated_at
+drop trigger if exists trg_care_profile_members_updated_at on public.care_profile_members;
+create trigger trg_care_profile_members_updated_at
   before update on public.care_profile_members
   for each row execute function public.set_updated_at();
 
-create trigger if not exists trg_medications_updated_at
+drop trigger if exists trg_medications_updated_at on public.medications;
+create trigger trg_medications_updated_at
   before update on public.medications
   for each row execute function public.set_updated_at();
 
-create trigger if not exists trg_appointments_updated_at
+drop trigger if exists trg_appointments_updated_at on public.appointments;
+create trigger trg_appointments_updated_at
   before update on public.appointments
   for each row execute function public.set_updated_at();
 
-create trigger if not exists trg_tasks_updated_at
+drop trigger if exists trg_tasks_updated_at on public.tasks;
+create trigger trg_tasks_updated_at
   before update on public.tasks
   for each row execute function public.set_updated_at();
 
-create trigger if not exists trg_documents_updated_at
+drop trigger if exists trg_documents_updated_at on public.documents;
+create trigger trg_documents_updated_at
   before update on public.documents
   for each row execute function public.set_updated_at();
 
-create trigger if not exists trg_emergency_contacts_updated_at
+drop trigger if exists trg_emergency_contacts_updated_at on public.emergency_contacts;
+create trigger trg_emergency_contacts_updated_at
   before update on public.emergency_contacts
   for each row execute function public.set_updated_at();
 
@@ -248,23 +256,11 @@ begin
 end;
 $$;
 
--- Conditionally create the trigger on auth.users.
--- If your Supabase project already has this trigger (e.g. from the built-in
--- auth user management), the block will skip creation.
-do $$
-begin
-  if not exists (
-    select 1 from information_schema.triggers
-    where event_object_schema = 'auth'
-      and event_object_table = 'users'
-      and trigger_name = 'on_auth_user_created'
-  ) then
-    execute 'create trigger on_auth_user_created
-      after insert on auth.users
-      for each row execute function public.handle_new_user()';
-  end if;
-end;
-$$;
+-- Drop and recreate the trigger on auth.users safely.
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_user();
 
 -- 7. RLS HELPER FUNCTIONS
 -- ============================================================================
