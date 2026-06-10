@@ -415,7 +415,9 @@ export const getOrCreateDefaultCareProfile = async (
 
   if (memErr) {
     console.error('[supabaseDataAdapter] Failed to create membership:', memErr);
-    // Still return profile id — profile exists even if membership insert had an issue
+    // Clean up orphaned profile to prevent duplicates on next login
+    await supabase.from('care_profiles').delete().eq('id', profile.id);
+    return null;
   }
 
   // Seed starter data

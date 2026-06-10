@@ -54,7 +54,7 @@ const translations = {
         'Sessão iniciada — sincronização na nuvem ativa.',
       cloudSyncActive: 'Sessão iniciada — sincronização na nuvem ativa.',
       loadingAccount: 'A carregar dados da conta...',
-      syncError: 'Não foi possível sincronizar os dados. A tentar novamente ou verifique a ligação.',
+      syncError: 'Não foi possível sincronizar os dados. Verifique a ligação e tente novamente.',
       cloudSyncActiveEn: 'Signed in — cloud sync active.',
       loadingAccountEn: 'Loading account data...',
       syncErrorEn: 'Could not sync your data. Please try again or check your connection.',
@@ -545,7 +545,7 @@ const translations = {
         'Signed in — cloud sync active.',
       cloudSyncActive: 'Signed in — cloud sync active.',
       loadingAccount: 'Loading account data...',
-      syncError: 'Could not sync your data. Please try again or check your connection.',
+      syncError: 'Could not sync your data. Check your connection and try again.',
     },
     auth: {
       titleSignIn: 'Sign in to CuidarJuntos',

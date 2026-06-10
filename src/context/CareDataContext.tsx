@@ -214,12 +214,7 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     } catch (err) {
       console.error('[CareDataContext] Cloud load error:', err);
       setSyncStatus('error');
-      const lang = getCurrentLang();
-      setSyncError(
-        lang === 'en'
-          ? 'Could not sync your data. Please try again or check your connection.'
-          : 'Não foi possível sincronizar os dados. A tentar novamente ou verifique a ligação.'
-      );
+      setSyncError(tt('demo.syncError'));
     }
   }, [user]);
 
