@@ -11,6 +11,7 @@ const Entrar: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const { signIn, user } = useAuth();
   const navigate = useNavigate();
   const { t } = useLanguage();
@@ -19,8 +20,17 @@ const Entrar: React.FC = () => {
     if (user) navigate('/dashboard');
   }, [user, navigate]);
 
+  const validate = (): boolean => {
+    const errors: string[] = [];
+    if (!email.trim()) errors.push(t('global.emailRequired'));
+    if (!password) errors.push(t('global.passwordRequired'));
+    setValidationErrors(errors);
+    return errors.length === 0;
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (!validate()) return;
     setLoading(true);
     setMessage('');
     setError('');
@@ -29,11 +39,11 @@ const Entrar: React.FC = () => {
     setLoading(false);
 
     if (authError) {
-      setError(authError.message || 'Não foi possível entrar. Verifique as suas credenciais.');
+      setError(authError.message || t('auth.errorSignIn'));
       return;
     }
 
-    setMessage('Entrada efetuada com sucesso. A redirecionar...');
+    setMessage(t('auth.successSignIn'));
     navigate('/dashboard');
   };
 
@@ -46,7 +56,7 @@ const Entrar: React.FC = () => {
           </Link>
           <LanguageToggle />
           <Link to="/dashboard" className="text-label-md font-bold text-primary hover:underline">
-            {t('auth.continueDemo') || 'Continuar para demo'}
+            {t('auth.continueDemo')}
           </Link>
         </nav>
       </header>
@@ -80,6 +90,11 @@ const Entrar: React.FC = () => {
                 className="w-full h-12 px-4 rounded-2xl border border-outline-variant bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
               />
             </div>
+            {validationErrors.length > 0 && (
+              <div className="rounded-2xl p-4 text-label-sm font-medium bg-error-container text-error">
+                {validationErrors.map((err, i) => <p key={i}>{err}</p>)}
+              </div>
+            )}
             <button
               type="submit"
               disabled={loading}
@@ -114,7 +129,7 @@ const Entrar: React.FC = () => {
 
           <div className="mt-8 rounded-[24px] bg-cj-verde-pale/15 border border-cj-verde-pale p-5">
             <p className="text-label-sm text-on-surface-variant">
-              Contas reais estarão disponíveis na próxima versão. Nesta demo, pode continuar sem criar conta.
+              {t('auth.infoBox')}
             </p>
           </div>
         </div>

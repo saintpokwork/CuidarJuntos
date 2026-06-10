@@ -46,7 +46,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUp = async (email: string, password: string, name?: string) => {
     if (!isSupabaseConfigured) {
-      return { error: new Error('Supabase não está configurado.') };
+      return { error: new Error('O serviço de autenticação não está configurado.') };
     }
 
     const { error } = await supabase.auth.signUp({
@@ -64,7 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string) => {
     if (!isSupabaseConfigured) {
-      return { error: new Error('Supabase não está configurado.') };
+      return { error: new Error('O serviço de autenticação não está configurado.') };
     }
 
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -86,7 +86,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const resetPassword = async (email: string) => {
     if (!isSupabaseConfigured) {
-      return { error: new Error('Supabase não está configurado.') };
+      return { error: new Error('O serviço de autenticação não está configurado.') };
     }
 
     const { error } = await supabase.auth.resetPasswordForEmail(email);

@@ -9,9 +9,11 @@ const CriarConta: React.FC = () => {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const { signUp, user } = useAuth();
   const navigate = useNavigate();
   const { t } = useLanguage();
@@ -22,8 +24,21 @@ const CriarConta: React.FC = () => {
     }
   }, [user, navigate]);
 
+  const validate = (): boolean => {
+    const errors: string[] = [];
+    if (!nome.trim()) errors.push(t('global.nameRequired'));
+    if (!email.trim()) errors.push(t('global.emailRequired'));
+    if (!password) errors.push(t('global.passwordRequired'));
+    else if (password.length < 6) errors.push(t('global.passwordMinLength'));
+    if (!confirmPassword) errors.push(t('global.passwordConfirmation'));
+    else if (password !== confirmPassword) errors.push(t('global.passwordMismatch'));
+    setValidationErrors(errors);
+    return errors.length === 0;
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (!validate()) return;
     setLoading(true);
     setError('');
     setMessage('');
@@ -32,11 +47,11 @@ const CriarConta: React.FC = () => {
     setLoading(false);
 
     if (signUpError) {
-      setError(signUpError.message || 'Não foi possível criar a conta.');
+      setError(signUpError.message || t('auth.errorSignUp'));
       return;
     }
 
-    setMessage('Conta criada. Verifique o seu email, se necessário, para confirmar o acesso.');
+    setMessage(t('auth.successSignUp'));
   };
 
   return (
@@ -63,7 +78,7 @@ const CriarConta: React.FC = () => {
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-label-sm font-bold text-on-surface mb-2">Nome</label>
+              <label className="block text-label-sm font-bold text-on-surface mb-2">{t('global.name')}</label>
               <input
                 type="text"
                 value={nome}
@@ -92,6 +107,21 @@ const CriarConta: React.FC = () => {
                 className="w-full h-12 px-4 rounded-2xl border border-outline-variant bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
               />
             </div>
+            <div>
+              <label className="block text-label-sm font-bold text-on-surface mb-2">{t('global.confirmPassword')}</label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="********"
+                className="w-full h-12 px-4 rounded-2xl border border-outline-variant bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
+              />
+            </div>
+            {validationErrors.length > 0 && (
+              <div className="rounded-2xl p-4 text-label-sm font-medium bg-error-container text-error">
+                {validationErrors.map((err, i) => <p key={i}>{err}</p>)}
+              </div>
+            )}
             <button type="submit" disabled={loading} className="w-full h-12 rounded-full bg-primary text-on-primary font-bold disabled:cursor-not-allowed disabled:opacity-60">
               {loading ? t('auth.creating') : t('auth.submitSignUp')}
             </button>
@@ -111,13 +141,13 @@ const CriarConta: React.FC = () => {
               to="/dashboard"
               className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 rounded-full bg-primary text-on-primary font-bold hover:opacity-90 transition-all"
             >
-              Experimentar demo
+              {t('auth.tryDemo')}
             </Link>
           </div>
 
           <div className="mt-8 rounded-[24px] bg-cj-verde-pale/15 border border-cj-verde-pale p-5">
             <p className="text-label-sm text-on-surface-variant">
-              Na versão final, a sua conta permitirá guardar dados em segurança e partilhar cuidados com familiares.
+              {t('auth.infoBoxSignUp')}
             </p>
           </div>
         </div>

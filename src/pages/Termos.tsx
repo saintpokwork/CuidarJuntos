@@ -17,78 +17,60 @@ const Termos: React.FC = () => {
             to="/dashboard"
             className="text-label-md font-bold text-primary hover:underline"
           >
-            Experimentar demo
+            {isEnglish() ? t('howItWorks.tryDemo') : 'Experimentar demo'}
           </Link>
         </nav>
       </header>
 
       <main className="max-w-[800px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-12">
-        <h1 className="text-headline-lg font-headline-lg text-on-surface mb-6">Termos de Utilização</h1>
-        <p className="text-label-sm text-on-surface-variant mb-8">Última atualização: junho de 2024</p>
+        <h1 className="text-headline-lg font-headline-lg text-on-surface mb-6">{t('legal.terms.title')}</h1>
+        <p className="text-label-sm text-on-surface-variant mb-8">{t('legal.terms.lastUpdated')}</p>
 
         <div className="space-y-6 text-body-md text-on-surface-variant leading-relaxed">
           {isEnglish() && (
             <div className="p-4 bg-surface-container-low rounded-lg">
-              <strong className="block mb-2">English summary</strong>
+              <strong className="block mb-2">{t('legal.terms.englishSummary')}</strong>
+              <p className="text-label-sm text-on-surface-variant">{t('legal.privacy.summary_en')}</p>
+            </div>
+          )}
+          {!isEnglish() && (
+            <div className="p-4 bg-surface-container-low rounded-lg">
+              <strong className="block mb-2">{t('legal.terms.englishSummary')}</strong>
               <p className="text-label-sm text-on-surface-variant">{t('legal.terms.summary_en')}</p>
             </div>
           )}
-          <p>
-            Ao utilizar o <strong className="text-on-surface">CuidarJuntos</strong>, aceita estes
-            termos. A plataforma encontra-se em fase de demonstração (MVP).
-          </p>
+          <p>{t('legal.terms.intro')}</p>
 
           <section>
-            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">Natureza do serviço</h2>
-            <p>
-              O CuidarJuntos é uma ferramenta de organização familiar para ajudar a gerir informação,
-              tarefas, lembretes e contactos relacionados com o cuidado de familiares.
-            </p>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.terms.natureTitle')}</h2>
+            <p>{t('legal.terms.natureP1')}</p>
           </section>
 
           <section>
-            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">Não substitui serviços de saúde</h2>
-            <p>
-              O CuidarJuntos <strong className="text-on-surface">não substitui</strong> médicos,
-              hospitais, farmácias, serviços de emergência ou o Serviço Nacional de Saúde (SNS). Não
-              deve ser utilizado como única fonte de informação em situações clínicas ou de emergência.
-            </p>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.terms.noSubstituteTitle')}</h2>
+            <p>{t('legal.terms.noSubstituteP1')}</p>
           </section>
 
           <section>
-            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">Responsabilidade do utilizador</h2>
-            <p>
-              O utilizador é responsável por verificar a exatidão das informações introduzidas e por
-              tomar decisões de saúde com base em profissionais qualificados.
-            </p>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.terms.userResponsibilityTitle')}</h2>
+            <p>{t('legal.terms.userResponsibilityP1')}</p>
           </section>
 
           <section>
-            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">Emergências</h2>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.terms.emergencyTitle')}</h2>
             <p className="p-4 bg-error-container/20 border-l-4 border-error rounded-r-xl">
-              Em caso de emergência médica, ligue imediatamente para o{' '}
-              <strong className="text-on-surface text-headline-md">112</strong>.
+              {t('legal.terms.emergencyP1')}
             </p>
           </section>
 
           <section>
-            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">Versão demo e armazenamento local</h2>
-            <p>
-              Nesta versão de demonstração, os dados são guardados apenas no navegador do utilizador
-              (<code className="text-primary">localStorage</code>). Podem ser perdidos ao limpar o
-              histórico do navegador ou ao repor os dados de demonstração nas Definições.
-            </p>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.terms.demoStorageTitle')}</h2>
+            <p>{t('legal.terms.demoStorageP1')}</p>
           </section>
 
           <section>
-            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">Contacto</h2>
-            <p>
-              Para questões sobre estes termos, contacte-nos em{' '}
-              <a className="text-primary font-bold hover:underline" href="mailto:contato@cuidarjuntos.pt">
-                contato@cuidarjuntos.pt
-              </a>
-              .
-            </p>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.terms.contactTitle')}</h2>
+            <p>{t('legal.terms.contactP1')}</p>
           </section>
         </div>
 
@@ -97,13 +79,13 @@ const Termos: React.FC = () => {
             to="/"
             className="px-6 py-3 border border-primary text-primary font-bold rounded-full hover:bg-primary/5 transition-colors"
           >
-            Voltar ao início
+            {t('legal.terms.backToHome')}
           </Link>
           <Link
             to="/privacidade"
             className="px-6 py-3 bg-surface-container-low text-primary font-bold rounded-full hover:bg-surface-container-high transition-colors"
           >
-            Ver política de privacidade
+            {t('legal.terms.viewPrivacy')}
           </Link>
         </div>
       </main>

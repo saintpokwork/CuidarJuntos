@@ -90,19 +90,20 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
             );
           })}
         </nav>
-        <div className="px-4 mt-auto">
+        <div className="px-4 mt-auto space-y-3">
+          <LanguageToggle />
           {user ? (
             <div className="flex items-center justify-between gap-3 p-3 rounded-xl bg-white/10">
               <div className="overflow-hidden">
                 <p className="text-label-md font-bold text-white truncate">{displayName || 'Conta'} </p>
-                <p className="text-[10px] text-white/50 uppercase">Sessão iniciada</p>
+                <p className="text-[10px] text-white/50 uppercase">{t('global.sessionStarted')}</p>
               </div>
               <button
                 type="button"
                 onClick={handleSignOut}
                 className="px-3 py-2 rounded-full bg-white/10 text-white text-label-sm hover:bg-white/20 transition-colors"
               >
-                Sair
+                {t('global.signOutShort')}
               </button>
             </div>
           ) : (
@@ -136,7 +137,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary text-base">person</span>
                 <span>
-                  {t('global.signIn')/* label */} <strong className="text-primary">{displayName}</strong>
+                  {t('global.sessionStarted')} <strong className="text-primary">{displayName}</strong>
                 </span>
               </div>
               <div className="flex flex-wrap gap-3 items-center">
@@ -148,7 +149,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                   onClick={handleSignOut}
                   className="text-primary font-bold hover:underline whitespace-nowrap"
                 >
-                  Sair
+                  {t('global.signOutShort')}
                 </button>
               </div>
             </div>

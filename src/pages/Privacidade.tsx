@@ -17,93 +17,84 @@ const Privacidade: React.FC = () => {
             to="/dashboard"
             className="text-label-md font-bold text-primary hover:underline"
           >
-            Experimentar demo
+            {isEnglish() ? t('howItWorks.tryDemo') : 'Experimentar demo'}
           </Link>
         </nav>
       </header>
 
       <main className="max-w-[800px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-12">
-        <h1 className="text-headline-lg font-headline-lg text-on-surface mb-6">Política de Privacidade</h1>
-        <p className="text-label-sm text-on-surface-variant mb-8">Última atualização: junho de 2024</p>
-
-        <div className="space-y-6 text-body-md text-on-surface-variant leading-relaxed">
-          {isEnglish() && (
-            <div className="p-4 bg-surface-container-low rounded-lg">
-              <strong className="block mb-2">English summary</strong>
-              <p className="text-label-sm text-on-surface-variant">{t('legal.privacy.summary_en')}</p>
+        {isEnglish() ? (
+          <>
+            <h1 className="text-headline-lg font-headline-lg text-on-surface mb-6">{t('legal.privacy.title')}</h1>
+            <p className="text-label-sm text-on-surface-variant mb-8">{t('legal.privacy.lastUpdated')}</p>
+            <div className="space-y-6 text-body-md text-on-surface-variant leading-relaxed">
+              <p>{t('legal.privacy.intro')}</p>
+              <section>
+                <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.demoDataTitle')}</h2>
+                <p>{t('legal.privacy.demoDataP1')}</p>
+                <p className="mt-3">{t('legal.privacy.demoDataP2')}</p>
+              </section>
+              <section>
+                <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.noMedicalTitle')}</h2>
+                <p>{t('legal.privacy.noMedicalP1')}</p>
+              </section>
+              <section>
+                <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.sensitiveTitle')}</h2>
+                <p>{t('legal.privacy.sensitiveP1')}</p>
+              </section>
+              <section>
+                <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.futureTitle')}</h2>
+                <p>{t('legal.privacy.futureP1')}</p>
+              </section>
+              <section>
+                <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.contactTitle')}</h2>
+                <p>{t('legal.privacy.contactP1')}</p>
+              </section>
             </div>
-          )}
-          <p>
-            O <strong className="text-on-surface">CuidarJuntos</strong> é atualmente uma versão
-            demonstração (MVP). Esta página descreve como os dados são tratados nesta fase inicial do
-            produto.
-          </p>
-
-          <section>
-            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">Dados na versão demo</h2>
-            <p>
-              Os dados que introduz no painel (medicamentos, consultas, tarefas, documentos, notas e
-              contactos) são guardados <strong className="text-on-surface">localmente no seu navegador</strong>{' '}
-              através de <code className="text-primary">localStorage</code>. Não são enviados para
-              servidores externos nem sincronizados entre dispositivos.
-            </p>
-            <p>
-              Em versões futuras, os dados poderão ser armazenados de forma segura na nuvem, com
-              contas e encriptação.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">Sem aconselhamento médico</h2>
-            <p>
-              O CuidarJuntos é uma ferramenta de organização familiar. Não fornece aconselhamento
-              médico, diagnóstico ou tratamento. Consulte sempre profissionais de saúde para decisões
-              clínicas.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">Dados sensíveis</h2>
-            <p>
-              Recomendamos que <strong className="text-on-surface">não introduza dados médicos reais
-              altamente sensíveis</strong> nesta versão de demonstração. Utilize dados fictícios ou
-              anonimizados para experimentar a plataforma.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">Versões futuras</h2>
-            <p>
-              Versões futuras do CuidarJuntos poderão incluir contas seguras, armazenamento encriptado
-              e sincronização entre familiares. Esta política será atualizada quando essas
-              funcionalidades estiverem disponíveis.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">Contacto</h2>
-            <p>
-              Para questões sobre privacidade, contacte-nos em{' '}
-              <a className="text-primary font-bold hover:underline" href="mailto:contato@cuidarjuntos.pt">
-                contato@cuidarjuntos.pt
-              </a>
-              .
-            </p>
-          </section>
-        </div>
+          </>
+        ) : (
+          <>
+            <h1 className="text-headline-lg font-headline-lg text-on-surface mb-6">{t('legal.privacy.title')}</h1>
+            <p className="text-label-sm text-on-surface-variant mb-8">{t('legal.privacy.lastUpdated')}</p>
+            <div className="space-y-6 text-body-md text-on-surface-variant leading-relaxed">
+              <p>{t('legal.privacy.intro')}</p>
+              <section>
+                <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.demoDataTitle')}</h2>
+                <p>{t('legal.privacy.demoDataP1')}</p>
+                <p className="mt-3">{t('legal.privacy.demoDataP2')}</p>
+              </section>
+              <section>
+                <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.noMedicalTitle')}</h2>
+                <p>{t('legal.privacy.noMedicalP1')}</p>
+              </section>
+              <section>
+                <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.sensitiveTitle')}</h2>
+                <p>{t('legal.privacy.sensitiveP1')}</p>
+              </section>
+              <section>
+                <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.futureTitle')}</h2>
+                <p>{t('legal.privacy.futureP1')}</p>
+              </section>
+              <section>
+                <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.contactTitle')}</h2>
+                <p>{t('legal.privacy.contactP1')}</p>
+              </section>
+            </div>
+          </>
+        )}
 
         <div className="mt-12 flex flex-wrap gap-4">
           <Link
             to="/"
             className="px-6 py-3 border border-primary text-primary font-bold rounded-full hover:bg-primary/5 transition-colors"
           >
-            Voltar ao início
+            {t('legal.privacy.backToHome')}
           </Link>
           <Link
             to="/termos"
             className="px-6 py-3 bg-surface-container-low text-primary font-bold rounded-full hover:bg-surface-container-high transition-colors"
           >
-            Ver termos de utilização
+            {t('legal.privacy.viewTerms')}
           </Link>
         </div>
       </main>

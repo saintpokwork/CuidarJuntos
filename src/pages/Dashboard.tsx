@@ -65,20 +65,20 @@ const Dashboard: React.FC = () => {
                   </div>
                   <span className="material-symbols-outlined text-primary text-3xl">pill</span>
                 </div>
-                <p className="text-label-sm text-on-surface-variant">Quantas tomas foram marcadas como tomadas hoje.</p>
+                <p className="text-label-sm text-on-surface-variant">{t('dashboard.medsTakenHint')}</p>
               </div>
               <div className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40">
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <p className="text-label-sm text-on-surface-variant">{t('dashboard.nextAppointment')}</p>
                     <p className="text-headline-md font-headline-md text-on-surface">
-                      {appointments[0]?.tipo || 'Nenhuma consulta'}
+                      {appointments[0]?.tipo || '-'}
                     </p>
                   </div>
                   <span className="material-symbols-outlined text-secondary text-3xl">calendar_today</span>
                 </div>
                 <p className="text-label-sm text-on-surface-variant">
-                  {appointments[0]?.dataHora || 'Adicione uma consulta para ver o próximo horário.'}
+                  {appointments[0]?.dataHora || t('dashboard.noAppointments')}
                 </p>
               </div>
               <div className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40">
@@ -91,7 +91,7 @@ const Dashboard: React.FC = () => {
                   </div>
                   <span className="material-symbols-outlined text-tertiary text-3xl">assignment_late</span>
                 </div>
-                <p className="text-label-sm text-on-surface-variant">Tarefas que precisam de atenção rápida.</p>
+                <p className="text-label-sm text-on-surface-variant">{t('dashboard.tasksOverdueHint')}</p>
               </div>
               <div className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40">
                 <div className="flex items-center justify-between mb-4">
@@ -103,7 +103,7 @@ const Dashboard: React.FC = () => {
                   </div>
                   <span className="material-symbols-outlined text-primary text-3xl">person</span>
                 </div>
-                <p className="text-label-sm text-on-surface-variant">Percentagem de informações preenchidas no perfil.</p>
+                <p className="text-label-sm text-on-surface-variant">{t('dashboard.profileCompletionHint')}</p>
               </div>
             </div>
           </section>
@@ -157,8 +157,8 @@ const Dashboard: React.FC = () => {
             <div className="glass-card rounded-[24px] p-6 soft-shadow soft-shadow-hover transition-all border border-white/40">
               <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h3 className="text-headline-md font-headline-md text-on-surface">Medicamentos</h3>
-                  <p className="text-label-sm text-on-surface-variant">Próximas tomas para hoje</p>
+                  <h3 className="text-headline-md font-headline-md text-on-surface">{t('dashboard.cardMedications')}</h3>
+                  <p className="text-label-sm text-on-surface-variant">{t('dashboard.cardMedsSubtitle')}</p>
                 </div>
                 <span className="material-symbols-outlined text-primary text-3xl">pill</span>
               </div>
@@ -200,15 +200,15 @@ const Dashboard: React.FC = () => {
                 to="/dashboard/medicamentos"
                 className="mt-6 block w-full text-center text-primary font-bold text-label-md py-2 hover:bg-primary-fixed/10 rounded-lg transition-colors"
               >
-                Ver plano completo
+                {t('dashboard.viewFullPlan')}
               </Link>
             </div>
 
             <div className="glass-card rounded-[24px] p-6 soft-shadow soft-shadow-hover transition-all border border-white/40">
               <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h3 className="text-headline-md font-headline-md text-on-surface">Consultas</h3>
-                  <p className="text-label-sm text-on-surface-variant">Agenda da semana</p>
+                  <h3 className="text-headline-md font-headline-md text-on-surface">{t('dashboard.cardAppointments')}</h3>
+                  <p className="text-label-sm text-on-surface-variant">{t('dashboard.cardAppointmentsSubtitle')}</p>
                 </div>
                 <span className="material-symbols-outlined text-secondary text-3xl">calendar_today</span>
               </div>
@@ -233,16 +233,16 @@ const Dashboard: React.FC = () => {
                 to="/dashboard/consultas"
                 className="mt-6 block w-full text-center text-secondary font-bold text-label-md py-2 hover:bg-secondary-fixed/10 rounded-lg transition-colors"
               >
-                {appointments.length === 0 ? 'Agendar nova consulta' : 'Ver todas as consultas'}
+                {appointments.length === 0 ? t('dashboard.scheduleNewAppointment') : t('dashboard.viewAllAppointments')}
               </Link>
             </div>
 
             <div className="glass-card rounded-[24px] p-6 soft-shadow soft-shadow-hover transition-all border border-white/40">
               <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h3 className="text-headline-md font-headline-md text-on-surface">Tarefas</h3>
+                  <h3 className="text-headline-md font-headline-md text-on-surface">{t('dashboard.cardTasks')}</h3>
                   <p className="text-label-sm text-on-surface-variant">
-                    {pendingTasks.length} pendente{pendingTasks.length !== 1 ? 's' : ''}
+                    {pendingTasks.length} {t('dashboard.cardTasksSubtitle').toLowerCase()}
                   </p>
                 </div>
                 <span className="material-symbols-outlined text-tertiary text-3xl">assignment</span>
@@ -273,15 +273,15 @@ const Dashboard: React.FC = () => {
                 to="/dashboard/tarefas"
                 className="mt-6 block w-full text-center text-on-surface-variant font-bold text-label-md py-2 hover:bg-surface-container-highest rounded-lg transition-colors"
               >
-                Ver todas as tarefas
+                {t('dashboard.viewAllTasks')}
               </Link>
             </div>
 
             <div className="glass-card rounded-[24px] p-6 soft-shadow soft-shadow-hover transition-all border border-white/40">
               <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h3 className="text-headline-md font-headline-md text-on-surface">Documentos</h3>
-                  <p className="text-label-sm text-on-surface-variant">Recentes</p>
+                  <h3 className="text-headline-md font-headline-md text-on-surface">{t('dashboard.cardDocuments')}</h3>
+                  <p className="text-label-sm text-on-surface-variant">{t('dashboard.cardDocumentsSubtitle')}</p>
                 </div>
                 <span className="material-symbols-outlined text-primary text-3xl">description</span>
               </div>
@@ -300,7 +300,7 @@ const Dashboard: React.FC = () => {
                       <div className="flex-1 overflow-hidden">
                         <p className="text-label-md font-medium truncate">{doc.titulo}</p>
                         <p className="text-[10px] text-on-surface-variant">
-                          Adicionado {doc.dataAdicao.toLowerCase()}
+                          {doc.dataAdicao}
                         </p>
                       </div>
                     </div>
@@ -311,15 +311,15 @@ const Dashboard: React.FC = () => {
                 to="/dashboard/documentos"
                 className="mt-4 block text-primary font-bold text-label-sm"
               >
-                Ver todos os documentos →
+                {t('dashboard.viewAllDocuments')} →
               </Link>
             </div>
 
             <div className="glass-card rounded-[24px] p-6 soft-shadow soft-shadow-hover transition-all border border-white/40">
               <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h3 className="text-headline-md font-headline-md text-on-surface">Contactos</h3>
-                  <p className="text-label-sm text-on-surface-variant">Emergência rápida</p>
+                  <h3 className="text-headline-md font-headline-md text-on-surface">{t('dashboard.cardContacts')}</h3>
+                  <p className="text-label-sm text-on-surface-variant">{t('dashboard.cardContactsSubtitle')}</p>
                 </div>
                 <span className="material-symbols-outlined text-error text-3xl">emergency</span>
               </div>
@@ -349,15 +349,15 @@ const Dashboard: React.FC = () => {
                 to="/dashboard/emergencia"
                 className="mt-4 block text-center text-error font-bold text-label-sm"
               >
-                Ver ficha de emergência
+                {t('dashboard.viewEmergency')}
               </Link>
             </div>
 
             <div className="glass-card rounded-[24px] p-6 soft-shadow soft-shadow-hover transition-all border border-white/40">
               <div className="flex justify-between items-start mb-6">
                 <div>
-                  <h3 className="text-headline-md font-headline-md text-on-surface">Notas</h3>
-                  <p className="text-label-sm text-on-surface-variant">Lembretes de cuidado</p>
+                  <h3 className="text-headline-md font-headline-md text-on-surface">{t('dashboard.cardNotes')}</h3>
+                  <p className="text-label-sm text-on-surface-variant">{t('dashboard.cardNotesSubtitle')}</p>
                 </div>
                 <span className="material-symbols-outlined text-tertiary text-3xl">event_note</span>
               </div>
@@ -374,7 +374,7 @@ const Dashboard: React.FC = () => {
                 to="/dashboard/notas"
                 className="mt-4 flex justify-end text-primary font-bold text-label-sm items-center gap-1"
               >
-                <span className="material-symbols-outlined text-sm">edit</span> Ver todas as notas
+                <span className="material-symbols-outlined text-sm">edit</span> {t('dashboard.viewAllNotes')}
               </Link>
             </div>
           </div>

@@ -10,11 +10,20 @@ const RecuperarPassword: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const { resetPassword } = useAuth();
   const { t } = useLanguage();
 
+  const validate = (): boolean => {
+    const errors: string[] = [];
+    if (!email.trim()) errors.push(t('global.emailRequired'));
+    setValidationErrors(errors);
+    return errors.length === 0;
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (!validate()) return;
     setLoading(true);
     setMessage('');
     setError('');
@@ -23,11 +32,11 @@ const RecuperarPassword: React.FC = () => {
     setLoading(false);
 
     if (resetError) {
-      setError(resetError.message || 'Não foi possível enviar as instruções.');
+      setError(resetError.message || t('auth.errorReset'));
       return;
     }
 
-    setMessage('Se existir uma conta com este email, receberá instruções para recuperar a palavra-passe.');
+    setMessage(t('auth.successReset'));
   };
 
   return (
@@ -63,6 +72,11 @@ const RecuperarPassword: React.FC = () => {
                 className="w-full h-12 px-4 rounded-2xl border border-outline-variant bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
               />
             </div>
+            {validationErrors.length > 0 && (
+              <div className="rounded-2xl p-4 text-label-sm font-medium bg-error-container text-error">
+                {validationErrors.map((err, i) => <p key={i}>{err}</p>)}
+              </div>
+            )}
             <button type="submit" disabled={loading} className="w-full h-12 rounded-full bg-primary text-on-primary font-bold disabled:cursor-not-allowed disabled:opacity-60">
               {loading ? t('auth.sending') : t('auth.submitReset')}
             </button>
@@ -79,7 +93,7 @@ const RecuperarPassword: React.FC = () => {
 
           <div className="mt-6 text-center text-label-sm text-on-surface-variant">
             <Link to="/dashboard" className="text-primary font-bold hover:underline">
-              Continuar para demo
+              {t('auth.continueDemo')}
             </Link>
           </div>
         </div>

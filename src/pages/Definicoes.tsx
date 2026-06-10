@@ -14,6 +14,15 @@ const Definicoes: React.FC = () => {
   const [importError, setImportError] = useState('');
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const { t } = useLanguage();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
   const handleReset = () => {
     const confirmar = window.confirm(
       'Tem a certeza que pretende repor os dados de demonstração? Todas as alterações locais serão perdidas.'
@@ -23,8 +32,8 @@ const Definicoes: React.FC = () => {
 
   const exportDemoData = () => {
     downloadCareData(data);
-    showFeedback('Dados de demonstração descarregados.');
-    setImportMessage('Dados de demonstração exportados com sucesso.');
+    showFeedback('feedback.dataExported');
+    setImportMessage(t('feedback.dataExported'));
     setImportError('');
   };
 
@@ -39,11 +48,11 @@ const Definicoes: React.FC = () => {
         throw new Error('Formato de dados inválido.');
       }
       importDemoData(parsed);
-      setImportMessage('Dados importados com sucesso.');
+      setImportMessage(t('feedback.demoImported'));
       setImportError('');
-      showFeedback('Dados de demonstração importados.');
+      showFeedback('feedback.demoImported');
     } catch {
-      setImportError('Não foi possível importar o ficheiro. Verifique o formato JSON.');
+      setImportError(t('feedback.dataImportError'));
       setImportMessage('');
     } finally {
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -54,27 +63,16 @@ const Definicoes: React.FC = () => {
     fileInputRef.current?.click();
   };
 
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/');
-  };
-  const { t } = useLanguage();
-
   return (
     <DashboardLayout>
       <main className="flex-1 w-full relative ">
-        <DashboardPageHeader title="Definições" showSearch={false} />
+        <DashboardPageHeader title={t('pages.settings.title')} showSearch={false} />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop ">
           <div className="mb-stack-lg p-6 rounded-[24px] bg-secondary-container/20 border-l-4 border-secondary flex items-start gap-4">
             <span className="material-symbols-outlined text-secondary text-3xl shrink-0">info</span>
             <p className="text-body-md text-on-secondary-container italic">
-              &ldquo;CuidarJuntos não substitui médicos, hospitais, farmácias ou serviços públicos de saúde.
-              É uma ferramenta de organização familiar para ajudar a gerir informação, tarefas e
-              lembretes.&rdquo;
+              {t('safety.disclaimer')}
             </p>
           </div>
 
@@ -86,10 +84,10 @@ const Definicoes: React.FC = () => {
                     <div className="w-12 h-12 rounded-2xl bg-primary-fixed flex items-center justify-center text-primary">
                       <span className="material-symbols-outlined">person</span>
                     </div>
-                    <h2 className="text-headline-md font-headline-md">Perfil do cuidador</h2>
+                    <h2 className="text-headline-md font-headline-md">{t('pages.profile.title')}</h2>
                   </div>
                   <button type="button" className="text-primary font-bold text-label-md hover:underline">
-                    Editar
+                    {t('global.edit')}
                   </button>
                 </div>
                 <div className="flex items-center gap-4">
@@ -109,9 +107,9 @@ const Definicoes: React.FC = () => {
               <div className="bg-white p-8 rounded-[24px] soft-shadow mb-6">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-headline-md font-headline-md">Conta e sincronização</h2>
+                    <h2 className="text-headline-md font-headline-md">{t('pages.settings.account')}</h2>
                     <p className="text-label-md text-on-surface-variant">
-                      Funcionalidades de conta real e sincronização entre dispositivos estarão disponíveis em breve.
+                      {t('pages.settings.accountNotActive')}
                     </p>
                   </div>
                 </div>
@@ -130,18 +128,18 @@ const Definicoes: React.FC = () => {
                 <div className="grid gap-4 sm:grid-cols-2">
                   {[
                     {
-                      title: 'Guardar dados na nuvem',
-                      description: 'Disponível com contas reais.',
+                      title: t('pages.settings.dataStorage'),
+                      description: t('pages.settings.localStored'),
                       icon: 'cloud',
                     },
                     {
-                      title: 'Partilhar com familiares em tempo real',
-                      description: 'Disponível com contas reais.',
+                      title: t('auth.titleSignUp'),
+                      description: t('auth.infoBoxSignUp'),
                       icon: 'share',
                     },
                     {
-                      title: 'Acesso multi-dispositivo',
-                      description: 'Disponível com contas reais.',
+                      title: t('pages.settings.language'),
+                      description: t('demo.notice'),
                       icon: 'devices',
                     },
                   ].map((item) => (
@@ -159,9 +157,9 @@ const Definicoes: React.FC = () => {
               </div>
 
               <div className="bg-white p-6 rounded-[24px] soft-shadow border border-outline-variant/30">
-                <h3 className="text-headline-md font-headline-md text-on-surface mb-2">Dados da demo</h3>
+                <h3 className="text-headline-md font-headline-md text-on-surface mb-2">{t('pages.settings.demoData')}</h3>
                 <p className="text-label-md text-on-surface-variant mb-4">
-                  Exporte ou importe os seus dados locais como ficheiro JSON. Esta funcionalidade ajuda na futura migração para contas reais.
+                  {t('pages.settings.importHelp')}
                 </p>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <button
@@ -169,14 +167,14 @@ const Definicoes: React.FC = () => {
                     onClick={exportDemoData}
                     className="px-6 py-3 rounded-full bg-primary text-on-primary font-bold hover:opacity-90 transition-all"
                   >
-                    Exportar dados demo
+                    {t('pages.settings.export')}
                   </button>
                   <button
                     type="button"
                     onClick={openImportDialog}
                     className="px-6 py-3 rounded-full border border-primary text-primary font-bold hover:bg-primary/5 transition-all"
                   >
-                    Importar dados demo
+                    {t('pages.settings.import')}
                   </button>
                 </div>
                 <input
@@ -199,7 +197,7 @@ const Definicoes: React.FC = () => {
                     className="px-6 py-3 border-2 border-primary text-primary font-bold rounded-full hover:bg-primary/5 transition-colors flex items-center gap-2"
                   >
                     <span className="material-symbols-outlined">restart_alt</span>
-                    Repor dados de demonstração
+                    {t('pages.settings.resetDemo')}
                   </button>
                 </div>
               </div>
@@ -207,47 +205,20 @@ const Definicoes: React.FC = () => {
 
             <div className="md:col-span-4 space-y-4">
               <div className="bg-white p-6 rounded-[24px] soft-shadow">
-                <h3 className="text-headline-md font-headline-md text-on-surface mb-4">Notificações</h3>
-                <div className="space-y-4">
-                  {[
-                    { label: 'Lembretes de medicamentos', ativo: true },
-                    { label: 'Tarefas atribuídas', ativo: true },
-                    { label: 'Consultas próximas', ativo: true },
-                    { label: 'Notas da família', ativo: false },
-                  ].map((item) => (
-                    <div key={item.label} className="flex items-center justify-between">
-                      <span className="text-label-md text-on-surface">{item.label}</span>
-                      <div
-                        className={`w-12 h-7 rounded-full relative ${
-                          item.ativo ? 'bg-primary' : 'bg-outline-variant'
-                        }`}
-                      >
-                        <div
-                          className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow ${
-                            item.ativo ? 'right-1' : 'left-1'
-                          }`}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="bg-white p-6 rounded-[24px] soft-shadow">
-                <h3 className="text-headline-md font-headline-md text-on-surface mb-2">Privacidade</h3>
+                <h3 className="text-headline-md font-headline-md text-on-surface mb-4">{t('pages.settings.dataStorage')}</h3>
                 <p className="text-label-md text-on-surface-variant mb-4">
-                  Os seus dados são encriptados e armazenados localmente no seu navegador.
+                  {t('pages.settings.localStored')}
                 </p>
                 <button
                   type="button"
                   className="w-full py-3 border border-primary text-primary font-bold rounded-full hover:bg-primary/5 transition-colors"
                 >
-                  Ver política de privacidade
+                  {t('legal.privacy.backToHome')}
                 </button>
               </div>
 
               <p className="text-label-sm text-on-surface-variant text-center opacity-70">
-                © 2024 CuidarJuntos — Feito com cuidado para famílias portuguesas.
+                {t('footer.copyright')}
               </p>
             </div>
           </div>
