@@ -88,7 +88,7 @@ const Home: React.FC = () => {
                 </Link>
               </div>
               <p className="mt-4 text-label-sm text-on-surface-variant">
-                {t('home.hero.demoNotice')}
+                {t('home.hero.ctaSubtitle')}
               </p>
             </div>
             <div className="flex-1 w-full relative">

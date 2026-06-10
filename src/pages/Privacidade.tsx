@@ -23,65 +23,76 @@ const Privacidade: React.FC = () => {
       </header>
 
       <main className="max-w-[800px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-12">
-        {isEnglish() ? (
-          <>
-            <h1 className="text-headline-lg font-headline-lg text-on-surface mb-6">{t('legal.privacy.title')}</h1>
-            <p className="text-label-sm text-on-surface-variant mb-8">{t('legal.privacy.lastUpdated')}</p>
-            <div className="space-y-6 text-body-md text-on-surface-variant leading-relaxed">
-              <p>{t('legal.privacy.intro')}</p>
-              <section>
-                <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.demoDataTitle')}</h2>
-                <p>{t('legal.privacy.demoDataP1')}</p>
-                <p className="mt-3">{t('legal.privacy.demoDataP2')}</p>
-              </section>
-              <section>
-                <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.noMedicalTitle')}</h2>
-                <p>{t('legal.privacy.noMedicalP1')}</p>
-              </section>
-              <section>
-                <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.sensitiveTitle')}</h2>
-                <p>{t('legal.privacy.sensitiveP1')}</p>
-              </section>
-              <section>
-                <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.futureTitle')}</h2>
-                <p>{t('legal.privacy.futureP1')}</p>
-              </section>
-              <section>
-                <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.contactTitle')}</h2>
-                <p>{t('legal.privacy.contactP1')}</p>
-              </section>
+        <h1 className="text-headline-lg font-headline-lg text-on-surface mb-6">{t('legal.privacy.title')}</h1>
+        <p className="text-label-sm text-on-surface-variant mb-8">{t('legal.privacy.lastUpdated')}</p>
+
+        <div className="space-y-6 text-body-md text-on-surface-variant leading-relaxed">
+          {isEnglish() && (
+            <div className="p-4 bg-surface-container-low rounded-lg">
+              <strong className="block mb-2">{t('legal.privacy.englishSummary')}</strong>
             </div>
-          </>
-        ) : (
-          <>
-            <h1 className="text-headline-lg font-headline-lg text-on-surface mb-6">{t('legal.privacy.title')}</h1>
-            <p className="text-label-sm text-on-surface-variant mb-8">{t('legal.privacy.lastUpdated')}</p>
-            <div className="space-y-6 text-body-md text-on-surface-variant leading-relaxed">
-              <p>{t('legal.privacy.intro')}</p>
-              <section>
-                <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.demoDataTitle')}</h2>
-                <p>{t('legal.privacy.demoDataP1')}</p>
-                <p className="mt-3">{t('legal.privacy.demoDataP2')}</p>
-              </section>
-              <section>
-                <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.noMedicalTitle')}</h2>
-                <p>{t('legal.privacy.noMedicalP1')}</p>
-              </section>
-              <section>
-                <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.sensitiveTitle')}</h2>
-                <p>{t('legal.privacy.sensitiveP1')}</p>
-              </section>
-              <section>
-                <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.futureTitle')}</h2>
-                <p>{t('legal.privacy.futureP1')}</p>
-              </section>
-              <section>
-                <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.contactTitle')}</h2>
-                <p>{t('legal.privacy.contactP1')}</p>
-              </section>
-            </div>
-          </>
-        )}
+          )}
+
+          <p>{t('legal.privacy.intro')}</p>
+
+          <section>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.providerTitle')}</h2>
+            <p>{t('legal.privacy.providerP1')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.dataCollectedTitle')}</h2>
+            <p>{t('legal.privacy.dataCollectedP1')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.demoTitle')}</h2>
+            <p>{t('legal.privacy.demoP1')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.cloudTitle')}</h2>
+            <p>{t('legal.privacy.cloudP1')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.authEmailsTitle')}</h2>
+            <p>{t('legal.privacy.authEmailsP1')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.documentsTitle')}</h2>
+            <p>{t('legal.privacy.documentsP1')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.gdprTitle')}</h2>
+            <p>{t('legal.privacy.gdprP1')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.subprocessorsTitle')}</h2>
+            <p>{t('legal.privacy.subprocessorsP1')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.cookiesTitle')}</h2>
+            <p>{t('legal.privacy.cookiesP1')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.privacy.contactTitle')}</h2>
+            <p>
+              <a href="mailto:contato@cuidarjuntos.pt" className="text-primary hover:underline">
+                {t('legal.privacy.contactP1')}
+              </a>
+            </p>
+          </section>
+
+          <div className="p-4 bg-cj-terra/10 rounded-lg text-label-sm text-on-surface-variant">
+            {t('legal.privacy.legalNote')}
+          </div>
+        </div>
 
         <div className="mt-12 flex flex-wrap gap-4">
           <Link

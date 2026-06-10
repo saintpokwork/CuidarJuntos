@@ -30,30 +30,24 @@ const Termos: React.FC = () => {
           {isEnglish() && (
             <div className="p-4 bg-surface-container-low rounded-lg">
               <strong className="block mb-2">{t('legal.terms.englishSummary')}</strong>
-              <p className="text-label-sm text-on-surface-variant">{t('legal.privacy.summary_en')}</p>
             </div>
           )}
-          {!isEnglish() && (
-            <div className="p-4 bg-surface-container-low rounded-lg">
-              <strong className="block mb-2">{t('legal.terms.englishSummary')}</strong>
-              <p className="text-label-sm text-on-surface-variant">{t('legal.terms.summary_en')}</p>
-            </div>
-          )}
+
           <p>{t('legal.terms.intro')}</p>
 
           <section>
-            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.terms.natureTitle')}</h2>
-            <p>{t('legal.terms.natureP1')}</p>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.terms.providerTitle')}</h2>
+            <p>{t('legal.terms.providerP1')}</p>
           </section>
 
           <section>
-            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.terms.noSubstituteTitle')}</h2>
-            <p>{t('legal.terms.noSubstituteP1')}</p>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.terms.purposeTitle')}</h2>
+            <p>{t('legal.terms.purposeP1')}</p>
           </section>
 
           <section>
-            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.terms.userResponsibilityTitle')}</h2>
-            <p>{t('legal.terms.userResponsibilityP1')}</p>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.terms.notMedicalTitle')}</h2>
+            <p>{t('legal.terms.notMedicalP1')}</p>
           </section>
 
           <section>
@@ -64,14 +58,42 @@ const Termos: React.FC = () => {
           </section>
 
           <section>
-            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.terms.demoStorageTitle')}</h2>
-            <p>{t('legal.terms.demoStorageP1')}</p>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.terms.userResponsibilityTitle')}</h2>
+            <p>{t('legal.terms.userResponsibilityP1')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.terms.accountModesTitle')}</h2>
+            <p>{t('legal.terms.accountModesP1')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.terms.documentsTitle')}</h2>
+            <p>{t('legal.terms.documentsP1')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.terms.availabilityTitle')}</h2>
+            <p>{t('legal.terms.availabilityP1')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.terms.paymentsTitle')}</h2>
+            <p>{t('legal.terms.paymentsP1')}</p>
           </section>
 
           <section>
             <h2 className="text-headline-md font-headline-md text-on-surface mb-3">{t('legal.terms.contactTitle')}</h2>
-            <p>{t('legal.terms.contactP1')}</p>
+            <p>
+              <a href="mailto:contato@cuidarjuntos.pt" className="text-primary hover:underline">
+                {t('legal.terms.contactP1')}
+              </a>
+            </p>
           </section>
+
+          <div className="p-4 bg-cj-terra/10 rounded-lg text-label-sm text-on-surface-variant">
+            {t('legal.terms.legalNote')}
+          </div>
         </div>
 
         <div className="mt-12 flex flex-wrap gap-4">
