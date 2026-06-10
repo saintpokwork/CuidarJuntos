@@ -17,7 +17,11 @@ import Termos from '../pages/Termos';
 import NotFound from '../pages/NotFound';
 import ComoFunciona from '../pages/ComoFunciona';
 import Guia from '../pages/Guia';
+import Entrar from '../pages/Entrar';
+import CriarConta from '../pages/CriarConta';
+import RecuperarPassword from '../pages/RecuperarPassword';
 import FeedbackMessage from './FeedbackMessage';
+import ScrollToTop from './ScrollToTop';
 import { useCareData } from '../context/CareDataContext';
 
 const AppRoutes: React.FC = () => {
@@ -25,9 +29,13 @@ const AppRoutes: React.FC = () => {
   return (
     <>
       <FeedbackMessage message={feedback} />
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/como-funciona" element={<ComoFunciona />} />
+        <Route path="/entrar" element={<Entrar />} />
+        <Route path="/criar-conta" element={<CriarConta />} />
+        <Route path="/recuperar-password" element={<RecuperarPassword />} />
         <Route path="/privacidade" element={<Privacidade />} />
         <Route path="/termos" element={<Termos />} />
         <Route path="/dashboard" element={<Dashboard />} />

@@ -11,7 +11,6 @@ import {
   Task,
   TaskPriority,
   TaskStatus,
-  careProfile,
   caregiver,
   getInitialCareData,
 } from '../data/initialData';
@@ -21,7 +20,28 @@ const STORAGE_KEY = 'cuidarjuntos-care-data';
 const loadFromStorage = (): CareData => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return JSON.parse(stored) as CareData;
+    if (stored) {
+      const parsed = JSON.parse(stored) as Partial<CareData>;
+      const initial = getInitialCareData();
+      return {
+        ...initial,
+        ...parsed,
+        medications: (parsed.medications ?? initial.medications).map((m) => ({
+          ...m,
+          tomadoHoje: m?.tomadoHoje ?? false,
+        })),
+        appointments: parsed.appointments ?? initial.appointments,
+        tasks: parsed.tasks ?? initial.tasks,
+        documents: parsed.documents ?? initial.documents,
+        careNotes: parsed.careNotes ?? initial.careNotes,
+        familyMembers: parsed.familyMembers ?? initial.familyMembers,
+        emergencyContacts: parsed.emergencyContacts ?? initial.emergencyContacts,
+        careProfile: {
+          ...initial.careProfile,
+          ...(parsed.careProfile ?? {}),
+        },
+      };
+    }
   } catch {
     /* usar dados iniciais */
   }
@@ -54,6 +74,7 @@ interface CareDataContextValue {
   showFeedback: (message: string) => void;
   addMedication: (med: Omit<Medication, 'id' | 'estado' | 'instrucoes' | 'responsavel'> & { responsavel?: string; instrucoes?: string }) => boolean;
   removeMedication: (id: string) => void;
+  updateMedicationTaken: (id: string, tomadoHoje: boolean) => void;
   addAppointment: (apt: Omit<Appointment, 'id' | 'estado' | 'dataHora' | 'medico' | 'responsavel' | 'notas'> & { dataHora: string; medico?: string; responsavel?: string; notas?: string }) => boolean;
   removeAppointment: (id: string) => void;
   addTask: (task: Omit<Task, 'id' | 'status'> & { status?: TaskStatus }) => boolean;
@@ -65,9 +86,20 @@ interface CareDataContextValue {
   removeCareNote: (id: string) => void;
   addFamilyMember: (member: { nome: string; contacto: string; relacao: string; funcao: FamilyRole }) => boolean;
   removeFamilyMember: (id: string) => void;
+  updateCareProfile: (profile: Partial<CareData['careProfile']>) => void;
+  importDemoData: (data: CareData) => void;
   resetDemoData: () => void;
   getEmergencySummary: () => string;
-  dashboardSummary: { saudacao: string; resumo: string };
+  dashboardSummary: {
+    saudacao: string;
+    resumo: string;
+    totalMedicamentosHoje: number;
+    medicamentosTomadosHoje: number;
+    proximaConsulta: string;
+    tarefasAtraso: number;
+    perfilCompletude: number;
+    sugestoes: string[];
+  };
 }
 
 const CareDataContext = createContext<CareDataContextValue | null>(null);
@@ -98,6 +130,7 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       responsavel: med.responsavel?.trim() || caregiver.nome,
       estado: 'Ativo',
       instrucoes: med.instrucoes?.trim() || '',
+      tomadoHoje: false,
     };
     setData((prev) => ({ ...prev, medications: [...prev.medications, novo] }));
     showFeedback('Medicamento adicionado com sucesso.');
@@ -107,6 +140,14 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const removeMedication = useCallback((id: string) => {
     setData((prev) => ({ ...prev, medications: prev.medications.filter((m) => m.id !== id) }));
     showFeedback('Medicamento removido.');
+  }, [showFeedback]);
+
+  const updateMedicationTaken = useCallback((id: string, tomadoHoje: boolean) => {
+    setData((prev) => ({
+      ...prev,
+      medications: prev.medications.map((m) => (m.id === id ? { ...m, tomadoHoje } : m)),
+    }));
+    showFeedback(tomadoHoje ? 'Medicamento marcado como tomado hoje.' : 'Toma do medicamento desmarcada.');
   }, [showFeedback]);
 
   const addAppointment: CareDataContextValue['addAppointment'] = useCallback((apt) => {
@@ -219,13 +260,35 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     showFeedback('Membro removido.');
   }, [showFeedback]);
 
+  const updateCareProfile = useCallback((profile: Partial<CareData['careProfile']>) => {
+    setData((prev) => ({
+      ...prev,
+      careProfile: {
+        ...prev.careProfile,
+        ...profile,
+        atualizadoEm: new Date().toLocaleDateString('pt-PT', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }),
+      },
+    }));
+    showFeedback('Perfil atualizado com sucesso.');
+  }, [showFeedback]);
+
   const resetDemoData = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY);
     setData(getInitialCareData());
     showFeedback('Dados de demonstração repostos.');
   }, [showFeedback]);
 
+  const importDemoData = useCallback((demoData: CareData) => {
+    setData(demoData);
+    showFeedback('Dados de demonstração importados.');
+  }, [showFeedback]);
+
   const getEmergencySummary = useCallback(() => {
+    const profile = data.careProfile;
     const meds = data.medications
       .filter((m) => m.estado === 'Ativo')
       .map((m) => `${m.nome} ${m.dosagem}`)
@@ -235,30 +298,75 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       .map((c) => `${c.nome}: ${c.telefone}`)
       .join('\n');
     return [
-      `FICHA DE EMERGÊNCIA — ${careProfile.nome}`,
-      `Data de nascimento: ${careProfile.dataNascimento}`,
-      `Número SNS: ${careProfile.numeroSNS}`,
-      `Alergias: ${careProfile.alergias.join(', ')}`,
+      `FICHA DE EMERGÊNCIA — ${profile.nome}`,
+      `Data de nascimento: ${profile.dataNascimento}`,
+      `Número SNS: ${profile.numeroSNS}`,
+      `Morada: ${profile.morada}`,
+      `Alergias: ${profile.alergias.join(', ')}`,
       `Medicamentos: ${meds || 'Nenhum'}`,
-      `Médico de família: ${careProfile.medicoFamilia}`,
-      `Morada: ${careProfile.morada}`,
+      `Médico de família: ${profile.medicoFamilia}`,
+      `Farmácia habitual: ${profile.farmaciaHabitual}`,
+      `Notas importantes: ${profile.notasImportantes || 'Nenhuma'}`,
       `Contactos:\n${contacts}`,
     ].join('\n');
-  }, [data.medications, data.emergencyContacts]);
+  }, [data.medications, data.emergencyContacts, data.careProfile]);
 
   const dashboardSummary = useMemo(() => {
     const medCount = data.medications.filter((m) => m.estado === 'Ativo').length;
+    const medsAtivos = data.medications.filter((m) => m.estado === 'Ativo');
+    const takenToday = medsAtivos.filter((m) => m.tomadoHoje).length;
+    const times = medsAtivos
+      .filter((m) => !m.tomadoHoje)
+      .flatMap((m) => m.horario.split(',').map((item) => item.trim()))
+      .map((time) => {
+        const match = time.match(/^(\d{2}:\d{2})$/);
+        return match ? match[1] : null;
+      })
+      .filter((value): value is string => !!value)
+      .sort();
+    const nextMedicationTime = times[0] || 'Sem horário definido';
     const pendingTasks = data.tasks.filter((t) => t.status === 'por_fazer').length;
+    const overdueTasks = data.tasks.filter((t) => {
+      const date = t.dataLimite.trim().toLowerCase();
+      return t.status !== 'concluido' && (date.includes('ontem') || date.includes('passado'));
+    }).length;
     const aptCount = data.appointments.length;
     const aptText =
       aptCount === 0
         ? 'nenhuma consulta marcada'
         : `${aptCount} consulta${aptCount !== 1 ? 's' : ''} marcada${aptCount !== 1 ? 's' : ''}`;
+    const profile = data.careProfile;
+    const filledFields = [
+      profile.nome,
+      profile.dataNascimento,
+      profile.morada,
+      profile.numeroSNS,
+      profile.alergias.length ? 'x' : '',
+      profile.condicoes.length ? 'x' : '',
+      profile.medicoFamilia,
+      profile.farmaciaHabitual,
+      profile.notasImportantes,
+    ].filter(Boolean).length;
+    const profileCompleteness = Math.round((filledFields / 9) * 100);
+    const suggestions: string[] = [];
+    if (profileCompleteness < 100) suggestions.push('Complete o perfil do familiar.');
+    if (medCount === 0) suggestions.push('Adicione medicamentos para acompanhar as tomas diárias.');
+    if (aptCount === 0) suggestions.push('Registe a próxima consulta.');
+    if (data.emergencyContacts.length === 0)
+      suggestions.push('Reveja os contactos de emergência.');
+    if (suggestions.length === 0) suggestions.push('Continue a usar o painel para manter tudo atualizado.');
+
     return {
-      saudacao: 'Bom dia, Ana',
+      saudacao: `Bom dia, ${caregiver.nome}`,
       resumo: `Hoje há ${medCount} medicamento${medCount !== 1 ? 's' : ''}, ${pendingTasks} tarefa${pendingTasks !== 1 ? 's' : ''} pendente${pendingTasks !== 1 ? 's' : ''} e ${aptText}.`,
+      totalMedicamentosHoje: medCount,
+      medicamentosTomadosHoje: takenToday,
+      proximaConsulta: nextMedicationTime,
+      tarefasAtraso: overdueTasks,
+      perfilCompletude: profileCompleteness,
+      sugestoes: suggestions,
     };
-  }, [data.medications, data.tasks, data.appointments]);
+  }, [data.medications, data.tasks, data.appointments, data.emergencyContacts, data.careProfile]);
 
   const value: CareDataContextValue = {
     data,
@@ -266,6 +374,7 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     showFeedback,
     addMedication,
     removeMedication,
+    updateMedicationTaken,
     addAppointment,
     removeAppointment,
     addTask,
@@ -277,6 +386,8 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     removeCareNote,
     addFamilyMember,
     removeFamilyMember,
+    updateCareProfile,
+    importDemoData,
     resetDemoData,
     getEmergencySummary,
     dashboardSummary,

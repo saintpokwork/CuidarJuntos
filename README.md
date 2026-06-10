@@ -4,6 +4,8 @@ Plataforma de organização familiar para cuidadores em Portugal. Ajuda família
 
 **Estado atual:** MVP demo com dados guardados localmente no navegador (`localStorage`).
 
+**Futuro planejado:** integração com Supabase para autenticação, base de dados na nuvem e sincronização entre familiares.
+
 ## Stack tecnológica
 
 - React 18 + TypeScript
@@ -32,6 +34,9 @@ npm run build
 | Rota | Página |
 |------|--------|
 | `/` | Landing page |
+| `/entrar` | Páginas de autenticação (placeholder) |
+| `/criar-conta` | Página de criação de conta (placeholder) |
+| `/recuperar-password` | Página de recuperação de palavra-passe (placeholder) |
 | `/como-funciona` | Como usar o CuidarJuntos (público) |
 | `/privacidade` | Política de privacidade |
 | `/termos` | Termos de utilização |
@@ -47,6 +52,10 @@ npm run build
 | `/dashboard/notas` | Notas de cuidado |
 | `/dashboard/definicoes` | Definições |
 | `/dashboard/mais` | Mais opções (mobile) |
+
+> A integração com Supabase está planeada para uma versão futura. Veja o plano em `docs/SUPABASE_PLAN.md`.
+>
+> O ficheiro de exemplo de ambiente está em `.env.example`.
 
 ## Estrutura do projeto
 

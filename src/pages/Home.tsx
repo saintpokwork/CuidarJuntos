@@ -33,7 +33,7 @@ const Home: React.FC = () => {
           <div className="flex items-center gap-4">
             <Link
               className="hidden md:block text-primary font-bold hover:text-primary-container transition-colors font-label-md text-label-md"
-              to="/dashboard"
+              to="/entrar"
             >
               Entrar
             </Link>
@@ -42,6 +42,12 @@ const Home: React.FC = () => {
               to="/dashboard"
             >
               Começar
+            </Link>
+            <Link
+              className="hidden md:inline-block text-primary font-bold hover:underline font-label-md text-label-md"
+              to="/criar-conta"
+            >
+              Criar conta em breve
             </Link>
           </div>
         </nav>
@@ -74,6 +80,12 @@ const Home: React.FC = () => {
                   to="/como-funciona"
                 >
                   Ver como funciona
+                </Link>
+                <Link
+                  className="bg-surface-container-high text-primary px-8 py-4 rounded-full font-headline-md text-[18px] hover:bg-surface-container-highest transition-colors text-center"
+                  to="/criar-conta"
+                >
+                  Criar conta em breve
                 </Link>
               </div>
               <p className="mt-4 text-label-sm text-on-surface-variant">

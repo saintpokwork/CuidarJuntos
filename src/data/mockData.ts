@@ -14,6 +14,8 @@ export const careProfile = {
   condicoes: ['Diabetes Tipo 2', 'Hipertensão arterial', 'Osteoartrite'],
   medicoFamilia: 'Dr. António Pereira — USF Campo de Ourique',
   farmaciaHabitual: 'Farmácia Central do Chiado',
+  notasImportantes:
+    'Paciente com diabetes e hipertensão. Em caso de desmaio, verificar glicemia. Contactar sempre a filha Ana Silva em primeiro lugar.',
   contactosPrincipais: [
     { nome: 'Ana Silva', relacao: 'Filha', telefone: '+351 912 345 678' },
     { nome: 'João Fernandes', relacao: 'Filho', telefone: '+351 923 456 789' },
@@ -35,6 +37,7 @@ export const medications = [
     responsavel: 'Ana Silva',
     estado: 'Ativo' as const,
     instrucoes: 'Após as refeições',
+    tomadoHoje: false,
   },
   {
     id: '2',
@@ -45,6 +48,7 @@ export const medications = [
     responsavel: 'João Fernandes',
     estado: 'Ativo' as const,
     instrucoes: 'Após o pequeno-almoço',
+    tomadoHoje: false,
   },
   {
     id: '3',
@@ -55,6 +59,7 @@ export const medications = [
     responsavel: 'Ana Silva',
     estado: 'Ativo' as const,
     instrucoes: 'Em jejum',
+    tomadoHoje: false,
   },
   {
     id: '4',
@@ -65,6 +70,7 @@ export const medications = [
     responsavel: 'Ana Silva',
     estado: 'Em falta' as const,
     instrucoes: 'Durante o almoço',
+    tomadoHoje: false,
   },
 ];
 

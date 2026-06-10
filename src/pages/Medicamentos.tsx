@@ -6,13 +6,8 @@ import { useCareData } from '../context/CareDataContext';
 import { caregiver } from '../data/initialData';
 import HelpTip from '../components/HelpTip';
 
-const estadoStyles: Record<string, string> = {
-  Ativo: 'bg-secondary-container text-on-secondary-container',
-  'Em falta': 'bg-error-container text-on-error-container',
-};
-
 const Medicamentos: React.FC = () => {
-  const { data, addMedication, removeMedication } = useCareData();
+  const { data, addMedication, removeMedication, updateMedicationTaken } = useCareData();
   const { medications } = data;
   const [nome, setNome] = useState('');
   const [dosagem, setDosagem] = useState('');
@@ -21,8 +16,15 @@ const Medicamentos: React.FC = () => {
   const [responsavel, setResponsavel] = useState(caregiver.nome);
   const [erro, setErro] = useState('');
 
-  const ativos = medications.filter((m) => m.estado === 'Ativo').length;
+  const medsAtivos = medications.filter((m) => m.estado === 'Ativo');
+  const takenHoje = medsAtivos.filter((m) => m.tomadoHoje).length;
   const emFalta = medications.filter((m) => m.estado === 'Em falta').length;
+  const proximosHorarios = medsAtivos
+    .filter((m) => !m.tomadoHoje)
+    .flatMap((m) => m.horario.split(',').map((item) => item.trim()))
+    .filter((item) => /^\d{2}:\d{2}$/.test(item))
+    .sort();
+  const nextMedicationTime = proximosHorarios[0] || 'Sem horário definido';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,13 +46,13 @@ const Medicamentos: React.FC = () => {
         <DashboardPageHeader title="Medicamentos" showSearch={false} />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
-          <HelpTip text="comece pelos medicamentos tomados todos os dias e confirme sempre os horários com a receita ou profissional de saúde." />
+          <HelpTip text="Registe as tomas de hoje e confirme sempre a medicação com a receita ou profissional de saúde." />
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-gutter mb-stack-lg">
             {[
-              { valor: ativos, label: 'Ativos', cor: 'text-primary' },
-              { valor: medications.length, label: 'Total', cor: 'text-secondary' },
+              { valor: medsAtivos.length, label: 'Medicamentos hoje', cor: 'text-primary' },
+              { valor: takenHoje, label: 'Tomados hoje', cor: 'text-secondary' },
               { valor: emFalta, label: 'Em falta', cor: 'text-error' },
-              { valor: ativos, label: 'Próxima hora', cor: 'text-tertiary' },
+              { valor: nextMedicationTime, label: 'Próxima hora', cor: 'text-tertiary' },
             ].map((stat) => (
               <div
                 key={stat.label}
@@ -83,10 +85,12 @@ const Medicamentos: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <span
                             className={`px-3 py-1 text-label-sm rounded-full font-bold ${
-                              estadoStyles[med.estado] || 'bg-surface-container-high'
+                              med.tomadoHoje
+                                ? 'bg-cj-verde-pale text-cj-verde'
+                                : 'bg-surface-container-high text-on-surface-variant'
                             }`}
                           >
-                            {med.estado}
+                            {med.tomadoHoje ? 'Tomado hoje' : 'Pendente'}
                           </span>
                           <button
                             type="button"
@@ -116,10 +120,14 @@ const Medicamentos: React.FC = () => {
                       </div>
                       <button
                         type="button"
-                        className="w-full py-3 rounded-xl bg-surface-container-low text-primary font-bold hover:bg-primary hover:text-on-primary transition-all flex justify-center items-center gap-2"
+                        onClick={() => updateMedicationTaken(med.id, !med.tomadoHoje)}
+                        className={`w-full py-3 rounded-xl font-bold transition-all ${
+                          med.tomadoHoje
+                            ? 'bg-surface-container-high text-on-surface'
+                            : 'bg-primary text-on-primary hover:opacity-90'
+                        }`}
                       >
-                        <span className="material-symbols-outlined">check_circle</span>
-                        Confirmar toma
+                        {med.tomadoHoje ? 'Desmarcar' : 'Marcar como tomado'}
                       </button>
                     </div>
                   ))}

@@ -2,13 +2,12 @@ import React, { useEffect, useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
 import { useCareData } from '../context/CareDataContext';
-import { careProfile } from '../data/initialData';
 import HelpTip from '../components/HelpTip';
 import CuidarJuntosLogo from '../components/brand/CuidarJuntosLogo';
 
 const Emergencia: React.FC = () => {
   const { data, getEmergencySummary, showFeedback } = useCareData();
-  const { medications, emergencyContacts } = data;
+  const { medications, emergencyContacts, careProfile } = data;
   const [partilhaMsg, setPartilhaMsg] = useState('');
 
   useEffect(() => {
@@ -54,16 +53,13 @@ const Emergencia: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <main className="flex-1 w-full relative emergency-print-area">
-        <div className="no-print">
-          <DashboardPageHeader title="Ficha de emergência" showSearch={false} />
-        </div>
+      <main className="flex-1 w-full relative">
+        <DashboardPageHeader title="Ficha de emergência" showSearch={false} />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
-          <div className="no-print">
-            <HelpTip text="imprima esta ficha e mantenha uma cópia acessível em casa." />
-          </div>
-          <section className="flex flex-wrap gap-3 mb-stack-lg no-print">
+          <HelpTip text="Em caso de emergência, ligue 112. O CuidarJuntos é uma ferramenta de organização familiar e não substitui profissionais de saúde." />
+
+          <section className="flex flex-wrap gap-3 mb-stack-lg print:hidden">
             <button
               type="button"
               onClick={() => window.print()}
@@ -76,32 +72,35 @@ const Emergencia: React.FC = () => {
               onClick={handleExportPdf}
               className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-cj-verde-pale text-primary px-6 py-4 rounded-full font-label-md shadow-md hover:bg-surface-container-high active:scale-95 transition-all border border-cj-border"
             >
-              <span className="material-symbols-outlined">picture_as_pdf</span> Exportar PDF
+              <span className="material-symbols-outlined">picture_as_pdf</span> Guardar como PDF
             </button>
             <button
               type="button"
               onClick={handlePartilhar}
               className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-cj-terracota text-white px-6 py-4 rounded-full font-label-md shadow-md hover:opacity-90 active:scale-95 transition-all"
             >
-              <span className="material-symbols-outlined">share</span> Partilhar
+              <span className="material-symbols-outlined">share</span> Partilhar resumo
             </button>
           </section>
-          <p className="text-label-sm text-on-surface-variant mb-4 no-print">
-            Para exportar em PDF, clique em &ldquo;Exportar PDF&rdquo; e escolha &ldquo;Guardar como PDF&rdquo; na
-            janela de impressão.
-          </p>
+
           {partilhaMsg && (
-            <p className="text-label-sm text-primary font-bold mb-4 no-print p-3 bg-cj-verde-pale rounded-xl">
+            <p className="text-label-sm text-primary font-bold mb-4 p-3 bg-cj-verde-pale rounded-xl print:hidden">
               {partilhaMsg}
             </p>
           )}
 
-          <div className="emergency-card-brand p-6 md:p-8 mb-8">
-            <div className="flex items-center gap-3 border-b border-cj-border pb-4 mb-6">
-              <CuidarJuntosLogo variant="icon" size="sm" />
-              <div>
-                <p className="text-label-sm font-bold text-cj-terra uppercase tracking-wide">CuidarJuntos</p>
-                <p className="text-label-sm text-cj-cinza">Cartão de Emergência</p>
+          <div className="glass-card rounded-[24px] p-6 md:p-8 mb-8 print:p-0 print:border-none print:bg-transparent print:shadow-none">
+            <div className="flex flex-wrap items-center justify-between gap-4 border-b border-cj-border pb-4 mb-6 print:border-b-0 print:mb-0">
+              <div className="flex items-center gap-3">
+                <CuidarJuntosLogo variant="icon" size="sm" />
+                <div>
+                  <p className="text-label-sm font-bold text-cj-terra uppercase tracking-wide">CuidarJuntos</p>
+                  <p className="text-label-sm text-cj-cinza">Cartão de Emergência</p>
+                </div>
+              </div>
+              <div className="flex flex-col text-right text-label-sm text-cj-cinza print:text-on-surface">
+                <span>Em caso de emergência, ligue 112.</span>
+                <span>{careProfile.atualizadoEm || new Date().toLocaleDateString('pt-PT', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
               </div>
             </div>
 
@@ -161,10 +160,7 @@ const Emergencia: React.FC = () => {
 
                 <div>
                   <p className="text-label-sm text-cj-cinza uppercase tracking-wide mb-2">Notas importantes</p>
-                  <p className="text-body-md text-cj-cinza leading-relaxed">
-                    Paciente com diabetes e hipertensão. Em caso de desmaio, verificar glicemia. Contactar
-                    sempre a filha Ana Silva em primeiro lugar.
-                  </p>
+                  <p className="text-body-md text-cj-cinza leading-relaxed">{careProfile.notasImportantes}</p>
                 </div>
               </div>
 
@@ -180,6 +176,13 @@ const Emergencia: React.FC = () => {
                 <div>
                   <p className="text-label-sm text-cj-cinza uppercase tracking-wide mb-1">Morada</p>
                   <p className="text-label-md font-bold text-cj-terra">{careProfile.morada}</p>
+                </div>
+
+                <div className="bg-surface-container-low p-5 rounded-3xl border border-outline-variant">
+                  <p className="text-label-sm text-cj-cinza uppercase tracking-wide mb-3">QR seguro</p>
+                  <div className="h-36 rounded-3xl bg-surface-container-high flex items-center justify-center text-center text-label-sm text-on-surface-variant">
+                    QR seguro — disponível em versão futura
+                  </div>
                 </div>
 
                 <div>
@@ -212,10 +215,10 @@ const Emergencia: React.FC = () => {
                 </div>
               </div>
             </div>
+          </div>
 
-            <div className="mt-6 pt-4 border-t border-cj-border text-label-sm text-cj-cinza">
-              cuidarjuntos.pt · Atualizado: {new Date().toLocaleDateString('pt-PT', { month: 'long', year: 'numeric' })}
-            </div>
+          <div className="text-label-sm text-cj-cinza print:hidden">
+            Ficha de emergência para uso de referência. Não substitui o SNS ou o conselho de um profissional de saúde.
           </div>
         </div>
       </main>

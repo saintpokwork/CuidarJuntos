@@ -38,6 +38,10 @@ const Privacidade: React.FC = () => {
               através de <code className="text-primary">localStorage</code>. Não são enviados para
               servidores externos nem sincronizados entre dispositivos.
             </p>
+            <p>
+              Em versões futuras, os dados poderão ser armazenados de forma segura na nuvem, com
+              contas e encriptação.
+            </p>
           </section>
 
           <section>

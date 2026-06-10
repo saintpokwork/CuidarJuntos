@@ -10,14 +10,43 @@ const Documentos: React.FC = () => {
   const { data, addDocument, removeDocument } = useCareData();
   const { documents } = data;
   const [filtro, setFiltro] = useState<DocumentCategory | 'Todos'>('Todos');
+  const [busca, setBusca] = useState('');
   const [titulo, setTitulo] = useState('');
   const [categoria, setCategoria] = useState<DocumentCategory>('Outros');
   const [dataValidade, setDataValidade] = useState('');
   const [notas, setNotas] = useState('');
   const [erro, setErro] = useState('');
 
-  const filtrados =
-    filtro === 'Todos' ? documents : documents.filter((d) => d.categoria === filtro);
+  const parseDateValue = (value: string) => {
+    if (!value) return null;
+    const isoMatch = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (isoMatch) return new Date(`${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`);
+    const brMatch = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (brMatch) return new Date(`${brMatch[3]}-${brMatch[2]}-${brMatch[1]}`);
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  };
+
+  const getValidity = (value: string) => {
+    const date = parseDateValue(value);
+    if (!date) return { label: 'Sem validade definida', color: 'bg-surface-container-high text-on-surface-variant' };
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const diffDays = Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    if (diffDays < 0) {
+      return { label: 'Expirado', color: 'bg-error-container text-on-error-container' };
+    }
+    if (diffDays <= 30) {
+      return { label: 'A expirar', color: 'bg-cj-terra/15 text-cj-terra' };
+    }
+    return { label: 'Válido', color: 'bg-secondary-container text-on-secondary-container' };
+  };
+
+  const filtrados = documents
+    .filter((d) => (filtro === 'Todos' ? true : d.categoria === filtro))
+    .filter((d) =>
+      [d.titulo, d.notas].some((field) => field.toLowerCase().includes(busca.toLowerCase()))
+    );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,32 +74,44 @@ const Documentos: React.FC = () => {
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
           <HelpTip text="nesta demo o upload é simulado. Na versão futura poderá guardar ficheiros reais com segurança." />
-          <div className="flex flex-wrap gap-2 mb-stack-lg">
-            <button
-              type="button"
-              onClick={() => setFiltro('Todos')}
-              className={`px-4 py-2 rounded-full text-label-md font-bold transition-colors ${
-                filtro === 'Todos'
-                  ? 'bg-primary text-on-primary'
-                  : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'
-              }`}
-            >
-              Todos
-            </button>
-            {documentCategories.map((cat) => (
+          <div className="grid gap-4 mb-stack-lg md:grid-cols-[2fr_1fr]">
+            <div>
+              <label className="text-label-sm text-on-surface-variant mb-2 inline-block">Pesquisar documentos</label>
+              <input
+                type="search"
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+                placeholder="Procure por nome ou notas"
+                className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
+              />
+            </div>
+            <div className="flex flex-wrap gap-2">
               <button
-                key={cat}
                 type="button"
-                onClick={() => setFiltro(cat)}
-                className={`px-4 py-2 rounded-full text-label-md font-medium transition-colors ${
-                  filtro === cat
+                onClick={() => setFiltro('Todos')}
+                className={`px-4 py-2 rounded-full text-label-md font-bold transition-colors ${
+                  filtro === 'Todos'
                     ? 'bg-primary text-on-primary'
                     : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'
                 }`}
               >
-                {cat}
+                Todos
               </button>
-            ))}
+              {documentCategories.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setFiltro(cat)}
+                  className={`px-4 py-2 rounded-full text-label-md font-medium transition-colors ${
+                    filtro === cat
+                      ? 'bg-primary text-on-primary'
+                      : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -90,7 +131,12 @@ const Documentos: React.FC = () => {
                         </span>
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-start gap-2">
-                            <p className="text-label-md font-bold text-on-surface truncate">{doc.titulo}</p>
+                            <div className="min-w-0">
+                              <p className="text-label-md font-bold text-on-surface truncate">{doc.titulo}</p>
+                              <span className="inline-block mt-1 px-2 py-0.5 bg-primary-fixed/20 text-primary rounded-full text-[10px] font-bold">
+                                {doc.categoria}
+                              </span>
+                            </div>
                             <button
                               type="button"
                               onClick={() => removeDocument(doc.id)}
@@ -100,12 +146,16 @@ const Documentos: React.FC = () => {
                               <span className="material-symbols-outlined text-lg">delete</span>
                             </button>
                           </div>
-                          <span className="inline-block mt-1 px-2 py-0.5 bg-primary-fixed/20 text-primary rounded-full text-[10px] font-bold">
-                            {doc.categoria}
-                          </span>
                           <p className="text-label-sm text-on-surface-variant mt-2">
                             Adicionado {doc.dataAdicao.toLowerCase()}
                           </p>
+                          <div className="mt-2">
+                            <span
+                              className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold ${getValidity(doc.dataValidade).color}`}
+                            >
+                              {getValidity(doc.dataValidade).label}
+                            </span>
+                          </div>
                           {doc.dataValidade && (
                             <p className="text-label-sm text-on-surface-variant">
                               Validade: {doc.dataValidade}

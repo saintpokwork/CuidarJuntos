@@ -1,48 +1,54 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
 import { useCareData } from '../context/CareDataContext';
+import { downloadCareData, isCareDataShape } from '../lib/data/localStorageAdapter';
 import { caregiver } from '../data/initialData';
 
-const settingsSections = [
-  {
-    id: 'notificacoes',
-    titulo: 'Notificações',
-    descricao: 'Alertas de medicamentos, tarefas e consultas',
-    icon: 'notifications',
-    cor: 'bg-secondary-container',
-  },
-  {
-    id: 'privacidade',
-    titulo: 'Privacidade',
-    descricao: 'Controlo de acesso e partilha de dados',
-    icon: 'shield',
-    cor: 'bg-surface-container-high',
-  },
-  {
-    id: 'exportar',
-    titulo: 'Exportar dados',
-    descricao: 'Descarregar toda a informação da família',
-    icon: 'download',
-    cor: 'bg-tertiary-fixed',
-  },
-  {
-    id: 'apagar',
-    titulo: 'Apagar conta',
-    descricao: 'Eliminar permanentemente todos os dados',
-    icon: 'delete_forever',
-    cor: 'bg-error-container',
-  },
-];
-
 const Definicoes: React.FC = () => {
-  const { resetDemoData } = useCareData();
+  const { data, resetDemoData, importDemoData, showFeedback } = useCareData();
+  const [importMessage, setImportMessage] = useState('');
+  const [importError, setImportError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleReset = () => {
     const confirmar = window.confirm(
       'Tem a certeza que pretende repor os dados de demonstração? Todas as alterações locais serão perdidas.'
     );
     if (confirmar) resetDemoData();
+  };
+
+  const exportDemoData = () => {
+    downloadCareData(data);
+    showFeedback('Dados de demonstração descarregados.');
+    setImportMessage('Dados de demonstração exportados com sucesso.');
+    setImportError('');
+  };
+
+  const handleImportFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      if (!isCareDataShape(parsed)) {
+        throw new Error('Formato de dados inválido.');
+      }
+      importDemoData(parsed);
+      setImportMessage('Dados importados com sucesso.');
+      setImportError('');
+      showFeedback('Dados de demonstração importados.');
+    } catch {
+      setImportError('Não foi possível importar o ficheiro. Verifique o formato JSON.');
+      setImportMessage('');
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const openImportDialog = () => {
+    fileInputRef.current?.click();
   };
 
   return (
@@ -88,54 +94,90 @@ const Definicoes: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                {settingsSections.map((section) => (
-                  <button
-                    key={section.id}
-                    type="button"
-                    className={`bg-white p-6 rounded-[24px] soft-shadow text-left hover:shadow-xl transition-all duration-300 group ${
-                      section.id === 'apagar' ? 'border border-error/20' : ''
-                    }`}
-                  >
-                    <div
-                      className={`w-12 h-12 rounded-2xl ${section.cor} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}
-                    >
-                      <span
-                        className={`material-symbols-outlined ${
-                          section.id === 'apagar' ? 'text-error' : 'text-primary'
-                        }`}
-                      >
-                        {section.icon}
-                      </span>
+              <div className="bg-white p-8 rounded-[24px] soft-shadow mb-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-headline-md font-headline-md">Conta e sincronização</h2>
+                    <p className="text-label-md text-on-surface-variant">
+                      Funcionalidades de conta real e sincronização entre dispositivos estarão disponíveis em breve.
+                    </p>
+                  </div>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {[
+                    {
+                      title: 'Guardar dados na nuvem',
+                      description: 'Disponível com contas reais.',
+                      icon: 'cloud',
+                    },
+                    {
+                      title: 'Partilhar com familiares em tempo real',
+                      description: 'Disponível com contas reais.',
+                      icon: 'share',
+                    },
+                    {
+                      title: 'Acesso multi-dispositivo',
+                      description: 'Disponível com contas reais.',
+                      icon: 'devices',
+                    },
+                  ].map((item) => (
+                    <div key={item.title} className="rounded-[24px] border border-outline-variant p-6 bg-surface-container-low opacity-90">
+                      <div className="flex items-center gap-3 mb-4">
+                        <span className="material-symbols-outlined text-primary text-3xl">{item.icon}</span>
+                        <div>
+                          <p className="text-headline-sm font-headline-sm text-on-surface">{item.title}</p>
+                        </div>
+                      </div>
+                      <p className="text-label-md text-on-surface-variant">{item.description}</p>
                     </div>
-                    <h3
-                      className={`text-headline-md font-headline-md mb-1 ${
-                        section.id === 'apagar' ? 'text-error' : 'text-on-surface'
-                      }`}
-                    >
-                      {section.titulo}
-                    </h3>
-                    <p className="text-label-md text-on-surface-variant">{section.descricao}</p>
-                  </button>
-                ))}
+                  ))}
+                </div>
               </div>
 
               <div className="bg-white p-6 rounded-[24px] soft-shadow border border-outline-variant/30">
-                <h3 className="text-headline-md font-headline-md text-on-surface mb-2">
-                  Dados de demonstração
-                </h3>
+                <h3 className="text-headline-md font-headline-md text-on-surface mb-2">Dados da demo</h3>
                 <p className="text-label-md text-on-surface-variant mb-4">
-                  Repor todos os dados ao estado inicial de demonstração. As alterações guardadas no
-                  navegador serão apagadas.
+                  Exporte ou importe os seus dados locais como ficheiro JSON. Esta funcionalidade ajuda na futura migração para contas reais.
                 </p>
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  className="px-6 py-3 border-2 border-primary text-primary font-bold rounded-full hover:bg-primary/5 transition-colors flex items-center gap-2"
-                >
-                  <span className="material-symbols-outlined">restart_alt</span>
-                  Repor dados de demonstração
-                </button>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <button
+                    type="button"
+                    onClick={exportDemoData}
+                    className="px-6 py-3 rounded-full bg-primary text-on-primary font-bold hover:opacity-90 transition-all"
+                  >
+                    Exportar dados demo
+                  </button>
+                  <button
+                    type="button"
+                    onClick={openImportDialog}
+                    className="px-6 py-3 rounded-full border border-primary text-primary font-bold hover:bg-primary/5 transition-all"
+                  >
+                    Importar dados demo
+                  </button>
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="application/json"
+                  onChange={handleImportFile}
+                  className="hidden"
+                />
+                {importMessage && (
+                  <p className="mt-4 text-label-md text-cj-verde font-bold">{importMessage}</p>
+                )}
+                {importError && (
+                  <p className="mt-4 text-label-md text-error font-bold">{importError}</p>
+                )}
+                <div className="mt-6 border-t border-outline-variant pt-6">
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    className="px-6 py-3 border-2 border-primary text-primary font-bold rounded-full hover:bg-primary/5 transition-colors flex items-center gap-2"
+                  >
+                    <span className="material-symbols-outlined">restart_alt</span>
+                    Repor dados de demonstração
+                  </button>
+                </div>
               </div>
             </div>
 

@@ -32,6 +32,7 @@ export interface Medication {
   responsavel: string;
   estado: MedicationEstado;
   instrucoes: string;
+  tomadoHoje?: boolean;
 }
 
 export interface Appointment {
@@ -89,6 +90,20 @@ export interface EmergencyContact {
   avatar: string;
 }
 
+export interface CareProfile {
+  nome: string;
+  dataNascimento: string;
+  morada: string;
+  numeroSNS: string;
+  alergias: string[];
+  condicoes: string[];
+  medicoFamilia: string;
+  farmaciaHabitual: string;
+  notasImportantes: string;
+  contactosPrincipais: { nome: string; relacao: string; telefone: string }[];
+  atualizadoEm?: string;
+}
+
 export interface CareData {
   medications: Medication[];
   appointments: Appointment[];
@@ -97,6 +112,7 @@ export interface CareData {
   careNotes: CareNote[];
   familyMembers: FamilyMember[];
   emergencyContacts: EmergencyContact[];
+  careProfile: CareProfile;
 }
 
 export const getInitialCareData = (): CareData => ({
@@ -107,6 +123,7 @@ export const getInitialCareData = (): CareData => ({
   careNotes: JSON.parse(JSON.stringify(initialCareNotes)),
   familyMembers: JSON.parse(JSON.stringify(initialFamilyMembers)),
   emergencyContacts: JSON.parse(JSON.stringify(initialEmergencyContacts)),
+  careProfile: JSON.parse(JSON.stringify(careProfile)),
 });
 
 export { careProfile, caregiver };

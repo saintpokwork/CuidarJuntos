@@ -28,6 +28,28 @@ const Dashboard: React.FC = () => {
         <DashboardPageHeader />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
+          <div className="mb-stack-lg rounded-[24px] border border-cj-verde-pale bg-cj-verde-pale/10 p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-label-md font-bold text-cj-terra">Criar conta em breve</p>
+              <p className="text-body-md text-on-surface-variant max-w-2xl">
+                Contas reais estão planeadas para a próxima versão. Por agora, continue a usar a demo local e veja como a sincronização com familiares funcionará mais tarde.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                to="/criar-conta"
+                className="px-5 py-3 rounded-full bg-primary text-on-primary font-bold hover:opacity-90 transition-all"
+              >
+                Criar conta em breve
+              </Link>
+              <Link
+                to="/entrar"
+                className="px-5 py-3 rounded-full border border-primary text-primary font-bold hover:bg-primary/5 transition-all"
+              >
+                Entrar
+              </Link>
+            </div>
+          </div>
           <p className="text-label-sm text-on-surface-variant mb-4 p-3 bg-surface-container-low rounded-xl">
             Os dados apresentados são exemplos para demonstrar como a plataforma funciona.
           </p>
@@ -39,6 +61,81 @@ const Dashboard: React.FC = () => {
               {dashboardSummary.saudacao}
             </h1>
             <p className="text-body-lg text-on-surface-variant">{dashboardSummary.resumo}</p>
+          </section>
+
+          <section className="mb-stack-lg">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+              <div className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-label-sm text-on-surface-variant">Medicamentos hoje</p>
+                    <p className="text-headline-md font-headline-md text-on-surface">
+                      {dashboardSummary.medicamentosTomadosHoje}/{dashboardSummary.totalMedicamentosHoje}
+                    </p>
+                  </div>
+                  <span className="material-symbols-outlined text-primary text-3xl">pill</span>
+                </div>
+                <p className="text-label-sm text-on-surface-variant">Quantas tomas foram marcadas como tomadas hoje.</p>
+              </div>
+              <div className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-label-sm text-on-surface-variant">Próxima consulta</p>
+                    <p className="text-headline-md font-headline-md text-on-surface">
+                      {appointments[0]?.tipo || 'Nenhuma consulta'}
+                    </p>
+                  </div>
+                  <span className="material-symbols-outlined text-secondary text-3xl">calendar_today</span>
+                </div>
+                <p className="text-label-sm text-on-surface-variant">
+                  {appointments[0]?.dataHora || 'Adicione uma consulta para ver o próximo horário.'}
+                </p>
+              </div>
+              <div className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-label-sm text-on-surface-variant">Tarefas em atraso</p>
+                    <p className="text-headline-md font-headline-md text-on-surface">
+                      {dashboardSummary.tarefasAtraso}
+                    </p>
+                  </div>
+                  <span className="material-symbols-outlined text-tertiary text-3xl">assignment_late</span>
+                </div>
+                <p className="text-label-sm text-on-surface-variant">Tarefas que precisam de atenção rápida.</p>
+              </div>
+              <div className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-label-sm text-on-surface-variant">Perfil completo</p>
+                    <p className="text-headline-md font-headline-md text-on-surface">
+                      {dashboardSummary.perfilCompletude}%
+                    </p>
+                  </div>
+                  <span className="material-symbols-outlined text-primary text-3xl">person</span>
+                </div>
+                <p className="text-label-sm text-on-surface-variant">Percentagem de informações preenchidas no perfil.</p>
+              </div>
+            </div>
+          </section>
+
+          <section className="mb-stack-lg">
+            <div className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-headline-md font-headline-md text-on-surface">Próximos passos</h3>
+                  <p className="text-label-sm text-on-surface-variant">Sugestões para manter a organização da família.</p>
+                </div>
+                <span className="material-symbols-outlined text-primary text-3xl">lightbulb</span>
+              </div>
+              <ul className="space-y-3">
+                {dashboardSummary.sugestoes.map((item) => (
+                  <li key={item} className="flex items-start gap-3 text-body-md text-on-surface">
+                    <span className="material-symbols-outlined text-primary mt-1">check_circle</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </section>
 
           <section className="mb-stack-lg">
