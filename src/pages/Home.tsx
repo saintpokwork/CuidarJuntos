@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import CuidarJuntosLogo from '../components/brand/CuidarJuntosLogo';
+import { useLanguage } from '../i18n/LanguageContext';
+import LanguageToggle from '../components/LanguageToggle';
 
 const Home: React.FC = () => {
   return (
@@ -11,43 +13,26 @@ const Home: React.FC = () => {
             <CuidarJuntosLogo variant="default" size="md" />
           </Link>
           <div className="hidden md:flex items-center gap-8">
-            <Link
-              className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-md text-label-md"
-              to="/como-funciona"
-            >
-              Como funciona
+            <Link className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-md text-label-md" to="/como-funciona">
+              {useLanguage().t('nav.howItWorks')}
             </Link>
-            <a
-              className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-md text-label-md"
-              href="#funcionalidades"
-            >
+            <a className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-md text-label-md" href="#funcionalidades">
               Funcionalidades
             </a>
-            <a
-              className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-md text-label-md"
-              href="#precos"
-            >
+            <a className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-md text-label-md" href="#precos">
               Preços
             </a>
           </div>
           <div className="flex items-center gap-4">
-            <Link
-              className="hidden md:block text-primary font-bold hover:text-primary-container transition-colors font-label-md text-label-md"
-              to="/entrar"
-            >
-              Entrar
+            <LanguageToggle />
+            <Link className="hidden md:block text-primary font-bold hover:text-primary-container transition-colors font-label-md text-label-md" to="/entrar">
+              {useLanguage().t('global.signIn')}
             </Link>
-            <Link
-              className="bg-primary text-on-primary px-6 py-2.5 rounded-full font-label-md text-label-md shadow-sm hover:scale-105 active:scale-95 transition-all"
-              to="/dashboard"
-            >
-              Começar
+            <Link className="bg-primary text-on-primary px-6 py-2.5 rounded-full font-label-md text-label-md shadow-sm hover:scale-105 active:scale-95 transition-all" to="/dashboard">
+              {useLanguage().t('global.continue') || 'Começar'}
             </Link>
-            <Link
-              className="hidden md:inline-block text-primary font-bold hover:underline font-label-md text-label-md"
-              to="/criar-conta"
-            >
-              Criar conta em breve
+            <Link className="hidden md:inline-block text-primary font-bold hover:underline font-label-md text-label-md" to="/criar-conta">
+              {useLanguage().t('global.createAccount')}
             </Link>
           </div>
         </nav>

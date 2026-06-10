@@ -1,9 +1,12 @@
 import React, { useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
 import { useCareData } from '../context/CareDataContext';
 import { downloadCareData, isCareDataShape } from '../lib/data/localStorageAdapter';
 import { caregiver } from '../data/initialData';
+import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../i18n/LanguageContext';
 
 const Definicoes: React.FC = () => {
   const { data, resetDemoData, importDemoData, showFeedback } = useCareData();
@@ -50,6 +53,15 @@ const Definicoes: React.FC = () => {
   const openImportDialog = () => {
     fileInputRef.current?.click();
   };
+
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+  const { t } = useLanguage();
 
   return (
     <DashboardLayout>
@@ -103,6 +115,18 @@ const Definicoes: React.FC = () => {
                     </p>
                   </div>
                 </div>
+                {user ? (
+                  <div className="mb-6 rounded-[24px] border border-primary/20 bg-primary/5 p-6">
+                    <p className="text-label-md text-on-surface">{t('global.signIn')} <strong>{user.user_metadata?.full_name || user.email}</strong></p>
+                    <p className="text-label-sm text-on-surface-variant mt-2">{t('demo.notice')}</p>
+                    <button type="button" onClick={handleSignOut} className="mt-4 px-6 py-3 rounded-full border border-primary text-primary font-bold hover:bg-primary/5 transition-colors">{t('global.signOut')}</button>
+                  </div>
+                ) : (
+                  <div className="mb-6 grid gap-3 sm:grid-cols-2">
+                    <Link to="/entrar" className="px-6 py-3 rounded-full border border-primary text-primary font-bold text-center hover:bg-primary/5 transition-colors">{t('global.signIn')}</Link>
+                    <Link to="/criar-conta" className="px-6 py-3 rounded-full bg-primary text-on-primary font-bold text-center hover:bg-primary/95 transition-colors">{t('global.createAccount')}</Link>
+                  </div>
+                )}
                 <div className="grid gap-4 sm:grid-cols-2">
                   {[
                     {

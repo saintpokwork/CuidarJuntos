@@ -1,11 +1,43 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import CuidarJuntosLogo from '../components/brand/CuidarJuntosLogo';
+import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../i18n/LanguageContext';
+import LanguageToggle from '../components/LanguageToggle';
 
 const CriarConta: React.FC = () => {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const { signUp, user } = useAuth();
+  const navigate = useNavigate();
+  const { t } = useLanguage();
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setLoading(true);
+    setError('');
+    setMessage('');
+
+    const { error: signUpError } = await signUp(email, password, nome);
+    setLoading(false);
+
+    if (signUpError) {
+      setError(signUpError.message || 'Não foi possível criar a conta.');
+      return;
+    }
+
+    setMessage('Conta criada. Verifique o seu email, se necessário, para confirmar o acesso.');
+  };
 
   return (
     <div className="min-h-screen bg-background text-on-surface">
@@ -14,11 +46,9 @@ const CriarConta: React.FC = () => {
           <Link to="/">
             <CuidarJuntosLogo variant="default" size="sm" />
           </Link>
-          <Link
-            to="/dashboard"
-            className="text-label-md font-bold text-primary hover:underline"
-          >
-            Experimentar demo
+          <LanguageToggle />
+          <Link to="/dashboard" className="text-label-md font-bold text-primary hover:underline">
+            {t('auth.continueDemo')}
           </Link>
         </nav>
       </header>
@@ -26,14 +56,12 @@ const CriarConta: React.FC = () => {
       <main className="max-w-[520px] mx-auto px-6 py-16">
         <div className="bg-white shadow-soft rounded-[32px] border border-outline-variant p-10">
           <div className="mb-8 text-center">
-            <p className="text-label-sm text-cj-verde uppercase tracking-[0.3em] mb-3">Registo preparado</p>
-            <h1 className="text-headline-2 font-headline-lg text-on-surface">Criar conta</h1>
-            <p className="text-body-md text-on-surface-variant mt-3">
-              No futuro, a sua conta permitirá guardar dados em segurança e partilhar cuidados com familiares.
-            </p>
+            <p className="text-label-sm text-cj-verde uppercase tracking-[0.3em] mb-3">{t('auth.titleSignUp')}</p>
+            <h1 className="text-headline-2 font-headline-lg text-on-surface">{t('auth.titleSignUp')}</h1>
+            <p className="text-body-md text-on-surface-variant mt-3">{t('demo.notice')}</p>
           </div>
 
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
               <label className="block text-label-sm font-bold text-on-surface mb-2">Nome</label>
               <input
@@ -45,7 +73,7 @@ const CriarConta: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-label-sm font-bold text-on-surface mb-2">Email</label>
+              <label className="block text-label-sm font-bold text-on-surface mb-2">{t('auth.email')}</label>
               <input
                 type="email"
                 value={email}
@@ -55,7 +83,7 @@ const CriarConta: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-label-sm font-bold text-on-surface mb-2">Palavra-passe</label>
+              <label className="block text-label-sm font-bold text-on-surface mb-2">{t('auth.password')}</label>
               <input
                 type="password"
                 value={password}
@@ -64,14 +92,19 @@ const CriarConta: React.FC = () => {
                 className="w-full h-12 px-4 rounded-2xl border border-outline-variant bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
               />
             </div>
-            <button
-              type="button"
-              disabled
-              className="w-full h-12 rounded-full bg-on-surface/10 text-on-surface disabled:cursor-not-allowed disabled:opacity-60 font-bold"
-            >
-              Criar conta
+            <button type="submit" disabled={loading} className="w-full h-12 rounded-full bg-primary text-on-primary font-bold disabled:cursor-not-allowed disabled:opacity-60">
+              {loading ? t('auth.creating') : t('auth.submitSignUp')}
             </button>
           </form>
+          {(error || message) && (
+            <div
+              className={`mt-4 rounded-2xl p-4 text-center text-label-sm font-medium ${
+                error ? 'bg-error-container text-error' : 'bg-cj-verde-pale text-cj-terra'
+              }`}
+            >
+              {error || message}
+            </div>
+          )}
 
           <div className="mt-6 text-center">
             <Link

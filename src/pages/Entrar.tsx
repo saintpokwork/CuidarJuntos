@@ -1,10 +1,41 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import CuidarJuntosLogo from '../components/brand/CuidarJuntosLogo';
+import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../i18n/LanguageContext';
+import LanguageToggle from '../components/LanguageToggle';
 
 const Entrar: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const { signIn, user } = useAuth();
+  const navigate = useNavigate();
+  const { t } = useLanguage();
+
+  useEffect(() => {
+    if (user) navigate('/dashboard');
+  }, [user, navigate]);
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setLoading(true);
+    setMessage('');
+    setError('');
+
+    const { error: authError } = await signIn(email, password);
+    setLoading(false);
+
+    if (authError) {
+      setError(authError.message || 'Não foi possível entrar. Verifique as suas credenciais.');
+      return;
+    }
+
+    setMessage('Entrada efetuada com sucesso. A redirecionar...');
+    navigate('/dashboard');
+  };
 
   return (
     <div className="min-h-screen bg-background text-on-surface">
@@ -13,11 +44,9 @@ const Entrar: React.FC = () => {
           <Link to="/">
             <CuidarJuntosLogo variant="default" size="sm" />
           </Link>
-          <Link
-            to="/dashboard"
-            className="text-label-md font-bold text-primary hover:underline"
-          >
-            Experimente a demo
+          <LanguageToggle />
+          <Link to="/dashboard" className="text-label-md font-bold text-primary hover:underline">
+            {t('auth.continueDemo') || 'Continuar para demo'}
           </Link>
         </nav>
       </header>
@@ -25,16 +54,14 @@ const Entrar: React.FC = () => {
       <main className="max-w-[480px] mx-auto px-6 py-16">
         <div className="bg-white shadow-soft rounded-[32px] border border-outline-variant p-10">
           <div className="mb-8 text-center">
-            <p className="text-label-sm text-cj-verde uppercase tracking-[0.3em] mb-3">Futuro login seguro</p>
-            <h1 className="text-headline-2 font-headline-lg text-on-surface">Entrar no CuidarJuntos</h1>
-            <p className="text-body-md text-on-surface-variant mt-3">
-              Esta página mostra o fluxo de autenticação. Na versão demo, pode continuar sem conta.
-            </p>
+            <p className="text-label-sm text-cj-verde uppercase tracking-[0.3em] mb-3">{t('auth.titleSignIn')}</p>
+            <h1 className="text-headline-2 font-headline-lg text-on-surface">{t('auth.titleSignIn')}</h1>
+            <p className="text-body-md text-on-surface-variant mt-3">{t('demo.notice')}</p>
           </div>
 
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-label-sm font-bold text-on-surface mb-2">Email</label>
+              <label className="block text-label-sm font-bold text-on-surface mb-2">{t('auth.email')}</label>
               <input
                 type="email"
                 value={email}
@@ -44,7 +71,7 @@ const Entrar: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-label-sm font-bold text-on-surface mb-2">Palavra-passe</label>
+              <label className="block text-label-sm font-bold text-on-surface mb-2">{t('auth.password')}</label>
               <input
                 type="password"
                 value={password}
@@ -54,27 +81,33 @@ const Entrar: React.FC = () => {
               />
             </div>
             <button
-              type="button"
-              disabled
-              className="w-full h-12 rounded-full bg-on-surface/10 text-on-surface disabled:cursor-not-allowed disabled:opacity-60 font-bold"
+              type="submit"
+              disabled={loading}
+              className="w-full h-12 rounded-full bg-primary text-on-primary font-bold disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Entrar
+              {loading ? t('auth.signingIn') : t('auth.submitSignIn')}
             </button>
           </form>
+          {(error || message) && (
+            <div
+              className={`mt-4 rounded-2xl p-4 text-center text-label-sm font-medium ${
+                error ? 'bg-error-container text-error' : 'bg-cj-verde-pale text-cj-terra'
+              }`}
+            >
+              {error || message}
+            </div>
+          )}
 
           <div className="mt-6 space-y-4 text-center">
-            <Link
-              to="/dashboard"
-              className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 rounded-full bg-primary text-on-primary font-bold hover:opacity-90 transition-all"
-            >
-              Continuar para demo
+            <Link to="/dashboard" className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 rounded-full bg-primary text-on-primary font-bold hover:opacity-90 transition-all">
+              {t('auth.continueDemo')}
             </Link>
             <div className="flex flex-wrap justify-center gap-4 text-label-sm text-on-surface-variant">
               <Link to="/criar-conta" className="text-primary hover:underline">
-                Criar conta
+                {t('global.createAccount')}
               </Link>
               <Link to="/recuperar-password" className="text-primary hover:underline">
-                Recuperar palavra-passe
+                {t('auth.titleReset')}
               </Link>
             </div>
           </div>
