@@ -66,61 +66,82 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
   return (
     <div className="flex min-h-screen bg-background overflow-x-hidden">
-      <aside className="h-screen w-64 hidden lg:flex flex-col sticky left-0 top-0 bg-cj-sidebar shadow-cj-md py-stack-md px-base shrink-0">
-        <div className="px-4 mb-stack-lg">
+      {/* ── Desktop Sidebar ── */}
+      <aside className="h-screen w-60 hidden lg:flex flex-col sticky left-0 top-0 bg-cj-sidebar shrink-0 overflow-hidden">
+        {/* Top: Logo + brand */}
+        <div className="px-4 pt-5 pb-3 shrink-0">
           <Link to="/dashboard" className="block">
             <CuidarJuntosLogo variant="white" size="md" />
           </Link>
-          <p className="text-white/50 text-label-sm mt-3">{caregiver.funcao}</p>
+          <p className="text-white/40 text-[11px] mt-2 tracking-wide uppercase">{caregiver.funcao}</p>
         </div>
-        <nav className="flex-1 space-y-1 overflow-y-auto">
+
+        {/* Middle: Nav links (scrollable, scrollbar hidden) */}
+        <nav className="flex-1 min-h-0 overflow-y-auto sidebar-scroll px-2 py-1">
           {menuItems.map((item) => {
             const active = isActive(location.pathname, item.path, item.exact);
             return (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center px-4 py-3 rounded-lg transition-colors ${
+                className={`flex items-center gap-3 px-3 py-2.5 mb-0.5 rounded-lg text-[13px] transition-all ${
                   active
-                    ? 'text-white font-bold border-r-4 border-cj-cobre bg-white/10'
-                    : 'text-white/60 hover:bg-white/5 hover:text-white/90'
+                    ? 'text-white font-semibold bg-white/10 border-l-[3px] border-cj-cobre pl-[9px]'
+                    : 'text-white/55 hover:bg-white/5 hover:text-white/85 border-l-[3px] border-transparent pl-[9px]'
                 }`}
               >
-                <span className="material-symbols-outlined mr-3">{item.icon}</span>
-                <span className="text-label-md">{t(item.labelKey)}</span>
+                <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
+                <span className="truncate">{t(item.labelKey)}</span>
               </Link>
             );
           })}
         </nav>
-        <div className="px-4 mt-auto space-y-3">
-          <LanguageToggle />
+
+        {/* Bottom: Language toggle + user card */}
+        <div className="shrink-0 px-3 pb-4 pt-2 border-t border-white/8">
+          {/* Language toggle */}
+          <div className="flex items-center justify-center mb-3">
+            <LanguageToggle compact />
+          </div>
+
+          {/* User card */}
           {user ? (
-            <div className="flex items-center justify-between gap-3 p-3 rounded-xl bg-white/10">
-              <div className="overflow-hidden">
-                <p className="text-label-md font-bold text-white truncate">{displayName || 'Conta'} </p>
-                <p className="text-[10px] text-white/50 uppercase">{t('global.sessionStarted')}</p>
+            <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-white/8">
+              <div className="w-8 h-8 rounded-full bg-white/15 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                {(displayName || 'U').charAt(0).toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[12px] font-semibold text-white truncate leading-tight">{displayName || 'Conta'}</p>
+                <p className="text-[10px] text-white/40 leading-tight mt-0.5">{user.email}</p>
               </div>
               <button
                 type="button"
                 onClick={handleSignOut}
-                className="px-3 py-2 rounded-full bg-white/10 text-white text-label-sm hover:bg-white/20 transition-colors"
+                className="text-[10px] text-white/40 hover:text-white/70 transition-colors shrink-0 px-1"
+                title={t('global.signOutShort')}
               >
-                {t('global.signOutShort')}
+                <span className="material-symbols-outlined text-[16px]">logout</span>
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-3 p-2 rounded-xl bg-white/10">
-              <img alt={caregiver.nome} className="w-10 h-10 rounded-full object-cover" src={caregiver.avatar} />
-              <div className="overflow-hidden">
-                <p className="text-label-md font-bold text-white truncate">{caregiver.nome}</p>
-                <p className="text-[10px] text-white/50 uppercase">{caregiver.funcao}</p>
+            <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-white/8">
+              <img
+                alt={caregiver.nome}
+                className="w-8 h-8 rounded-full object-cover shrink-0"
+                src={caregiver.avatar}
+              />
+              <div className="flex-1 min-w-0">
+                <p className="text-[12px] font-semibold text-white truncate leading-tight">{caregiver.nome}</p>
+                <p className="text-[10px] text-white/40 leading-tight mt-0.5">{caregiver.funcao}</p>
               </div>
             </div>
           )}
         </div>
       </aside>
 
+      {/* ── Main Content Area ── */}
       <div className="flex-1 flex flex-col relative min-w-0 overflow-x-hidden">
+        {/* Mobile top bar */}
         <div className="lg:hidden bg-cj-sidebar px-container-padding-mobile py-3 flex items-center justify-between no-print">
           <Link to="/dashboard">
             <CuidarJuntosLogo variant="white" size="sm" />
@@ -133,6 +154,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
         <GuideBanner />
 
+        {/* Status banner */}
         <div className="bg-cj-verde-pale border-b border-cj-border px-container-padding-mobile md:px-container-padding-desktop py-2 text-label-sm text-on-surface-variant">
           {storageMode === 'cloud' ? (
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -179,8 +201,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           )}
         </div>
 
+        {/* Page content */}
         <div className="flex-1 pb-28 lg:pb-0">{children}</div>
 
+        {/* Mobile bottom nav */}
         <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center px-2 py-2 bg-cj-branco shadow-[0_-4px_24px_rgba(45,106,82,0.08)] rounded-t-xl border-t border-cj-border safe-bottom">
           {mobileNavItems.map((item) => {
             const active = isActive(location.pathname, item.path, item.exact, item.maisGroup);

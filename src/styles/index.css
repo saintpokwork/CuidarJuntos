@@ -138,3 +138,13 @@ select:focus {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--cj-cinza);
 }
+
+/* Sidebar: hide scrollbar but keep scroll functional */
+.sidebar-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.sidebar-scroll {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
