@@ -981,8 +981,8 @@ export const getCareProfileMembers = async (
 
 /**
  * Add a member to a care profile.
- * NOTE: This requires a valid user_id. Email-only invites require a future
- * `care_profile_invites` table and are not yet supported.
+ * NOTE: This writes direct memberships for an existing user_id.
+ * Email invitation tokens are handled outside this adapter.
  */
 export const addCareProfileMember = async (
   careProfileId: string,

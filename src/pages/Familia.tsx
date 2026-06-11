@@ -43,7 +43,7 @@ const Familia: React.FC = () => {
   const handleSimulatedInvite = (e: React.FormEvent) => {
     e.preventDefault();
     if (!nome.trim() || !contacto.trim() || !relacao.trim()) {
-      setErro(t('pages.family.emailRequired') || 'Preencha nome/contacto e relação.');
+      setErro(t('pages.family.emailRequired'));
       return;
     }
     const ok = addFamilyMember({ nome: nome.trim(), contacto: contacto.trim(), relacao: relacao.trim(), funcao });
@@ -111,7 +111,7 @@ const Familia: React.FC = () => {
         <DashboardPageHeader title={t('pages.family.title')} showSearch={false} />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
-          <HelpTip text={t('pages.family.help') || t('home.whoFor.item2')} />
+          <HelpTip text={t('pages.family.help')} />
 
           {/* Mode-specific notices */}
           {storageMode === 'demo' && (

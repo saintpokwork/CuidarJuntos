@@ -23,7 +23,7 @@ const Consultas: React.FC = () => {
     e.preventDefault();
     const ok = addAppointment({ tipo, dataHora, local, medico, responsavel, notas });
     if (!ok) {
-      setErro('Preencha título, data/hora e local.');
+      setErro(t('pages.appointments.validation'));
       return;
     }
     setErro('');
@@ -40,9 +40,9 @@ const Consultas: React.FC = () => {
         <DashboardPageHeader title={t('pages.appointments.title')} showSearch={false} />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
-          <HelpTip text={t('pages.appointments.help') || 'adicione também exames, deslocações e quem acompanha o familiar.'} />
+          <HelpTip text={t('pages.appointments.help')} />
           <p className="text-body-lg text-on-surface-variant mb-stack-lg">
-            Agenda partilhada para toda a família cuidadora.
+            {t('pages.appointments.intro')}
           </p>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -78,7 +78,7 @@ const Consultas: React.FC = () => {
                             </p>
                             <p className="flex items-center gap-2">
                               <span className="material-symbols-outlined text-sm">person</span>
-                              Responsável: {apt.responsavel}
+                              {t('pages.appointments.responsible')}: {apt.responsavel}
                             </p>
                           </div>
                         </div>
@@ -91,7 +91,7 @@ const Consultas: React.FC = () => {
                           type="button"
                           onClick={() => removeAppointment(apt.id)}
                           className="p-2 rounded-full hover:bg-error-container/30 text-error transition-colors"
-                          aria-label="Remover consulta"
+                          aria-label={t('pages.appointments.remove')}
                         >
                           <span className="material-symbols-outlined">delete</span>
                         </button>
@@ -100,7 +100,7 @@ const Consultas: React.FC = () => {
                     {apt.notas && (
                       <div className="mt-4 p-3 bg-warm-beige rounded-xl">
                         <p className="text-label-sm text-on-surface-variant">
-                          <span className="font-bold">Notas:</span> {apt.notas}
+                          <span className="font-bold">{t('pages.appointments.notesPrefix')}</span> {apt.notas}
                         </p>
                       </div>
                     )}
@@ -110,22 +110,22 @@ const Consultas: React.FC = () => {
             </div>
 
             <div className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40 h-fit">
-              <h3 className="text-headline-md font-headline-md text-on-surface mb-6">Marcar consulta</h3>
+              <h3 className="text-headline-md font-headline-md text-on-surface mb-6">{t('pages.appointments.formTitle')}</h3>
               {erro && (
                 <p className="text-label-sm text-error mb-4 p-3 bg-error-container/20 rounded-xl">{erro}</p>
               )}
               <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">Título *</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.appointments.titleLabel')} *</label>
                   <input
                     value={tipo}
                     onChange={(e) => setTipo(e.target.value)}
                     className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
-                    placeholder="Ex: Consulta de cardiologia"
+                    placeholder={t('pages.appointments.titlePlaceholder')}
                   />
                 </div>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">Data e hora *</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.appointments.dateTime')} *</label>
                   <input
                     value={dataHora}
                     onChange={(e) => setDataHora(e.target.value)}
@@ -134,25 +134,25 @@ const Consultas: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">Local *</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.appointments.location')} *</label>
                   <input
                     value={local}
                     onChange={(e) => setLocal(e.target.value)}
                     className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
-                    placeholder="Ex: Hospital de Santa Maria"
+                    placeholder={t('pages.appointments.locationPlaceholder')}
                   />
                 </div>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">Médico / Serviço</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.appointments.doctorService')}</label>
                   <input
                     value={medico}
                     onChange={(e) => setMedico(e.target.value)}
                     className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
-                    placeholder="Ex: Dr. Roberto Santos"
+                    placeholder={t('pages.appointments.doctorPlaceholder')}
                   />
                 </div>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">Responsável</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.appointments.responsible')}</label>
                   <select
                     value={responsavel}
                     onChange={(e) => setResponsavel(e.target.value)}
@@ -163,12 +163,12 @@ const Consultas: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">Notas</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.appointments.notes')}</label>
                   <textarea
                     value={notas}
                     onChange={(e) => setNotas(e.target.value)}
                     className="w-full px-4 py-3 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none resize-none"
-                    placeholder="Instruções ou lembretes..."
+                    placeholder={t('pages.appointments.notesPlaceholder')}
                     rows={3}
                   />
                 </div>
@@ -176,7 +176,7 @@ const Consultas: React.FC = () => {
                   type="submit"
                   className="w-full py-4 bg-secondary text-on-secondary font-bold rounded-full shadow-lg hover:opacity-90 transition-all"
                 >
-                  Guardar consulta
+                  {t('pages.appointments.save')}
                 </button>
               </form>
             </div>

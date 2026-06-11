@@ -25,7 +25,7 @@ const Definicoes: React.FC = () => {
 
   const handleReset = () => {
     const confirmar = window.confirm(
-      'Tem a certeza que pretende repor os dados de demonstração? Todas as alterações locais serão perdidas.'
+      t('pages.settings.resetConfirmMessage')
     );
     if (confirmar) resetDemoData();
   };

@@ -1,6 +1,7 @@
 import React from 'react';
 import { caregiver } from '../data/initialData';
 import CuidarJuntosLogo from './brand/CuidarJuntosLogo';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface DashboardPageHeaderProps {
   title?: string;
@@ -13,11 +14,13 @@ const DashboardPageHeader: React.FC<DashboardPageHeaderProps> = ({
   showSearch = true,
   action,
 }) => {
+  const { t } = useLanguage();
+
   return (
     <header className="flex justify-between items-center w-full px-container-padding-mobile md:px-container-padding-desktop py-stack-md max-w-[1200px] mx-auto bg-background">
       <div className="flex items-center gap-4 min-w-0">
         {title ? (
-          <h1 className="text-headline-lg-mobile md:text-headline-lg font-headline-lg text-primary truncate">
+          <h1 className="text-headline-lg-mobile md:text-headline-lg font-headline-lg text-primary leading-tight">
             {title}
           </h1>
         ) : (
@@ -31,7 +34,7 @@ const DashboardPageHeader: React.FC<DashboardPageHeaderProps> = ({
           <span className="material-symbols-outlined text-on-surface-variant mr-2">search</span>
           <input
             className="bg-transparent border-none focus:ring-0 text-label-md w-full placeholder-on-surface-variant"
-            placeholder="Procurar medicamentos, tarefas..."
+            placeholder={t('dashboard.searchPlaceholder')}
             type="text"
           />
         </div>

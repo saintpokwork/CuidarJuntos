@@ -4,12 +4,26 @@ import CuidarJuntosLogo from '../components/brand/CuidarJuntosLogo';
 import PublicFooter from '../components/PublicFooter';
 import { useLanguage } from '../i18n/LanguageContext';
 import blogPosts from '../data/blogPosts';
+import LanguageToggle from '../components/LanguageToggle';
 
 const BlogPost: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
   const lang = language as 'pt' | 'en';
   const post = blogPosts.find((p) => p.slug === slug);
+  const categoryLabel = (category: string) => {
+    const labels: Record<string, { pt: string; en: string }> = {
+      Organização: { pt: 'Organização', en: 'Organisation' },
+      Emergência: { pt: 'Emergência', en: 'Emergency' },
+      Medicamentos: { pt: 'Medicamentos', en: 'Medications' },
+      Documentos: { pt: 'Documentos', en: 'Documents' },
+    };
+    return labels[category]?.[lang] || category;
+  };
+  const readingTimeLabel = (readingTime: string) => {
+    const minutes = readingTime.match(/\d+/)?.[0] || readingTime;
+    return lang === 'en' ? `${minutes} min read` : `${minutes} min`;
+  };
 
   if (!post) {
     return (
@@ -33,18 +47,21 @@ const BlogPost: React.FC = () => {
           <Link to="/">
             <CuidarJuntosLogo variant="default" size="md" />
           </Link>
-          <Link to="/blog" className="text-primary font-bold hover:underline text-label-md">
-            {lang === 'en' ? '← All guides' : '← Todos os guias'}
-          </Link>
+          <div className="flex items-center gap-4">
+            <LanguageToggle variant="light" />
+            <Link to="/blog" className="text-primary font-bold hover:underline text-label-md">
+              {lang === 'en' ? '← All guides' : '← Todos os guias'}
+            </Link>
+          </div>
         </nav>
       </header>
 
       <main className="max-w-[780px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-16">
         <div className="flex items-center gap-2 mb-4">
           <span className="px-3 py-1 bg-primary-fixed/20 text-primary rounded-full text-[11px] font-bold">
-            {post.category}
+            {categoryLabel(post.category)}
           </span>
-          <span className="text-[11px] text-on-surface-variant">{post.readingTime}</span>
+          <span className="text-[11px] text-on-surface-variant">{readingTimeLabel(post.readingTime)}</span>
         </div>
 
         <h1 className="text-headline-xl md:text-[40px] font-display italic text-on-surface mb-4">

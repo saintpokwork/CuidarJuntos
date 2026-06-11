@@ -16,7 +16,7 @@ const Notas: React.FC = () => {
     e.preventDefault();
     const ok = addCareNote(texto);
     if (!ok) {
-      setErro('Escreva uma nota antes de guardar.');
+      setErro(t('pages.notes.validation'));
       return;
     }
     setErro('');
@@ -30,7 +30,7 @@ const Notas: React.FC = () => {
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
           <p className="text-body-lg text-on-surface-variant mb-stack-lg">
-            Atualizações partilhadas sobre o cuidado diário.
+            {t('pages.notes.intro')}
           </p>
 
           <form
@@ -43,7 +43,7 @@ const Notas: React.FC = () => {
                   value={texto}
                   onChange={(e) => setTexto(e.target.value)}
                   className="w-full bg-transparent border-none focus:ring-0 text-body-md placeholder-on-surface-variant resize-none min-h-[48px]"
-                    placeholder={t('pages.notes.placeholder') || 'Escreva uma atualização sobre o cuidado de hoje...'}
+                    placeholder={t('pages.notes.placeholder')}
                   rows={2}
                 />
               </div>
@@ -81,14 +81,14 @@ const Notas: React.FC = () => {
                     <div className="flex items-center gap-2">
                       {index === 0 && (
                         <span className="px-3 py-1 bg-primary-fixed/30 text-primary rounded-full text-label-sm font-bold">
-                          Mais recente
+                          {t('pages.notes.latest')}
                         </span>
                       )}
                       <button
                         type="button"
                         onClick={() => removeCareNote(note.id)}
                         className="p-1 rounded-full hover:bg-error-container/30 text-error transition-colors"
-                        aria-label="Remover nota"
+                        aria-label={t('pages.notes.remove')}
                       >
                         <span className="material-symbols-outlined text-lg">delete</span>
                       </button>

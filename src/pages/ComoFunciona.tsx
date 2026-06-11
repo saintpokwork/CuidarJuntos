@@ -2,6 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import CuidarJuntosLogo from '../components/brand/CuidarJuntosLogo';
 import { useLanguage } from '../i18n/LanguageContext';
+import PublicFooter from '../components/PublicFooter';
+import LanguageToggle from '../components/LanguageToggle';
 
 const ComoFunciona: React.FC = () => {
   const { t } = useLanguage();
@@ -12,12 +14,15 @@ const ComoFunciona: React.FC = () => {
           <Link to="/">
             <CuidarJuntosLogo variant="default" size="sm" />
           </Link>
-          <Link
-            to="/dashboard"
-            className="text-label-md font-bold text-primary hover:underline"
-          >
-            {t('howItWorks.tryDemo')}
-          </Link>
+          <div className="flex items-center gap-4">
+            <LanguageToggle variant="light" />
+            <Link
+              to="/dashboard"
+              className="text-label-md font-bold text-primary hover:underline"
+            >
+              {t('howItWorks.tryDemo')}
+            </Link>
+          </div>
         </nav>
       </header>
 
@@ -78,6 +83,7 @@ const ComoFunciona: React.FC = () => {
           </Link>
         </div>
       </main>
+      <PublicFooter />
     </div>
   );
 };

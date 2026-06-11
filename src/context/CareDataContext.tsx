@@ -649,7 +649,7 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   /**
    * Get a download/opening URL for a document.
-   * In demo mode, returns a translated message placeholder.
+   * Local sample data does not include stored document files.
    * In cloud mode, creates a signed URL from Supabase Storage.
    */
   const getDocumentDownloadUrl: CareDataContextValue['getDocumentDownloadUrl'] = useCallback(
@@ -657,7 +657,7 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const doc = data.documents.find((d) => d.id === docId);
       if (!doc) return null;
 
-      // Demo mode — no actual file stored
+      // Local sample data — no actual file stored
       if (storageMode === 'demo' || !doc.filePath) {
         return null;
       }
@@ -723,7 +723,7 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [storageMode, showFeedback]);
 
   // ---------------------------------------------------------------------------
-  // CRUD: Family Members (demo only for now)
+  // CRUD: Family Members
   // ---------------------------------------------------------------------------
   const addFamilyMember: CareDataContextValue['addFamilyMember'] = useCallback((member) => {
     if (!member.nome.trim() || !member.contacto.trim() || !member.relacao.trim()) return false;

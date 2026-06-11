@@ -180,15 +180,8 @@ const Emergencia: React.FC = () => {
                   <p className="text-label-md font-bold text-cj-terra">{careProfile.morada}</p>
                 </div>
 
-                <div className="bg-surface-container-low p-5 rounded-3xl border border-outline-variant">
-                  <p className="text-label-sm text-cj-cinza uppercase tracking-wide mb-3">QR seguro</p>
-                  <div className="h-36 rounded-3xl bg-surface-container-high flex items-center justify-center text-center text-label-sm text-on-surface-variant">
-                    QR seguro — disponível em versão futura
-                  </div>
-                </div>
-
                 <div>
-                  <p className="text-label-sm text-cj-cinza uppercase tracking-wide mb-3">Contactos de emergência</p>
+                  <p className="text-label-sm text-cj-cinza uppercase tracking-wide mb-3">{t('pages.emergency.emergencyContacts')}</p>
                   <div className="space-y-3">
                     {emergencyContacts.map((contact) => (
                       <div
@@ -220,7 +213,7 @@ const Emergencia: React.FC = () => {
           </div>
 
           <div className="text-label-sm text-cj-cinza print:hidden">
-            Ficha de emergência para uso de referência. Não substitui o SNS ou o conselho de um profissional de saúde.
+            {t('pages.emergency.referenceDisclaimer')}
           </div>
         </div>
       </main>

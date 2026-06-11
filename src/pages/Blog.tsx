@@ -4,10 +4,24 @@ import CuidarJuntosLogo from '../components/brand/CuidarJuntosLogo';
 import PublicFooter from '../components/PublicFooter';
 import { useLanguage } from '../i18n/LanguageContext';
 import blogPosts from '../data/blogPosts';
+import LanguageToggle from '../components/LanguageToggle';
 
 const Blog: React.FC = () => {
   const { language } = useLanguage();
   const lang = language as 'pt' | 'en';
+  const categoryLabel = (category: string) => {
+    const labels: Record<string, { pt: string; en: string }> = {
+      Organização: { pt: 'Organização', en: 'Organisation' },
+      Emergência: { pt: 'Emergência', en: 'Emergency' },
+      Medicamentos: { pt: 'Medicamentos', en: 'Medications' },
+      Documentos: { pt: 'Documentos', en: 'Documents' },
+    };
+    return labels[category]?.[lang] || category;
+  };
+  const readingTimeLabel = (readingTime: string) => {
+    const minutes = readingTime.match(/\d+/)?.[0] || readingTime;
+    return lang === 'en' ? `${minutes} min read` : `${minutes} min`;
+  };
 
   return (
     <div className="bg-background text-on-surface min-h-screen">
@@ -16,9 +30,12 @@ const Blog: React.FC = () => {
           <Link to="/">
             <CuidarJuntosLogo variant="default" size="md" />
           </Link>
-          <Link to="/" className="text-primary font-bold hover:underline text-label-md">
-            {lang === 'en' ? 'Home' : 'Início'}
-          </Link>
+          <div className="flex items-center gap-4">
+            <LanguageToggle variant="light" />
+            <Link to="/" className="text-primary font-bold hover:underline text-label-md">
+              {lang === 'en' ? 'Home' : 'Início'}
+            </Link>
+          </div>
         </nav>
       </header>
 
@@ -41,9 +58,9 @@ const Blog: React.FC = () => {
             >
               <div className="flex items-center gap-2 mb-3">
                 <span className="px-3 py-1 bg-primary-fixed/20 text-primary rounded-full text-[11px] font-bold">
-                  {post.category}
+                  {categoryLabel(post.category)}
                 </span>
-                <span className="text-[11px] text-on-surface-variant">{post.readingTime}</span>
+                <span className="text-[11px] text-on-surface-variant">{readingTimeLabel(post.readingTime)}</span>
               </div>
               <h2 className="text-headline-md font-headline-md text-on-surface mb-2 group-hover:text-primary transition-colors">
                 {post.title[lang]}

@@ -7,18 +7,6 @@ import { useCareData, TaskStatus } from '../context/CareDataContext';
 import { caregiver } from '../data/initialData';
 import HelpTip from '../components/HelpTip';
 
-const columns: { status: TaskStatus; label: string; cor: string }[] = [
-  { status: 'por_fazer', label: 'Por fazer', cor: 'bg-error' },
-  { status: 'em_progresso', label: 'Em progresso', cor: 'bg-primary' },
-  { status: 'concluido', label: 'Concluído', cor: 'bg-secondary' },
-];
-
-const statusOptions: { value: TaskStatus; label: string }[] = [
-  { value: 'por_fazer', label: 'Por fazer' },
-  { value: 'em_progresso', label: 'Em progresso' },
-  { value: 'concluido', label: 'Concluído' },
-];
-
 const prioridadeStyles: Record<string, string> = {
   Urgente: 'bg-error-container text-on-error-container',
   Média: 'bg-primary-fixed/30 text-primary',
@@ -36,12 +24,24 @@ const Tarefas: React.FC = () => {
   const [local, setLocal] = useState('');
   const [erro, setErro] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const columns: { status: TaskStatus; label: string; cor: string }[] = [
+    { status: 'por_fazer', label: t('pages.tasks.statuses.todo'), cor: 'bg-error' },
+    { status: 'em_progresso', label: t('pages.tasks.statuses.inProgress'), cor: 'bg-primary' },
+    { status: 'concluido', label: t('pages.tasks.statuses.done'), cor: 'bg-secondary' },
+  ];
+  const statusOptions: { value: TaskStatus; label: string }[] = columns.map(({ status, label }) => ({ value: status, label }));
+  const priorityOptions = [
+    { value: 'Baixa' as const, label: t('pages.tasks.priorities.low') },
+    { value: 'Média' as const, label: t('pages.tasks.priorities.medium') },
+    { value: 'Urgente' as const, label: t('pages.tasks.priorities.urgent') },
+  ];
+  const priorityLabel = (value: string) => priorityOptions.find((item) => item.value === value)?.label || value;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const ok = addTask({ titulo, responsavel, prioridade, dataLimite, local });
     if (!ok) {
-      setErro('Preencha o título da tarefa.');
+      setErro(t('pages.tasks.validation'));
       return;
     }
     setErro('');
@@ -70,9 +70,9 @@ const Tarefas: React.FC = () => {
         />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
-          <HelpTip text={t('pages.tasks.help') || 'use tarefas para dividir responsabilidades entre irmãos, familiares ou cuidadores.'} />
+          <HelpTip text={t('pages.tasks.help')} />
           <p className="text-body-lg text-on-surface-variant mb-stack-lg">
-            Gerir as responsabilidades diárias com calma e clareza.
+            {t('pages.tasks.intro')}
           </p>
 
           {(showForm || tasks.length === 0) && (
@@ -83,16 +83,16 @@ const Tarefas: React.FC = () => {
               )}
               <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleSubmit}>
                 <div className="md:col-span-2">
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">Título *</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.tasks.titleLabel')} *</label>
                   <input
                     value={titulo}
                     onChange={(e) => setTitulo(e.target.value)}
                     className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
-                    placeholder={t('pages.tasks.placeholder') || 'Ex: Comprar medicamentos'}
+                    placeholder={t('pages.tasks.placeholder')}
                   />
                 </div>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">Responsável</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.tasks.responsible')}</label>
                   <select
                     value={responsavel}
                     onChange={(e) => setResponsavel(e.target.value)}
@@ -103,33 +103,33 @@ const Tarefas: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">Prioridade</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.tasks.priority')}</label>
                   <select
                     value={prioridade}
                     onChange={(e) => setPrioridade(e.target.value as 'Baixa' | 'Média' | 'Urgente')}
                     className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
                   >
-                    <option>Baixa</option>
-                    <option>Média</option>
-                    <option>Urgente</option>
+                    {priorityOptions.map((item) => (
+                      <option key={item.value} value={item.value}>{item.label}</option>
+                    ))}
                   </select>
                 </div>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">Data limite</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.tasks.dueDate')}</label>
                   <input
                     value={dataLimite}
                     onChange={(e) => setDataLimite(e.target.value)}
                     className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
-                    placeholder="Ex: Hoje, Até sexta-feira"
+                    placeholder={t('pages.tasks.dueDatePlaceholder')}
                   />
                 </div>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">Local</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.tasks.location')}</label>
                   <input
                     value={local}
                     onChange={(e) => setLocal(e.target.value)}
                     className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
-                    placeholder="Ex: Farmácia Central"
+                    placeholder={t('pages.tasks.locationPlaceholder')}
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -162,7 +162,7 @@ const Tarefas: React.FC = () => {
                       </span>
                     </div>
                     {colTasks.length === 0 ? (
-                      <p className="text-label-sm text-on-surface-variant text-center py-4">Nenhuma tarefa</p>
+                      <p className="text-label-sm text-on-surface-variant text-center py-4">{t('pages.tasks.noTasks')}</p>
                     ) : (
                       colTasks.map((task) => (
                         <div
@@ -175,7 +175,7 @@ const Tarefas: React.FC = () => {
                               type="button"
                               onClick={() => removeTask(task.id)}
                               className="p-1 rounded-full hover:bg-error-container/30 text-error transition-colors shrink-0"
-                              aria-label="Remover tarefa"
+                              aria-label={t('pages.tasks.remove')}
                             >
                               <span className="material-symbols-outlined text-lg">delete</span>
                             </button>
@@ -185,7 +185,7 @@ const Tarefas: React.FC = () => {
                               prioridadeStyles[task.prioridade]
                             }`}
                           >
-                            {task.prioridade}
+                            {priorityLabel(task.prioridade)}
                           </span>
                           <div className="space-y-1 text-label-sm text-on-surface-variant mb-3">
                             <p className="flex items-center gap-2">

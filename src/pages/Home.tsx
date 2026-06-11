@@ -17,7 +17,7 @@ const Home: React.FC = () => {
     { icon: 'emergency_home', key: '5' },
   ];
   const featureCards = [
-    { icon: 'medication', title: 'meds', desc: 'medsDesc', span: 'md:col-span-3 lg:col-span-4 row-span-2 bg-cj-grad text-white' },
+    { icon: 'medication', title: 'meds', desc: 'medsDesc', span: 'md:col-span-3 lg:col-span-4 bg-cj-grad text-white' },
     { icon: 'event_available', title: 'appointments', desc: 'appointmentsDesc', span: 'md:col-span-3 lg:col-span-8 bg-cj-verde-pale border border-cj-border' },
     { icon: 'description', title: 'documents', desc: 'documentsDesc', span: 'md:col-span-3 lg:col-span-4 bg-warm-beige' },
     { icon: 'task_alt', title: 'tasks', desc: 'tasksDesc', span: 'md:col-span-3 lg:col-span-4 bg-surface-container-high' },
@@ -137,13 +137,15 @@ const Home: React.FC = () => {
                 {t('home.features.subtitle')}
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-6 auto-rows-[240px]">
+            <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-6 items-stretch">
               {featureCards.map((card, idx) => (
-                <div key={idx} className={`${card.span} p-8 rounded-2xl flex flex-col justify-between soft-shadow relative overflow-hidden group`}>
-                  <div>
-                    <span className="material-symbols-outlined text-4xl mb-6">{card.icon}</span>
-                    <h3 className="font-headline-md text-headline-md mb-3">{t(`home.features.${card.title}`)}</h3>
-                    <p className={card.span.includes('text-white') ? 'opacity-90' : 'text-on-surface-variant'}>{t(`home.features.${card.desc}`)}</p>
+                <div key={idx} className={`${card.span} min-h-[220px] p-6 md:p-8 rounded-2xl flex flex-col soft-shadow relative overflow-hidden group`}>
+                  <div className="flex h-full flex-col justify-start">
+                    <span className="material-symbols-outlined text-4xl mb-6 shrink-0">{card.icon}</span>
+                    <h3 className="font-headline-md text-headline-md mb-3 break-words">{t(`home.features.${card.title}`)}</h3>
+                    <p className={`${card.span.includes('text-white') ? 'opacity-90' : 'text-on-surface-variant'} max-w-[44rem]`}>
+                      {t(`home.features.${card.desc}`)}
+                    </p>
                   </div>
                 </div>
               ))}

@@ -4,6 +4,7 @@ import CuidarJuntosLogo from '../components/brand/CuidarJuntosLogo';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../i18n/LanguageContext';
 import LanguageToggle from '../components/LanguageToggle';
+import PublicFooter from '../components/PublicFooter';
 
 const Entrar: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -48,7 +49,7 @@ const Entrar: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-on-surface">
+    <div className="min-h-screen bg-background text-on-surface flex flex-col">
       <header className="border-b border-cj-border bg-cj-branco/90 backdrop-blur-md">
         <nav className="max-w-[900px] mx-auto flex items-center justify-between px-container-padding-mobile md:px-container-padding-desktop h-20">
           <Link to="/">
@@ -61,7 +62,7 @@ const Entrar: React.FC = () => {
         </nav>
       </header>
 
-      <main className="max-w-[480px] mx-auto px-6 py-16">
+      <main className="max-w-[480px] w-full mx-auto px-6 py-16 flex-1">
         <div className="bg-white shadow-soft rounded-[32px] border border-outline-variant p-10">
           <div className="mb-8 text-center">
             <p className="text-label-sm text-cj-verde uppercase tracking-[0.3em] mb-3">{t('auth.titleSignIn')}</p>
@@ -134,6 +135,7 @@ const Entrar: React.FC = () => {
           </div>
         </div>
       </main>
+      <PublicFooter />
     </div>
   );
 };

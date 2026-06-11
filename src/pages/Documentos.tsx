@@ -156,7 +156,7 @@ const Documentos: React.FC = () => {
         <DashboardPageHeader title={t('pages.documents.title')} showSearch={false} />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
-          <HelpTip text={t('pages.documents.help') || 'Gestão de documentos com upload seguro.'} />
+          <HelpTip text={t('pages.documents.help')} />
           <div className="grid gap-4 mb-stack-lg md:grid-cols-[2fr_1fr]">
             <div>
               <label className="text-label-sm text-on-surface-variant mb-2 inline-block">{t('pages.documents.search')}</label>

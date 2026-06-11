@@ -190,7 +190,7 @@ const Perfil: React.FC = () => {
                   value={form.alergias}
                   onChange={(e) => setForm((prev) => ({ ...prev, alergias: e.target.value }))}
                   className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none disabled:cursor-not-allowed"
-                  placeholder="Separe com vírgulas"
+                  placeholder={t('pages.profile.separateCommas')}
                 />
               </div>
               <div className="space-y-3 md:col-span-2">

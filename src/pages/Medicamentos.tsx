@@ -14,7 +14,7 @@ const Medicamentos: React.FC = () => {
   const [nome, setNome] = useState('');
   const [dosagem, setDosagem] = useState('');
   const [horario, setHorario] = useState('');
-  const [frequencia, setFrequencia] = useState('Diariamente');
+  const [frequencia, setFrequencia] = useState(t('pages.medications.daily'));
   const [responsavel, setResponsavel] = useState(caregiver.nome);
   const [erro, setErro] = useState('');
 
@@ -26,20 +26,20 @@ const Medicamentos: React.FC = () => {
     .flatMap((m) => m.horario.split(',').map((item) => item.trim()))
     .filter((item) => /^\d{2}:\d{2}$/.test(item))
     .sort();
-  const nextMedicationTime = proximosHorarios[0] || 'Sem horário definido';
+  const nextMedicationTime = proximosHorarios[0] || t('pages.medications.noTime');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const ok = addMedication({ nome, dosagem, horario, frequencia, responsavel });
     if (!ok) {
-      setErro('Preencha nome, dosagem, horário e frequência.');
+      setErro(t('pages.medications.validation'));
       return;
     }
     setErro('');
     setNome('');
     setDosagem('');
     setHorario('');
-    setFrequencia('Diariamente');
+    setFrequencia(t('pages.medications.daily'));
   };
 
   return (
@@ -48,7 +48,7 @@ const Medicamentos: React.FC = () => {
         <DashboardPageHeader title={t('pages.medications.title')} showSearch={false} />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
-          <HelpTip text={t('pages.medications.help') || 'Registe as tomas de hoje e confirme sempre a medicação com a receita ou profissional de saúde.'} />
+          <HelpTip text={t('pages.medications.help')} />
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-gutter mb-stack-lg">
             {[
               { valor: medsAtivos.length, label: t('dashboard.medsToday'), cor: 'text-primary' },
@@ -92,13 +92,13 @@ const Medicamentos: React.FC = () => {
                                 : 'bg-surface-container-high text-on-surface-variant'
                             }`}
                           >
-                            {med.tomadoHoje ? 'Tomado hoje' : 'Pendente'}
+                            {med.tomadoHoje ? t('pages.medications.takenToday') : t('pages.medications.pending')}
                           </span>
                           <button
                             type="button"
                             onClick={() => removeMedication(med.id)}
                             className="p-1 rounded-full hover:bg-error-container/30 text-error transition-colors"
-                            aria-label="Remover medicamento"
+                            aria-label={t('pages.medications.remove')}
                           >
                             <span className="material-symbols-outlined text-lg">delete</span>
                           </button>
@@ -129,7 +129,7 @@ const Medicamentos: React.FC = () => {
                             : 'bg-primary text-on-primary hover:opacity-90'
                         }`}
                       >
-                        {med.tomadoHoje ? 'Desmarcar' : 'Marcar como tomado'}
+                        {med.tomadoHoje ? t('pages.medications.unmark') : t('pages.medications.markTaken')}
                       </button>
                     </div>
                   ))}
@@ -139,32 +139,32 @@ const Medicamentos: React.FC = () => {
 
             <div className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40 h-fit">
               <h3 className="text-headline-md font-headline-md text-on-surface mb-6">
-                Adicionar medicamento
+                {t('pages.medications.formTitle')}
               </h3>
               {erro && (
                 <p className="text-label-sm text-error mb-4 p-3 bg-error-container/20 rounded-xl">{erro}</p>
               )}
               <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">Nome *</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.medications.name')} *</label>
                   <input
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
                     className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
-                    placeholder="Ex: Metformina"
+                    placeholder={t('pages.medications.namePlaceholder')}
                   />
                 </div>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">Dosagem *</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.medications.dosage')} *</label>
                   <input
                     value={dosagem}
                     onChange={(e) => setDosagem(e.target.value)}
                     className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
-                    placeholder="Ex: 500mg"
+                    placeholder={t('pages.medications.dosagePlaceholder')}
                   />
                 </div>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">Horário *</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.medications.schedule')} *</label>
                   <input
                     value={horario}
                     onChange={(e) => setHorario(e.target.value)}
@@ -173,19 +173,19 @@ const Medicamentos: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">Frequência *</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.medications.frequency')} *</label>
                   <select
                     value={frequencia}
                     onChange={(e) => setFrequencia(e.target.value)}
                     className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
                   >
-                    <option>Diariamente</option>
-                    <option>A cada 8 horas</option>
-                    <option>Semanalmente</option>
+                    <option>{t('pages.medications.daily')}</option>
+                    <option>{t('pages.medications.everyEightHours')}</option>
+                    <option>{t('pages.medications.weekly')}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="text-label-sm font-bold text-on-surface block mb-1">Responsável</label>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.medications.responsible')}</label>
                   <select
                     value={responsavel}
                     onChange={(e) => setResponsavel(e.target.value)}
@@ -199,7 +199,7 @@ const Medicamentos: React.FC = () => {
                   type="submit"
                   className="w-full py-4 bg-primary text-on-primary font-bold rounded-full shadow-lg hover:opacity-90 transition-all"
                 >
-                  Guardar medicamento
+                  {t('pages.medications.save')}
                 </button>
               </form>
             </div>

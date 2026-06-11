@@ -10,8 +10,8 @@ import type {
   EmergencyContact,
 } from './types';
 
-// Placeholder adapter for future Supabase integration.
-// Nunca chama a API ou carrega bibliotecas Supabase nesta versão.
+// Isolated adapter used when the Supabase client must not be loaded.
+// Nunca chama a API ou carrega bibliotecas Supabase.
 
 export const signIn = async (email: string, password: string): Promise<void> => {
   // TODO: implementar autenticação com Supabase Auth

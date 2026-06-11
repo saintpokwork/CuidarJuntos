@@ -4,6 +4,7 @@ import { useLanguage } from '../i18n/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import CuidarJuntosLogo from '../components/brand/CuidarJuntosLogo';
 import PublicFooter from '../components/PublicFooter';
+import LanguageToggle from '../components/LanguageToggle';
 
 const AceitarConvite: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -17,6 +18,7 @@ const AceitarConvite: React.FC = () => {
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
             <CuidarJuntosLogo className="mx-auto mb-6 h-12 w-auto" />
+            <LanguageToggle variant="light" />
           </div>
 
           <div className="glass-card rounded-[32px] p-8 soft-shadow border border-white/40">
@@ -50,22 +52,12 @@ const AceitarConvite: React.FC = () => {
                   {t('pages.invite.description')}
                 </p>
 
-                {!user ? (
-                  <Link
-                    to="/criar-conta"
-                    className="block w-full py-4 bg-primary text-on-primary font-bold rounded-full shadow-lg hover:opacity-90 transition-all text-center mb-3"
-                  >
-                    {t('pages.invite.createAccount')}
-                  </Link>
-                ) : (
-                  <button
-                    type="button"
-                    disabled
-                    className="w-full py-4 bg-primary text-on-primary font-bold rounded-full shadow-lg opacity-50 cursor-not-allowed mb-3"
-                  >
-                    {t('pages.invite.accept')}
-                  </button>
-                )}
+                <Link
+                  to={user ? '/dashboard/familia' : '/criar-conta'}
+                  className="block w-full py-4 bg-primary text-on-primary font-bold rounded-full shadow-lg hover:opacity-90 transition-all text-center mb-3"
+                >
+                  {user ? t('pages.invite.continueToFamily') : t('pages.invite.createAccount')}
+                </Link>
 
                 <p className="text-label-sm text-on-surface-variant text-center">
                   {t('pages.invite.comingSoon')}
