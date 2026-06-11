@@ -7,23 +7,39 @@ import GuideBanner from './GuideBanner';
 import CuidarJuntosLogo from './brand/CuidarJuntosLogo';
 import { useLanguage } from '../i18n/LanguageContext';
 import LanguageToggle from './LanguageToggle';
+import NotificationBell from './NotificationBell';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
-const menuItems = [
-  { path: '/dashboard', labelKey: 'nav.dashboard', icon: 'dashboard', exact: true },
-  { path: '/dashboard/guia', labelKey: 'nav.quickGuide', icon: 'menu_book', exact: false },
-  { path: '/dashboard/perfil', labelKey: 'nav.profile', icon: 'person', exact: false },
-  { path: '/dashboard/medicamentos', labelKey: 'nav.medications', icon: 'pill', exact: false },
-  { path: '/dashboard/consultas', labelKey: 'nav.appointments', icon: 'calendar_today', exact: false },
-  { path: '/dashboard/tarefas', labelKey: 'nav.tasks', icon: 'assignment', exact: false },
-  { path: '/dashboard/documentos', labelKey: 'nav.documents', icon: 'description', exact: false },
-  { path: '/dashboard/emergencia', labelKey: 'nav.emergency', icon: 'emergency', exact: false },
-  { path: '/dashboard/familia', labelKey: 'nav.family', icon: 'group', exact: false },
-  { path: '/dashboard/notas', labelKey: 'nav.notes', icon: 'event_note', exact: false },
-  { path: '/dashboard/definicoes', labelKey: 'nav.settings', icon: 'settings', exact: false },
+const menuGroups = [
+  {
+    labelKey: 'nav.daily',
+    items: [
+      { path: '/dashboard', labelKey: 'nav.dashboard', icon: 'dashboard', exact: true },
+      { path: '/dashboard/medicamentos', labelKey: 'nav.medications', icon: 'pill', exact: false },
+      { path: '/dashboard/tarefas', labelKey: 'nav.tasks', icon: 'assignment', exact: false },
+      { path: '/dashboard/notas', labelKey: 'nav.notes', icon: 'event_note', exact: false },
+    ],
+  },
+  {
+    labelKey: 'nav.reference',
+    items: [
+      { path: '/dashboard/consultas', labelKey: 'nav.appointments', icon: 'calendar_today', exact: false },
+      { path: '/dashboard/documentos', labelKey: 'nav.documents', icon: 'description', exact: false },
+      { path: '/dashboard/emergencia', labelKey: 'nav.emergency', icon: 'emergency', exact: false },
+    ],
+  },
+  {
+    labelKey: 'nav.account',
+    items: [
+      { path: '/dashboard/familia', labelKey: 'nav.family', icon: 'group', exact: false },
+      { path: '/dashboard/perfil', labelKey: 'nav.profile', icon: 'person', exact: false },
+      { path: '/dashboard/guia', labelKey: 'nav.quickGuide', icon: 'menu_book', exact: false },
+      { path: '/dashboard/definicoes', labelKey: 'nav.settings', icon: 'settings', exact: false },
+    ],
+  },
 ];
 
 const mobileNavItems = [
@@ -78,29 +94,37 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
         {/* Middle: Nav links (scrollable, scrollbar hidden) */}
         <nav className="flex-1 min-h-0 overflow-y-auto sidebar-scroll px-2 py-1">
-          {menuItems.map((item) => {
-            const active = isActive(location.pathname, item.path, item.exact);
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex items-center gap-3 px-3 py-2.5 mb-0.5 rounded-lg text-[13px] transition-all ${
-                  active
-                    ? 'text-white font-semibold bg-white/10 border-l-[3px] border-cj-cobre pl-[9px]'
-                    : 'text-white/55 hover:bg-white/5 hover:text-white/85 border-l-[3px] border-transparent pl-[9px]'
-                }`}
-              >
-                <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
-                <span className="truncate">{t(item.labelKey)}</span>
-              </Link>
-            );
-          })}
+          {menuGroups.map((group) => (
+            <div key={group.labelKey} className="mb-4">
+              <p className="px-3 pb-1 text-[10px] font-bold uppercase tracking-[0.16em] text-white/35">
+                {t(group.labelKey)}
+              </p>
+              {group.items.map((item) => {
+                const active = isActive(location.pathname, item.path, item.exact);
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`flex min-h-11 items-center gap-3 px-3 py-2.5 mb-0.5 rounded-lg text-[13px] transition-all ${
+                      active
+                        ? 'text-white font-semibold bg-white/14 border-l-[3px] border-cj-cobre pl-[9px]'
+                        : 'text-white/60 hover:bg-white/5 hover:text-white/90 border-l-[3px] border-transparent pl-[9px]'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
+                    <span className="truncate">{t(item.labelKey)}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </nav>
 
         {/* Bottom: Language toggle + user card */}
         <div className="shrink-0 px-3 pb-4 pt-2 border-t border-white/8">
           {/* Language toggle */}
-          <div className="flex items-center justify-center mb-3">
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <NotificationBell />
             <LanguageToggle compact />
           </div>
 
@@ -143,11 +167,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       <div className="flex-1 flex flex-col relative min-w-0 overflow-x-hidden">
         {/* Mobile top bar */}
         <div className="lg:hidden bg-cj-sidebar px-container-padding-mobile py-3 flex items-center justify-between no-print">
-          <Link to="/dashboard">
+          <Link to="/dashboard" className="inline-flex min-h-11 items-center">
             <CuidarJuntosLogo variant="white" size="sm" />
           </Link>
-          <LanguageToggle />
-          <Link to="/" className="text-label-sm text-white/60 hover:text-white">
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+            <LanguageToggle />
+          </div>
+          <Link to="/" className="inline-flex min-h-11 items-center text-label-sm text-white/60 hover:text-white">
             {t('nav.home')}
           </Link>
         </div>
@@ -186,13 +213,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
               <div className="flex flex-wrap gap-3">
                 <Link
                   to="/entrar"
-                  className="text-primary font-bold hover:underline whitespace-nowrap"
+                  className="inline-flex min-h-11 items-center text-primary font-bold hover:underline whitespace-nowrap"
                 >
                   {t('global.signIn')}
                 </Link>
                 <Link
                   to="/criar-conta"
-                  className="text-primary font-bold hover:underline whitespace-nowrap"
+                  className="inline-flex min-h-11 items-center text-primary font-bold hover:underline whitespace-nowrap"
                 >
                   {t('global.createAccount')}
                 </Link>
@@ -212,9 +239,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex flex-col items-center justify-center min-w-[56px] p-2 rounded-xl transition-all ${
+                className={`flex min-h-14 flex-col items-center justify-center min-w-[60px] p-2 rounded-xl transition-all ${
                   active
-                    ? 'bg-primary text-on-primary px-3 py-1 shadow-cj-sm'
+                    ? 'bg-primary text-on-primary px-3 shadow-cj-sm'
                     : 'text-on-surface-variant'
                 }`}
               >

@@ -53,6 +53,11 @@ const Emergencia: React.FC = () => {
     }
   };
 
+  const handlePreparePublicCard = () => {
+    document.getElementById('emergency-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    showFeedback(t('pages.emergency.publicCardPrepared'));
+  };
+
   return (
     <DashboardLayout>
       <main className="flex-1 w-full relative">
@@ -91,7 +96,7 @@ const Emergencia: React.FC = () => {
             </p>
           )}
 
-          <div className="glass-card rounded-[24px] p-6 md:p-8 mb-8 print:p-0 print:border-none print:bg-transparent print:shadow-none">
+          <div id="emergency-card" className="glass-card rounded-[24px] p-6 md:p-8 mb-8 print:p-0 print:border-none print:bg-transparent print:shadow-none">
             <div className="flex flex-wrap items-center justify-between gap-4 border-b border-cj-border pb-4 mb-6 print:border-b-0 print:mb-0">
               <div className="flex items-center gap-3">
                 <CuidarJuntosLogo variant="icon" size="sm" />
@@ -201,8 +206,15 @@ const Emergencia: React.FC = () => {
                         )}
                         <div className="flex-1 min-w-0">
                           <p className="text-label-md font-bold text-cj-terra truncate">{contact.nome}</p>
+                          <p className="text-label-sm text-cj-cinza">{contact.relacao || contact.funcao}</p>
                           <p className="text-label-sm text-cj-cinza">{contact.funcao}</p>
-                          <p className="text-label-sm text-primary font-medium">{contact.telefone}</p>
+                          <a
+                            href={`tel:${contact.telefone.replace(/\s+/g, '')}`}
+                            className="mt-2 inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-4 text-label-sm font-bold text-on-primary print:bg-transparent print:px-0 print:text-primary"
+                          >
+                            <span className="material-symbols-outlined text-base print:hidden">call</span>
+                            {t('pages.emergency.call')} {contact.telefone}
+                          </a>
                         </div>
                       </div>
                     ))}
@@ -211,6 +223,31 @@ const Emergencia: React.FC = () => {
               </div>
             </div>
           </div>
+
+          <section className="print:hidden rounded-2xl border border-cj-border bg-cj-verde-pale/30 p-5 mb-8">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h3 className="text-headline-sm font-bold text-on-surface">{t('pages.emergency.publicCardTitle')}</h3>
+                <p className="text-body-sm text-on-surface-variant mt-1 max-w-2xl">{t('pages.emergency.publicCardText')}</p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={handlePreparePublicCard}
+                  className="min-h-11 rounded-full bg-primary px-5 text-label-md font-bold text-on-primary"
+                >
+                  {t('pages.emergency.preparePublicCard')}
+                </button>
+                <button
+                  type="button"
+                  onClick={handlePartilhar}
+                  className="min-h-11 rounded-full border border-primary px-5 text-label-md font-bold text-primary"
+                >
+                  {t('pages.emergency.shareResume')}
+                </button>
+              </div>
+            </div>
+          </section>
 
           <div className="text-label-sm text-cj-cinza print:hidden">
             {t('pages.emergency.referenceDisclaimer')}

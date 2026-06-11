@@ -17,11 +17,11 @@ const Home: React.FC = () => {
     { icon: 'emergency_home', key: '5' },
   ];
   const featureCards = [
-    { icon: 'medication', title: 'meds', desc: 'medsDesc', span: 'md:col-span-3 lg:col-span-4 bg-cj-grad text-white' },
-    { icon: 'event_available', title: 'appointments', desc: 'appointmentsDesc', span: 'md:col-span-3 lg:col-span-8 bg-cj-verde-pale border border-cj-border' },
-    { icon: 'description', title: 'documents', desc: 'documentsDesc', span: 'md:col-span-3 lg:col-span-4 bg-warm-beige' },
-    { icon: 'task_alt', title: 'tasks', desc: 'tasksDesc', span: 'md:col-span-3 lg:col-span-4 bg-surface-container-high' },
-    { icon: 'contact_phone', title: 'contacts', desc: 'contactsDesc', span: 'md:col-span-6 lg:col-span-4 bg-cj-terracota text-white' },
+    { icon: 'medication', title: 'meds', desc: 'medsDesc', tone: 'bg-cj-grad text-white' },
+    { icon: 'event_available', title: 'appointments', desc: 'appointmentsDesc', tone: 'bg-cj-verde-pale border border-cj-border' },
+    { icon: 'description', title: 'documents', desc: 'documentsDesc', tone: 'bg-warm-beige' },
+    { icon: 'task_alt', title: 'tasks', desc: 'tasksDesc', tone: 'bg-surface-container-high' },
+    { icon: 'contact_phone', title: 'contacts', desc: 'contactsDesc', tone: 'bg-cj-terracota text-white' },
   ];
   const howItWorksSteps = [0, 1, 2, 3];
   const pricingPlans = [
@@ -94,8 +94,6 @@ const Home: React.FC = () => {
             </div>
             <div className="flex-1 w-full relative">
               <HeroDashboardPreview />
-              <div className="absolute -top-20 -right-20 w-80 h-80 bg-cj-verde/10 rounded-full blur-3xl" />
-              <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-cj-terracota/10 rounded-full blur-3xl" />
             </div>
           </div>
         </section>
@@ -137,13 +135,13 @@ const Home: React.FC = () => {
                 {t('home.features.subtitle')}
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-6 lg:grid-cols-12 gap-6 items-stretch">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 items-stretch">
               {featureCards.map((card, idx) => (
-                <div key={idx} className={`${card.span} min-h-[220px] p-6 md:p-8 rounded-2xl flex flex-col soft-shadow relative overflow-hidden group`}>
-                  <div className="flex h-full flex-col justify-start">
-                    <span className="material-symbols-outlined text-4xl mb-6 shrink-0">{card.icon}</span>
-                    <h3 className="font-headline-md text-headline-md mb-3 break-words">{t(`home.features.${card.title}`)}</h3>
-                    <p className={`${card.span.includes('text-white') ? 'opacity-90' : 'text-on-surface-variant'} max-w-[44rem]`}>
+                <div key={idx} className={`${card.tone} min-h-[260px] p-6 rounded-2xl flex flex-col soft-shadow relative overflow-hidden group`}>
+                  <div className="flex h-full flex-col">
+                    <span className="material-symbols-outlined text-4xl mb-8 shrink-0">{card.icon}</span>
+                    <h3 className="font-headline-md text-headline-md mb-4 break-words leading-tight">{t(`home.features.${card.title}`)}</h3>
+                    <p className={`${card.tone.includes('text-white') ? 'opacity-90' : 'text-on-surface-variant'} text-body-md leading-relaxed`}>
                       {t(`home.features.${card.desc}`)}
                     </p>
                   </div>

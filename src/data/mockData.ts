@@ -209,6 +209,7 @@ export const emergencyContacts = [
     id: '1',
     nome: 'Dr. Roberto Santos',
     funcao: 'Cardiologista',
+    relacao: 'Especialista',
     telefone: '+351 213 456 789',
     avatar:
       'https://lh3.googleusercontent.com/aida-public/AB6AXuAzLuUldVxFr6oTpwHfCR_cVjegacX1rcjLvifvyX6Et7c2Rbb87al0JjVPLYWFXOl2EyfzCcyGitnRz4IBMTZRlH6rQ7A1DJfVZh8HAkAZVgx5jOC64U7abkiPm05ErRwzFvAS2eY2Btzu2ZL_-cJxoQRi22zEPQf6AzWc-lMIXpMg5iSk6R4n2yhssg2Gzz_Ty032HmkrUC1YBVpRFsIBtVupeWk-zhrWvx-sCA532QDre749A_tpID_x2wzpawCbdAnxUmp6MAIO',
@@ -217,6 +218,7 @@ export const emergencyContacts = [
     id: '2',
     nome: 'Enf. Maria Costa',
     funcao: 'Cuidados 24h',
+    relacao: 'Cuidadora',
     telefone: '+351 926 789 012',
     avatar:
       'https://lh3.googleusercontent.com/aida-public/AB6AXuBUyZABvFDj4v2v_L2kF80wk7dfsTqaSxi7fGRONoUqMKf7tYECWk22U2YE19y18YwtOXu0G47n7ys9iYMOeS1WMqZ8Ay1ZM17gUvC087UqCVZKCDFAmE12c3VLA9HS7lTKVSktfSL3cnbKXQLvbkhe0XR6VSR--BhEUCP-hPR_z5vpfcUfSwrvA8WlCD8_AmHeTmIn-EM5mimVypWa6aWQIyzDxUY-xehaKvrAEcEIEBrGyQG2HwsGXn8u5n2d8V2BBnVfWAZYgReL',
@@ -225,6 +227,7 @@ export const emergencyContacts = [
     id: '3',
     nome: 'Ana Silva',
     funcao: 'Filha / Contacto principal',
+    relacao: 'Filha',
     telefone: '+351 912 345 678',
     avatar: caregiver.avatar,
   },
@@ -232,6 +235,7 @@ export const emergencyContacts = [
     id: '4',
     nome: 'João Fernandes',
     funcao: 'Filho',
+    relacao: 'Filho',
     telefone: '+351 923 456 789',
     avatar: '',
   },

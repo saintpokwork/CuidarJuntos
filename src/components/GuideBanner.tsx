@@ -37,14 +37,14 @@ const GuideBanner: React.FC = () => {
         <div className="flex flex-wrap gap-3 shrink-0">
           <Link
             to="/dashboard/guia"
-            className="px-5 py-2.5 bg-primary text-on-primary font-bold rounded-full text-label-sm hover:opacity-90 transition-all"
+            className="inline-flex min-h-11 items-center px-5 bg-primary text-on-primary font-bold rounded-full text-label-sm hover:opacity-90 transition-all"
           >
             {t('guideBanner.cta')}
           </Link>
           <button
             type="button"
             onClick={dismiss}
-            className="px-5 py-2.5 text-on-surface-variant font-bold rounded-full text-label-sm hover:bg-surface-container-low transition-all"
+            className="inline-flex min-h-11 items-center px-5 text-on-surface-variant font-bold rounded-full text-label-sm hover:bg-surface-container-low transition-all"
           >
             {t('guideBanner.dismiss')}
           </button>

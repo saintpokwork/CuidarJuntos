@@ -6,6 +6,7 @@
     "start": "craco start",
     "dev": "craco start",
     "build": "craco build",
+    "qa:ui": "playwright test",
     "test": "craco test",
     "eject": "react-scripts eject"
   },

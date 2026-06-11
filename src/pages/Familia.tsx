@@ -167,7 +167,7 @@ const Familia: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => handleRemove(member.id)}
-                          className="p-2 rounded-full hover:bg-error-container/30 text-error transition-colors"
+                          className="flex min-h-11 min-w-11 items-center justify-center rounded-full hover:bg-error-container/30 text-error transition-colors"
                           aria-label={t('pages.family.removeMember')}
                         >
                           <span className="material-symbols-outlined">delete</span>
@@ -217,7 +217,7 @@ const Familia: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => handleCancelInvite(invite.id)}
-                            className="p-2 rounded-full hover:bg-error-container/30 text-error transition-colors"
+                            className="flex min-h-11 min-w-11 items-center justify-center rounded-full hover:bg-error-container/30 text-error transition-colors"
                             aria-label={t('pages.family.cancelInvite')}
                           >
                             <span className="material-symbols-outlined">close</span>
@@ -239,7 +239,7 @@ const Familia: React.FC = () => {
 
             {/* Invite form */}
             <div className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40 h-fit">
-              <h3 className="text-headline-md font-headline-md text-on-surface mb-2">{t('pages.family.title')}</h3>
+              <h3 className="text-headline-md font-headline-md text-on-surface mb-2">{t('pages.family.inviteCaregiverTitle')}</h3>
               <p className="text-label-md text-on-surface-variant mb-6">{t('pages.family.inviteDescription')}</p>
               {erro && (
                 <p className={`text-label-sm mb-4 p-3 rounded-xl ${erro.includes('copiado') || erro.includes('copied') ? 'bg-secondary-container/30 text-on-secondary-container' : 'bg-error-container/20 text-error'}`}>
@@ -274,6 +274,7 @@ const Familia: React.FC = () => {
                     className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
                     placeholder={t('pages.family.relationshipPlaceholder')}
                   />
+                  <p className="mt-1 text-label-sm text-on-surface-variant">{t('pages.family.relationshipHelp')}</p>
                 </div>
                 <div>
                   <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.family.role')}</label>

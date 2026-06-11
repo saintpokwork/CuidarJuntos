@@ -10,7 +10,7 @@ interface LanguageToggleProps {
 const LanguageToggle: React.FC<LanguageToggleProps> = ({ className = '', compact = false, variant = 'dark' }) => {
   const { language, setLanguage } = useLanguage();
 
-  const btnSize = compact ? 'px-2 py-0.5 text-[11px]' : 'px-3 py-1 text-[13px]';
+  const btnSize = compact ? 'min-h-11 px-3 text-[11px]' : 'min-h-11 px-4 text-[13px]';
   const gap = compact ? 'gap-1' : 'gap-1.5';
 
   const activeClasses = 'bg-primary text-on-primary font-bold';

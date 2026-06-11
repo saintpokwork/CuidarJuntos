@@ -6,16 +6,19 @@ import { useLanguage } from '../i18n/LanguageContext';
 import { useCareData } from '../context/CareDataContext';
 import { caregiver } from '../data/initialData';
 import HelpTip from '../components/HelpTip';
+import type { MedicationDoseStatus, MedicationUnit } from '../context/CareDataContext';
 
 const Medicamentos: React.FC = () => {
-  const { data, addMedication, removeMedication, updateMedicationTaken } = useCareData();
+  const { data, addMedication, removeMedication, updateMedicationTaken, updateMedicationDoseStatus } = useCareData();
   const { t } = useLanguage();
   const { medications } = data;
   const [nome, setNome] = useState('');
   const [dosagem, setDosagem] = useState('');
+  const [unidade, setUnidade] = useState<MedicationUnit>('mg');
   const [horario, setHorario] = useState('');
   const [frequencia, setFrequencia] = useState(t('pages.medications.daily'));
   const [responsavel, setResponsavel] = useState(caregiver.nome);
+  const [dataFim, setDataFim] = useState('');
   const [erro, setErro] = useState('');
 
   const medsAtivos = medications.filter((m) => m.estado === 'Ativo');
@@ -27,10 +30,24 @@ const Medicamentos: React.FC = () => {
     .filter((item) => /^\d{2}:\d{2}$/.test(item))
     .sort();
   const nextMedicationTime = proximosHorarios[0] || t('pages.medications.noTime');
+  const todayDoses = medsAtivos.flatMap((med) =>
+    (med.dosesHoje || []).map((dose) => ({
+      ...dose,
+      medicationId: med.id,
+      medicationName: med.nome,
+      dosage: med.dosagem,
+      responsible: med.responsavel,
+    })),
+  );
+  const doseStatusLabel: Record<MedicationDoseStatus, string> = {
+    por_tomar: t('pages.medications.pending'),
+    tomado: t('pages.medications.takenToday'),
+    em_falta: t('pages.medications.missed'),
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const ok = addMedication({ nome, dosagem, horario, frequencia, responsavel });
+    const ok = addMedication({ nome, dosagem, unidade, horario, frequencia, responsavel, dataFim });
     if (!ok) {
       setErro(t('pages.medications.validation'));
       return;
@@ -40,6 +57,7 @@ const Medicamentos: React.FC = () => {
     setDosagem('');
     setHorario('');
     setFrequencia(t('pages.medications.daily'));
+    setDataFim('');
   };
 
   return (
@@ -49,6 +67,56 @@ const Medicamentos: React.FC = () => {
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
           <HelpTip text={t('pages.medications.help')} />
+          {todayDoses.length > 0 && (
+            <section className="mb-stack-lg rounded-[24px] border border-cj-border bg-cj-branco p-5 soft-shadow">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
+                <div>
+                  <h2 className="text-headline-md font-headline-md text-on-surface">{t('pages.medications.todayTitle')}</h2>
+                  <p className="text-label-sm text-on-surface-variant">{t('pages.medications.todaySubtitle')}</p>
+                </div>
+                <span className="rounded-full bg-cj-verde-pale px-3 py-1 text-label-sm font-bold text-primary">
+                  {takenHoje}/{todayDoses.length}
+                </span>
+              </div>
+              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                {todayDoses.map((dose) => (
+                  <div key={dose.id} className="rounded-2xl bg-surface-container-low p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-label-md font-bold text-on-surface">{dose.medicationName} {dose.dosage}</p>
+                        <p className="text-label-sm text-on-surface-variant">{dose.horario} · {dose.responsible}</p>
+                      </div>
+                      <span className={`rounded-full px-2 py-1 text-[11px] font-bold ${
+                        dose.status === 'tomado'
+                          ? 'bg-secondary-container text-on-secondary-container'
+                          : dose.status === 'em_falta'
+                            ? 'bg-error-container text-on-error-container'
+                            : 'bg-surface-container-high text-on-surface-variant'
+                      }`}>
+                        {doseStatusLabel[dose.status]}
+                      </span>
+                    </div>
+                    <div className="mt-4 grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => updateMedicationDoseStatus(dose.medicationId, dose.id, 'tomado')}
+                        className="min-h-11 rounded-full bg-primary px-3 text-label-sm font-bold text-on-primary"
+                      >
+                        {t('pages.medications.markTaken')}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => updateMedicationDoseStatus(dose.medicationId, dose.id, 'em_falta')}
+                        className="min-h-11 rounded-full bg-error-container px-3 text-label-sm font-bold text-on-error-container"
+                      >
+                        {t('pages.medications.markMissed')}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-gutter mb-stack-lg">
             {[
               { valor: medsAtivos.length, label: t('dashboard.medsToday'), cor: 'text-primary' },
@@ -97,7 +165,7 @@ const Medicamentos: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => removeMedication(med.id)}
-                            className="p-1 rounded-full hover:bg-error-container/30 text-error transition-colors"
+                            className="flex min-h-11 min-w-11 items-center justify-center rounded-full hover:bg-error-container/30 text-error transition-colors"
                             aria-label={t('pages.medications.remove')}
                           >
                             <span className="material-symbols-outlined text-lg">delete</span>
@@ -154,7 +222,8 @@ const Medicamentos: React.FC = () => {
                     placeholder={t('pages.medications.namePlaceholder')}
                   />
                 </div>
-                <div>
+                <div className="grid grid-cols-[1fr_140px] gap-3">
+                  <div>
                   <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.medications.dosage')} *</label>
                   <input
                     value={dosagem}
@@ -162,6 +231,21 @@ const Medicamentos: React.FC = () => {
                     className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
                     placeholder={t('pages.medications.dosagePlaceholder')}
                   />
+                  </div>
+                  <div>
+                    <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.medications.unit')}</label>
+                    <select
+                      value={unidade}
+                      onChange={(e) => setUnidade(e.target.value as MedicationUnit)}
+                      className="w-full h-12 px-3 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
+                    >
+                      <option value="comprimidos">{t('pages.medications.units.tablets')}</option>
+                      <option value="mg">{t('pages.medications.units.mg')}</option>
+                      <option value="ml">{t('pages.medications.units.ml')}</option>
+                      <option value="gotas">{t('pages.medications.units.drops')}</option>
+                      <option value="unidades">{t('pages.medications.units.units')}</option>
+                    </select>
+                  </div>
                 </div>
                 <div>
                   <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.medications.schedule')} *</label>
@@ -194,6 +278,15 @@ const Medicamentos: React.FC = () => {
                     <option>Ana Silva</option>
                     <option>João Fernandes</option>
                   </select>
+                </div>
+                <div>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.medications.endDate')}</label>
+                  <input
+                    value={dataFim}
+                    onChange={(e) => setDataFim(e.target.value)}
+                    className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
+                    type="date"
+                  />
                 </div>
                 <button
                   type="submit"

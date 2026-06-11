@@ -41,18 +41,6 @@ const DashboardPageHeader: React.FC<DashboardPageHeaderProps> = ({
       )}
       <div className="flex items-center gap-2 md:gap-4 shrink-0">
         {action}
-        <button
-          type="button"
-          className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-all"
-        >
-          <span className="material-symbols-outlined text-on-surface-variant">notifications</span>
-        </button>
-        <button
-          type="button"
-          className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-all"
-        >
-          <span className="material-symbols-outlined text-on-surface-variant">help</span>
-        </button>
         <img
           alt={caregiver.nome}
           className="w-10 h-10 rounded-full object-cover lg:hidden"

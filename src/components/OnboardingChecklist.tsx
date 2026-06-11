@@ -1,11 +1,23 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useCareData } from '../context/CareDataContext';
 
+const STORAGE_KEY = 'cuidarjuntos-onboarding-checklist-dismissed';
+
 const OnboardingChecklist: React.FC = () => {
   const { data } = useCareData();
   const { t } = useLanguage();
+  const [dismissed, setDismissed] = useState(false);
+
+  useEffect(() => {
+    setDismissed(localStorage.getItem(STORAGE_KEY) === 'true');
+  }, []);
+
+  const dismiss = () => {
+    localStorage.setItem(STORAGE_KEY, 'true');
+    setDismissed(true);
+  };
 
   const steps = [
     {
@@ -19,21 +31,6 @@ const OnboardingChecklist: React.FC = () => {
       done: data.medications.filter((m) => m.estado === 'Ativo').length > 0,
     },
     {
-      id: 'appointments',
-      path: '/dashboard/consultas',
-      done: data.appointments.length > 0,
-    },
-    {
-      id: 'tasks',
-      path: '/dashboard/tarefas',
-      done: data.tasks.length > 0,
-    },
-    {
-      id: 'emergency',
-      path: '/dashboard/emergencia',
-      done: data.emergencyContacts.length > 0,
-    },
-    {
       id: 'family',
       path: '/dashboard/familia',
       done: data.familyMembers.length > 0,
@@ -43,15 +40,27 @@ const OnboardingChecklist: React.FC = () => {
   const doneCount = steps.filter((s) => s.done).length;
   const total = steps.length;
 
+  if (dismissed || doneCount === total) return null;
+
   return (
     <div className="mb-stack-lg glass-card rounded-[24px] p-6 soft-shadow border border-white/40">
-      <div className="flex items-center justify-between mb-5">
-        <h3 className="text-headline-md font-headline-md text-on-surface">
-          {t('onboarding.title')}
-        </h3>
-        <span className="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-label-sm font-bold">
-          {doneCount} {t('onboarding.ofSteps')} {total} {t('onboarding.stepsCompleted')}
-        </span>
+      <div className="flex items-start justify-between gap-4 mb-5">
+        <div>
+          <h3 className="text-headline-md font-headline-md text-on-surface">
+            {t('onboarding.title')}
+          </h3>
+          <span className="inline-flex mt-2 bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-label-sm font-bold">
+            {doneCount} {t('onboarding.ofSteps')} {total} {t('onboarding.stepsCompleted')}
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={dismiss}
+          className="min-h-11 min-w-11 rounded-full bg-surface-container-high text-on-surface-variant hover:text-on-surface"
+          aria-label={t('global.close') || t('global.cancel')}
+        >
+          <span className="material-symbols-outlined">close</span>
+        </button>
       </div>
       <ul className="space-y-3">
         {steps.map((item) => (

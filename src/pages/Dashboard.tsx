@@ -5,9 +5,12 @@ import DashboardPageHeader from '../components/DashboardPageHeader';
 import { useCareData } from '../context/CareDataContext';
 import OnboardingChecklist from '../components/OnboardingChecklist';
 import { useLanguage } from '../i18n/LanguageContext';
+import FirstRunWizard from '../components/FirstRunWizard';
+import DashboardAlerts from '../components/DashboardAlerts';
+import ActivityFeed from '../components/ActivityFeed';
 
 const Dashboard: React.FC = () => {
-  const { data, dashboardSummary, storageMode } = useCareData();
+  const { data, dashboardSummary, updateMedicationTaken } = useCareData();
   const { t } = useLanguage();
   const { medications, appointments, tasks, documents, emergencyContacts, careNotes } = data;
 
@@ -30,28 +33,9 @@ const Dashboard: React.FC = () => {
         <DashboardPageHeader />
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
-          {storageMode === 'demo' && (
-            <>
-              <div className="mb-stack-lg rounded-[24px] border border-cj-verde-pale bg-cj-verde-pale/10 p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <p className="text-label-md font-bold text-cj-terra">{t('dashboard.bannerTitle')}</p>
-                  <p className="text-body-md text-on-surface-variant max-w-2xl">{t('dashboard.bannerSubtitle')}</p>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                    <Link to="/criar-conta" className="px-5 py-3 rounded-full bg-primary text-on-primary font-bold hover:opacity-90 transition-all">
-                    {t('global.createAccount')}
-                  </Link>
-                  <Link to="/entrar" className="px-5 py-3 rounded-full border border-primary text-primary font-bold hover:bg-primary/5 transition-all">
-                    {t('global.signIn')}
-                  </Link>
-                </div>
-              </div>
-              <p className="text-label-sm text-on-surface-variant mb-4 p-3 bg-surface-container-low rounded-xl">{t('dashboard.exampleDataNote')}</p>
-            </>
-          )}
-
-
+          <FirstRunWizard />
           <OnboardingChecklist />
+          <DashboardAlerts />
 
           <section className="mb-stack-lg">
             <h1 className="text-headline-lg font-headline-lg text-on-surface mb-2">{dashboardSummary.saudacao}</h1>
@@ -147,6 +131,10 @@ const Dashboard: React.FC = () => {
                   <span className="material-symbols-outlined">playlist_add</span>
                   <span className="text-label-md">{t('dashboard.createTask')}</span>
                 </Link>
+                <Link to="/dashboard/familia" className="flex items-center gap-2 px-6 py-4 bg-primary-fixed/30 text-primary rounded-full font-bold hover:bg-cj-verde-pale transition-all">
+                  <span className="material-symbols-outlined">group_add</span>
+                  <span className="text-label-md">{t('dashboard.inviteFamily')}</span>
+                </Link>
                 <Link to="/dashboard/documentos" className="flex items-center gap-2 px-6 py-4 bg-surface-container-high text-primary rounded-full font-bold hover:bg-surface-container-highest transition-all">
                   <span className="material-symbols-outlined">upload_file</span>
                   <span className="text-label-md">{t('dashboard.uploadDocument')}</span>
@@ -193,21 +181,26 @@ const Dashboard: React.FC = () => {
                           {med.horario} • {med.instrucoes}
                         </p>
                       </div>
-                      <input
-                        className="w-6 h-6 rounded-lg text-primary border-outline-variant focus:ring-primary"
-                        type="checkbox"
-                      />
+                      <button
+                        type="button"
+                        onClick={() => updateMedicationTaken(med.id, true)}
+                        className="min-h-11 rounded-full bg-primary px-3 text-label-sm font-bold text-on-primary"
+                      >
+                        {t('pages.medications.markTaken')}
+                      </button>
                     </div>
                   ))}
                 </div>
               )}
               <Link
                 to="/dashboard/medicamentos"
-                className="mt-6 block w-full text-center text-primary font-bold text-label-md py-2 hover:bg-primary-fixed/10 rounded-lg transition-colors"
+                className="mt-6 flex min-h-11 w-full items-center justify-center text-center text-primary font-bold text-label-md hover:bg-primary-fixed/10 rounded-lg transition-colors"
               >
                 {t('dashboard.viewFullPlan')}
               </Link>
             </div>
+
+            <ActivityFeed />
 
             <div className="glass-card rounded-[24px] p-6 soft-shadow soft-shadow-hover transition-all border border-white/40">
               <div className="flex justify-between items-start mb-6">
@@ -236,7 +229,7 @@ const Dashboard: React.FC = () => {
               )}
               <Link
                 to="/dashboard/consultas"
-                className="mt-6 block w-full text-center text-secondary font-bold text-label-md py-2 hover:bg-secondary-fixed/10 rounded-lg transition-colors"
+                className="mt-6 flex min-h-11 w-full items-center justify-center text-center text-secondary font-bold text-label-md hover:bg-secondary-fixed/10 rounded-lg transition-colors"
               >
                 {appointments.length === 0 ? t('dashboard.scheduleNewAppointment') : t('dashboard.viewAllAppointments')}
               </Link>
@@ -276,7 +269,7 @@ const Dashboard: React.FC = () => {
               )}
               <Link
                 to="/dashboard/tarefas"
-                className="mt-6 block w-full text-center text-on-surface-variant font-bold text-label-md py-2 hover:bg-surface-container-highest rounded-lg transition-colors"
+                className="mt-6 flex min-h-11 w-full items-center justify-center text-center text-on-surface-variant font-bold text-label-md hover:bg-surface-container-highest rounded-lg transition-colors"
               >
                 {t('dashboard.viewAllTasks')}
               </Link>
@@ -314,7 +307,7 @@ const Dashboard: React.FC = () => {
               )}
               <Link
                 to="/dashboard/documentos"
-                className="mt-4 block text-primary font-bold text-label-sm"
+                className="mt-4 inline-flex min-h-11 items-center text-primary font-bold text-label-sm"
               >
                 {t('dashboard.viewAllDocuments')} →
               </Link>

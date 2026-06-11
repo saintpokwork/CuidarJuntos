@@ -3,7 +3,7 @@ import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
 import EmptyState from '../components/EmptyState';
 import { useLanguage } from '../i18n/LanguageContext';
-import { useCareData, TaskStatus } from '../context/CareDataContext';
+import { useCareData, TaskRecurrence, TaskStatus } from '../context/CareDataContext';
 import { caregiver } from '../data/initialData';
 import HelpTip from '../components/HelpTip';
 
@@ -22,6 +22,7 @@ const Tarefas: React.FC = () => {
   const [prioridade, setPrioridade] = useState<'Baixa' | 'Média' | 'Urgente'>('Média');
   const [dataLimite, setDataLimite] = useState('');
   const [local, setLocal] = useState('');
+  const [repetir, setRepetir] = useState<TaskRecurrence>('none');
   const [erro, setErro] = useState('');
   const [showForm, setShowForm] = useState(false);
   const columns: { status: TaskStatus; label: string; cor: string }[] = [
@@ -36,10 +37,14 @@ const Tarefas: React.FC = () => {
     { value: 'Urgente' as const, label: t('pages.tasks.priorities.urgent') },
   ];
   const priorityLabel = (value: string) => priorityOptions.find((item) => item.value === value)?.label || value;
+  const recurrenceLabel = (value?: TaskRecurrence) => {
+    if (!value || value === 'none') return '';
+    return t(`pages.tasks.recurrence.${value}`);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const ok = addTask({ titulo, responsavel, prioridade, dataLimite, local });
+    const ok = addTask({ titulo, responsavel, prioridade, dataLimite, local, repetir });
     if (!ok) {
       setErro(t('pages.tasks.validation'));
       return;
@@ -48,6 +53,7 @@ const Tarefas: React.FC = () => {
     setTitulo('');
     setDataLimite('');
     setLocal('');
+    setRepetir('none');
     setShowForm(false);
   };
 
@@ -133,6 +139,19 @@ const Tarefas: React.FC = () => {
                   />
                 </div>
                 <div className="md:col-span-2">
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.tasks.recurrenceLabel')}</label>
+                  <select
+                    value={repetir}
+                    onChange={(e) => setRepetir(e.target.value as TaskRecurrence)}
+                    className="w-full h-12 px-4 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none"
+                  >
+                    <option value="none">{t('pages.tasks.recurrence.never')}</option>
+                    <option value="daily">{t('pages.tasks.recurrence.daily')}</option>
+                    <option value="weekly">{t('pages.tasks.recurrence.weekly')}</option>
+                    <option value="monthly">{t('pages.tasks.recurrence.monthly')}</option>
+                  </select>
+                </div>
+                <div className="md:col-span-2">
                   <button
                     type="submit"
                     className="w-full py-4 bg-primary text-on-primary font-bold rounded-full shadow-lg hover:opacity-90 transition-all"
@@ -174,7 +193,7 @@ const Tarefas: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => removeTask(task.id)}
-                              className="p-1 rounded-full hover:bg-error-container/30 text-error transition-colors shrink-0"
+                              className="flex min-h-11 min-w-11 items-center justify-center rounded-full hover:bg-error-container/30 text-error transition-colors shrink-0"
                               aria-label={t('pages.tasks.remove')}
                             >
                               <span className="material-symbols-outlined text-lg">delete</span>
@@ -189,8 +208,10 @@ const Tarefas: React.FC = () => {
                           </span>
                           <div className="space-y-1 text-label-sm text-on-surface-variant mb-3">
                             <p className="flex items-center gap-2">
-                              <span className="material-symbols-outlined text-sm">person</span>
-                              {task.responsavel}
+                              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-on-primary text-label-sm font-bold">
+                                {task.responsavel.charAt(0).toUpperCase()}
+                              </span>
+                              <span>{task.responsavel}</span>
                             </p>
                             <p className="flex items-center gap-2">
                               <span className="material-symbols-outlined text-sm">schedule</span>
@@ -200,6 +221,18 @@ const Tarefas: React.FC = () => {
                               <p className="flex items-center gap-2">
                                 <span className="material-symbols-outlined text-sm">location_on</span>
                                 {task.local}
+                              </p>
+                            )}
+                            {recurrenceLabel(task.repetir) && (
+                              <p className="flex items-center gap-2">
+                                <span className="material-symbols-outlined text-sm">repeat</span>
+                                {recurrenceLabel(task.repetir)}
+                              </p>
+                            )}
+                            {task.status === 'concluido' && task.concluidoEm && (
+                              <p className="flex items-center gap-2">
+                                <span className="material-symbols-outlined text-sm">done_all</span>
+                                {t('pages.tasks.completedBy')} {task.concluidoPor || task.responsavel} · {task.concluidoEm}
                               </p>
                             )}
                           </div>

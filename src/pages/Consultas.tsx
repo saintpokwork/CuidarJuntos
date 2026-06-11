@@ -7,6 +7,11 @@ import { useCareData } from '../context/CareDataContext';
 import { caregiver } from '../data/initialData';
 import HelpTip from '../components/HelpTip';
 
+const parseAppointmentDate = (value: string) => {
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
+
 const Consultas: React.FC = () => {
   const { data, addAppointment, removeAppointment } = useCareData();
   const { t } = useLanguage();
@@ -17,11 +22,13 @@ const Consultas: React.FC = () => {
   const [medico, setMedico] = useState('');
   const [responsavel, setResponsavel] = useState(caregiver.nome);
   const [notas, setNotas] = useState('');
+  const [notasPreConsulta, setNotasPreConsulta] = useState('');
+  const [resultadoConsulta, setResultadoConsulta] = useState('');
   const [erro, setErro] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const ok = addAppointment({ tipo, dataHora, local, medico, responsavel, notas });
+    const ok = addAppointment({ tipo, dataHora, local, medico, responsavel, notas, notasPreConsulta, resultadoConsulta });
     if (!ok) {
       setErro(t('pages.appointments.validation'));
       return;
@@ -32,6 +39,8 @@ const Consultas: React.FC = () => {
     setLocal('');
     setMedico('');
     setNotas('');
+    setNotasPreConsulta('');
+    setResultadoConsulta('');
   };
 
   return (
@@ -90,7 +99,7 @@ const Consultas: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => removeAppointment(apt.id)}
-                          className="p-2 rounded-full hover:bg-error-container/30 text-error transition-colors"
+                          className="flex min-h-11 min-w-11 items-center justify-center rounded-full hover:bg-error-container/30 text-error transition-colors"
                           aria-label={t('pages.appointments.remove')}
                         >
                           <span className="material-symbols-outlined">delete</span>
@@ -104,6 +113,24 @@ const Consultas: React.FC = () => {
                         </p>
                       </div>
                     )}
+                    {apt.notasPreConsulta && (
+                      <div className="mt-3 p-3 bg-cj-verde-pale rounded-xl">
+                        <p className="text-label-sm text-on-surface-variant">
+                          <span className="font-bold">{t('pages.appointments.preVisitNotes')}:</span> {apt.notasPreConsulta}
+                        </p>
+                      </div>
+                    )}
+                    {apt.resultadoConsulta ? (
+                      <div className="mt-3 p-3 bg-secondary-container/30 rounded-xl">
+                        <p className="text-label-sm text-on-surface-variant">
+                          <span className="font-bold">{t('pages.appointments.resultNotes')}:</span> {apt.resultadoConsulta}
+                        </p>
+                      </div>
+                    ) : parseAppointmentDate(apt.dataHoraIso || apt.dataHora) && parseAppointmentDate(apt.dataHoraIso || apt.dataHora)! < new Date() ? (
+                      <div className="mt-3 p-3 bg-cj-terra/10 rounded-xl text-label-sm text-cj-terra font-bold">
+                        {t('pages.appointments.addResultPrompt')}
+                      </div>
+                    ) : null}
                   </div>
                 ))
               )}
@@ -169,6 +196,26 @@ const Consultas: React.FC = () => {
                     onChange={(e) => setNotas(e.target.value)}
                     className="w-full px-4 py-3 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none resize-none"
                     placeholder={t('pages.appointments.notesPlaceholder')}
+                    rows={3}
+                  />
+                </div>
+                <div>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.appointments.preVisitNotes')}</label>
+                  <textarea
+                    value={notasPreConsulta}
+                    onChange={(e) => setNotasPreConsulta(e.target.value)}
+                    className="w-full px-4 py-3 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none resize-none"
+                    placeholder={t('pages.appointments.preVisitPlaceholder')}
+                    rows={3}
+                  />
+                </div>
+                <div>
+                  <label className="text-label-sm font-bold text-on-surface block mb-1">{t('pages.appointments.resultNotes')}</label>
+                  <textarea
+                    value={resultadoConsulta}
+                    onChange={(e) => setResultadoConsulta(e.target.value)}
+                    className="w-full px-4 py-3 bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary/20 outline-none resize-none"
+                    placeholder={t('pages.appointments.resultPlaceholder')}
                     rows={3}
                   />
                 </div>

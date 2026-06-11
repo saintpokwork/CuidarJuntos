@@ -11,8 +11,11 @@ import {
 } from './mockData';
 
 export type MedicationEstado = 'Ativo' | 'Em falta';
+export type MedicationDoseStatus = 'por_tomar' | 'tomado' | 'em_falta';
+export type MedicationUnit = 'comprimidos' | 'mg' | 'ml' | 'gotas' | 'unidades';
 export type TaskStatus = 'por_fazer' | 'em_progresso' | 'concluido';
 export type TaskPriority = 'Baixa' | 'Média' | 'Urgente';
+export type TaskRecurrence = 'none' | 'daily' | 'weekly' | 'monthly';
 export type DocumentCategory =
   | 'Receitas'
   | 'Exames'
@@ -23,26 +26,41 @@ export type DocumentCategory =
 export type FamilyRole = 'Administrador' | 'Familiar' | 'Cuidador' | 'Apenas leitura';
 export type MemberStatus = 'Ativo' | 'Convite pendente' | 'Convite enviado' | 'Removido';
 
+export interface MedicationDose {
+  id: string;
+  horario: string;
+  status: MedicationDoseStatus;
+  markedBy?: string;
+  markedAt?: string;
+}
+
 export interface Medication {
   id: string;
   nome: string;
   dosagem: string;
+  unidade?: MedicationUnit;
   horario: string;
   frequencia: string;
   responsavel: string;
   estado: MedicationEstado;
   instrucoes: string;
   tomadoHoje?: boolean;
+  dataFim?: string;
+  dosesHoje?: MedicationDose[];
+  doseDate?: string;
 }
 
 export interface Appointment {
   id: string;
   tipo: string;
   dataHora: string;
+  dataHoraIso?: string;
   local: string;
   medico: string;
   responsavel: string;
   notas: string;
+  notasPreConsulta?: string;
+  resultadoConsulta?: string;
   estado: 'Agendada';
 }
 
@@ -54,6 +72,9 @@ export interface Task {
   dataLimite: string;
   status: TaskStatus;
   local: string;
+  repetir?: TaskRecurrence;
+  concluidoEm?: string;
+  concluidoPor?: string;
 }
 
 export interface Document {
@@ -88,6 +109,7 @@ export interface EmergencyContact {
   id: string;
   nome: string;
   funcao: string;
+  relacao?: string;
   telefone: string;
   avatar: string;
 }

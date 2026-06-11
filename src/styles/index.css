@@ -11,7 +11,7 @@
   --cj-terracota: #C8623A;
   --cj-cobre: #D4845A;
   --cj-terra: #3C2E28;
-  --cj-cinza: #6B6560;
+  --cj-cinza: #5A534E;
   --cj-branco: #FDFAF7;
   --cj-border: #E0D9D1;
   --cj-sucesso: #2D7A4F;
@@ -87,6 +87,28 @@ textarea:focus,
 select:focus {
   outline: 2px solid var(--cj-verde-light);
   outline-offset: 1px;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--cj-verde);
+  outline-offset: 2px;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  touch-action: manipulation;
+}
+
+input[type='checkbox'] {
+  min-width: 20px;
+  min-height: 20px;
 }
 
 @media print {

@@ -9,8 +9,11 @@ import {
   FamilyMember,
   FamilyRole,
   Medication,
+  MedicationDoseStatus,
+  MedicationUnit,
   Task,
   TaskPriority,
+  TaskRecurrence,
   TaskStatus,
   caregiver,
   getInitialCareData,
@@ -68,19 +71,139 @@ const tt = (path: string): string => {
   return typeof cur === 'string' ? cur : '';
 };
 
+const getTodayKey = () => {
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+};
+
+const getDoseId = (medicationId: string, horario: string) => `${medicationId}-${horario}`;
+
+const buildMedicationDoses = (m: Medication, status: MedicationDoseStatus = 'por_tomar') =>
+  m.horario
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .map((horario) => ({
+      id: getDoseId(m.id, horario),
+      horario,
+      status,
+    }));
+
+const normalizeRecurrence = (value?: TaskRecurrence | string): TaskRecurrence => {
+  switch (value) {
+    case 'Diariamente':
+    case 'daily':
+      return 'daily';
+    case 'Semanalmente':
+    case 'weekly':
+      return 'weekly';
+    case 'Mensalmente':
+    case 'monthly':
+      return 'monthly';
+    case 'Nunca':
+    case 'none':
+    default:
+      return 'none';
+  }
+};
+
+const parseFlexibleDate = (value?: string) => {
+  if (!value) return null;
+  const direct = new Date(value);
+  if (!Number.isNaN(direct.getTime())) return direct;
+
+  const ptMatch = value.match(/^(\d{1,2}) de ([a-zç]+) de (\d{4}),?\s*(\d{1,2}):(\d{2})?/i);
+  if (!ptMatch) return null;
+
+  const months: Record<string, number> = {
+    janeiro: 0,
+    fevereiro: 1,
+    marco: 2,
+    março: 2,
+    abril: 3,
+    maio: 4,
+    junho: 5,
+    julho: 6,
+    agosto: 7,
+    setembro: 8,
+    outubro: 9,
+    novembro: 10,
+    dezembro: 11,
+  };
+  const month = months[ptMatch[2].toLowerCase()];
+  if (month === undefined) return null;
+  return new Date(Number(ptMatch[3]), month, Number(ptMatch[1]), Number(ptMatch[4] || 0), Number(ptMatch[5] || 0));
+};
+
+const daysUntil = (date: Date) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const target = new Date(date);
+  target.setHours(0, 0, 0, 0);
+  return Math.round((target.getTime() - today.getTime()) / 86400000);
+};
+
+const isTaskOverdue = (task: Task) => {
+  if (task.status === 'concluido') return false;
+  const parsed = parseFlexibleDate(task.dataLimite);
+  if (parsed) return daysUntil(parsed) < 0;
+  const label = task.dataLimite.trim().toLowerCase();
+  return label.includes('ontem') || label.includes('passado') || label.includes('yesterday') || label.includes('overdue');
+};
+
+const normalizeMedication = (m: Medication): Medication => {
+  const todayKey = getTodayKey();
+  const hasCurrentDailyState = m.doseDate === todayKey && m.dosesHoje?.length;
+  const dosesHoje = hasCurrentDailyState
+    ? m.dosesHoje || []
+    : buildMedicationDoses(m, 'por_tomar');
+
+  return {
+    ...m,
+    unidade: m.unidade || (m.dosagem.toLowerCase().includes('comprimido') ? 'comprimidos' : 'mg'),
+    dataFim: m.dataFim || '',
+    doseDate: todayKey,
+    tomadoHoje: dosesHoje.length > 0 && dosesHoje.every((dose) => dose.status === 'tomado'),
+    dosesHoje,
+  };
+};
+
+const normalizeTask = (task: Task): Task => ({
+  ...task,
+  repetir: normalizeRecurrence(task.repetir),
+  concluidoEm: task.concluidoEm || '',
+  concluidoPor: task.concluidoPor || '',
+});
+
+const normalizeCareData = (raw: CareData): CareData => ({
+  ...raw,
+  medications: raw.medications.map(normalizeMedication),
+  tasks: raw.tasks.map(normalizeTask),
+  appointments: raw.appointments.map((apt) => ({
+    ...apt,
+    dataHoraIso: apt.dataHoraIso || parseFlexibleDate(apt.dataHora)?.toISOString() || '',
+    notasPreConsulta: apt.notasPreConsulta || '',
+    resultadoConsulta: apt.resultadoConsulta || '',
+  })),
+  emergencyContacts: raw.emergencyContacts.map((contact) => ({
+    ...contact,
+    relacao: contact.relacao || contact.funcao,
+  })),
+});
+
 const loadFromStorage = (): CareData => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored) as Partial<CareData>;
       const initial = getInitialCareData();
-      return {
+      return normalizeCareData({
         ...initial,
         ...parsed,
-        medications: (parsed.medications ?? initial.medications).map((m) => ({
-          ...m,
-          tomadoHoje: m?.tomadoHoje ?? false,
-        })),
+        medications: parsed.medications ?? initial.medications,
         appointments: parsed.appointments ?? initial.appointments,
         tasks: parsed.tasks ?? initial.tasks,
         documents: parsed.documents ?? initial.documents,
@@ -91,12 +214,12 @@ const loadFromStorage = (): CareData => {
           ...initial.careProfile,
           ...(parsed.careProfile ?? {}),
         },
-      };
+      });
     }
   } catch {
     /* use initial data */
   }
-  return getInitialCareData();
+  return normalizeCareData(getInitialCareData());
 };
 
 const generateId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -132,6 +255,22 @@ const formatDateTime = (value: string) => {
 export type StorageMode = 'demo' | 'cloud';
 export type SyncStatus = 'idle' | 'loading' | 'saving' | 'error' | 'synced';
 
+export interface CareNotification {
+  id: string;
+  type: 'missedDose' | 'appointmentTomorrow' | 'taskOverdue' | 'documentExpiring';
+  title: string;
+  body: string;
+  path: string;
+}
+
+export interface ActivityEvent {
+  id: string;
+  icon: string;
+  text: string;
+  when: string;
+  path: string;
+}
+
 interface CareDataContextValue {
   currentUserRole: string | null;
   isCurrentUserAdmin: boolean;
@@ -141,18 +280,21 @@ interface CareDataContextValue {
   cancelPendingInvite: (inviteId: string) => Promise<boolean>;
   reloadInvites: () => Promise<void>;
   data: CareData;
+  notifications: CareNotification[];
+  activityEvents: ActivityEvent[];
   feedback: string | null;
   storageMode: StorageMode;
   syncStatus: SyncStatus;
   syncError: string | null;
   reloadCloudData: () => Promise<void>;
   showFeedback: (message: string) => void;
-  addMedication: (med: Omit<Medication, 'id' | 'estado' | 'instrucoes' | 'responsavel'> & { responsavel?: string; instrucoes?: string }) => boolean;
+  addMedication: (med: Omit<Medication, 'id' | 'estado' | 'instrucoes' | 'responsavel' | 'dosesHoje' | 'tomadoHoje'> & { responsavel?: string; instrucoes?: string }) => boolean;
   removeMedication: (id: string) => void;
   updateMedicationTaken: (id: string, tomadoHoje: boolean) => void;
-  addAppointment: (apt: Omit<Appointment, 'id' | 'estado' | 'dataHora' | 'medico' | 'responsavel' | 'notas'> & { dataHora: string; medico?: string; responsavel?: string; notas?: string }) => boolean;
+  updateMedicationDoseStatus: (medicationId: string, doseId: string, status: MedicationDoseStatus) => void;
+  addAppointment: (apt: Omit<Appointment, 'id' | 'estado' | 'dataHora' | 'medico' | 'responsavel' | 'notas'> & { dataHora: string; medico?: string; responsavel?: string; notas?: string; notasPreConsulta?: string; resultadoConsulta?: string }) => boolean;
   removeAppointment: (id: string) => void;
-  addTask: (task: Omit<Task, 'id' | 'status'> & { status?: TaskStatus }) => boolean;
+  addTask: (task: Omit<Task, 'id' | 'status'> & { status?: TaskStatus; repetir?: TaskRecurrence }) => boolean;
   removeTask: (id: string) => void;
   updateTaskStatus: (id: string, status: TaskStatus) => void;
   addDocument: (doc: Omit<Document, 'id' | 'dataAdicao'>) => boolean;
@@ -227,7 +369,7 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         throw new Error('Could not load care data');
       }
 
-      setData(cloudData);
+      setData(normalizeCareData(cloudData));
       setStorageMode('cloud');
       setSyncStatus('synced');
     } catch (err) {
@@ -264,7 +406,7 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       if (careProfileId) {
         const cloudData = await loadCareDataFromSupabase(careProfileId);
         if (cloudData) {
-          setData(cloudData);
+          setData(normalizeCareData(cloudData));
           setSyncStatus('synced');
           setSyncError(null);
         }
@@ -280,7 +422,7 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const showFeedback = useCallback((msgKey: string) => {
     const msg = tt(msgKey) || msgKey;
     setFeedback(msg);
-    setTimeout(() => setFeedback(null), 3000);
+    setTimeout(() => setFeedback(null), 4000);
   }, []);
 
   // ---------------------------------------------------------------------------
@@ -296,16 +438,22 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     // Demo mode
     if (storageMode === 'demo') {
+      const id = generateId();
+      const todayKey = getTodayKey();
       const novo: Medication = {
-        id: generateId(),
+        id,
         nome: med.nome.trim(),
         dosagem: med.dosagem.trim(),
+        unidade: med.unidade,
         horario: med.horario.trim(),
         frequencia: med.frequencia.trim(),
         responsavel: med.responsavel?.trim() || caregiver.nome,
         estado: 'Ativo',
         instrucoes: med.instrucoes?.trim() || '',
         tomadoHoje: false,
+        dataFim: med.dataFim?.trim() || '',
+        doseDate: todayKey,
+        dosesHoje: buildMedicationDoses({ ...med, id } as Medication, 'por_tomar'),
       };
       setData((prev) => ({ ...prev, medications: [...prev.medications, novo] }));
       showFeedback('feedback.medicationAdded');
@@ -323,7 +471,7 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       instrucoes: med.instrucoes?.trim() || '',
     }).then((created) => {
       if (created) {
-        setData((prev) => ({ ...prev, medications: [...prev.medications, created] }));
+        setData((prev) => ({ ...prev, medications: [...prev.medications, normalizeMedication(created)] }));
         showFeedback('feedback.medicationAdded');
         setSyncStatus('synced');
       } else {
@@ -353,9 +501,46 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const updateMedicationTaken = useCallback((id: string, tomadoHoje: boolean) => {
     setData((prev) => ({
       ...prev,
-      medications: prev.medications.map((m) => (m.id === id ? { ...m, tomadoHoje } : m)),
+      medications: prev.medications.map((m) => (
+        m.id === id
+          ? {
+              ...m,
+              doseDate: getTodayKey(),
+              tomadoHoje,
+              dosesHoje: (m.dosesHoje || []).map((dose) => ({
+                ...dose,
+                status: tomadoHoje ? 'tomado' : 'por_tomar',
+                markedAt: tomadoHoje ? formatNow() : undefined,
+                markedBy: tomadoHoje ? caregiver.nome : undefined,
+              })),
+            }
+          : m
+      )),
     }));
     showFeedback(tomadoHoje ? 'feedback.medicationTaken' : 'feedback.medicationUntaken');
+  }, [showFeedback]);
+
+  const updateMedicationDoseStatus = useCallback((medicationId: string, doseId: string, status: MedicationDoseStatus) => {
+    const markedAt = formatNow();
+    setData((prev) => ({
+      ...prev,
+      medications: prev.medications.map((med) => {
+        if (med.id !== medicationId) return med;
+        const dosesHoje = (med.dosesHoje || []).map((dose) =>
+          dose.id === doseId
+            ? {
+                ...dose,
+                status,
+                markedAt: status === 'tomado' ? markedAt : undefined,
+                markedBy: status === 'tomado' ? caregiver.nome : undefined,
+              }
+            : dose,
+        );
+        const tomadoHoje = dosesHoje.length > 0 && dosesHoje.every((dose) => dose.status === 'tomado');
+        return { ...med, doseDate: getTodayKey(), dosesHoje, tomadoHoje };
+      }),
+    }));
+    showFeedback(status === 'tomado' ? 'feedback.medicationTaken' : 'feedback.medicationUntaken');
   }, [showFeedback]);
 
   // ---------------------------------------------------------------------------
@@ -369,10 +554,13 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         id: generateId(),
         tipo: apt.tipo.trim(),
         dataHora: formatDateTime(apt.dataHora),
+        dataHoraIso: new Date(apt.dataHora).toISOString(),
         local: apt.local.trim(),
         medico: apt.medico?.trim() || '—',
         responsavel: apt.responsavel?.trim() || caregiver.nome,
         notas: apt.notas?.trim() || '',
+        notasPreConsulta: apt.notasPreConsulta?.trim() || '',
+        resultadoConsulta: apt.resultadoConsulta?.trim() || '',
         estado: 'Agendada',
       };
       setData((prev) => ({ ...prev, appointments: [...prev.appointments, novo] }));
@@ -432,6 +620,9 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         dataLimite: task.dataLimite?.trim() || 'Sem data',
         status: task.status || 'por_fazer',
         local: task.local?.trim() || '',
+        repetir: normalizeRecurrence(task.repetir),
+        concluidoEm: task.status === 'concluido' ? formatNow() : '',
+        concluidoPor: task.status === 'concluido' ? task.responsavel?.trim() || caregiver.nome : '',
       };
       setData((prev) => ({ ...prev, tasks: [...prev.tasks, novo] }));
       showFeedback('feedback.taskAdded');
@@ -444,11 +635,12 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       responsavel: task.responsavel?.trim() || caregiver.nome,
       prioridade: task.prioridade || 'Média',
       dataLimite: task.dataLimite?.trim() || 'Sem data',
-      status: task.status || 'por_fazer',
-      local: task.local?.trim() || '',
-    }).then((created) => {
+        status: task.status || 'por_fazer',
+        local: task.local?.trim() || '',
+        repetir: normalizeRecurrence(task.repetir),
+      }).then((created) => {
       if (created) {
-        setData((prev) => ({ ...prev, tasks: [...prev.tasks, created] }));
+        setData((prev) => ({ ...prev, tasks: [...prev.tasks, normalizeTask(created)] }));
         showFeedback('feedback.taskAdded');
         setSyncStatus('synced');
       } else {
@@ -479,7 +671,16 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (storageMode === 'demo') {
       setData((prev) => ({
         ...prev,
-        tasks: prev.tasks.map((t) => (t.id === id ? { ...t, status } : t)),
+        tasks: prev.tasks.map((t) => (
+          t.id === id
+            ? {
+                ...t,
+                status,
+                concluidoEm: status === 'concluido' ? formatNow() : '',
+                concluidoPor: status === 'concluido' ? t.responsavel || caregiver.nome : '',
+              }
+            : t
+        )),
       }));
       showFeedback('feedback.taskStatusUpdated');
       return;
@@ -488,7 +689,15 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       if (updated) {
         setData((prev) => ({
           ...prev,
-          tasks: prev.tasks.map((t) => (t.id === id ? updated : t)),
+          tasks: prev.tasks.map((t) => (
+            t.id === id
+              ? normalizeTask({
+                  ...updated,
+                  concluidoEm: status === 'concluido' ? formatNow() : '',
+                  concluidoPor: status === 'concluido' ? updated.responsavel || caregiver.nome : '',
+                })
+              : t
+          )),
         }));
         showFeedback('feedback.taskStatusUpdated');
         setSyncStatus('synced');
@@ -868,10 +1077,7 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       .sort();
     const nextMedicationTime = times[0] || (lang === 'en' ? 'No time set' : 'Sem horário definido');
     const pendingTasks = data.tasks.filter((t) => t.status === 'por_fazer').length;
-    const overdueTasks = data.tasks.filter((t) => {
-      const date = t.dataLimite.trim().toLowerCase();
-      return t.status !== 'concluido' && (date.includes('ontem') || date.includes('passado') || date.includes('yesterday') || date.includes('overdue'));
-    }).length;
+    const overdueTasks = data.tasks.filter(isTaskOverdue).length;
     const aptCount = data.appointments.length;
     const aptText =
       aptCount === 0
@@ -1009,6 +1215,68 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [storageMode, careProfileId, reloadInvites]);
 
+  const notifications = React.useMemo<CareNotification[]>(() => {
+    const medicationAlerts = data.medications
+      .filter((med) => med.estado === 'Em falta' || med.dosesHoje?.some((dose) => dose.status === 'em_falta'))
+      .map((med) => ({
+        id: `missed-${med.id}`,
+        type: 'missedDose' as const,
+        title: tt('notifications.missedDoseTitle'),
+        body: `${med.nome} · ${med.horario}`,
+        path: '/dashboard/medicamentos',
+      }));
+
+    const taskAlerts = data.tasks
+      .filter(isTaskOverdue)
+      .map((task) => ({
+        id: `task-${task.id}`,
+        type: 'taskOverdue' as const,
+        title: tt('notifications.taskOverdueTitle'),
+        body: task.titulo,
+        path: '/dashboard/tarefas',
+      }));
+
+    const documentAlerts = data.documents
+      .filter((doc) => {
+        const expiryDate = parseFlexibleDate(doc.dataValidade);
+        return expiryDate ? daysUntil(expiryDate) <= 60 : false;
+      })
+      .slice(0, 2)
+      .map((doc) => ({
+        id: `doc-${doc.id}`,
+        type: 'documentExpiring' as const,
+        title: tt('notifications.documentExpiringTitle'),
+        body: doc.titulo,
+        path: '/dashboard/documentos',
+      }));
+
+    return [...medicationAlerts, ...taskAlerts, ...documentAlerts].slice(0, 8);
+  }, [data.medications, data.tasks, data.documents]);
+
+  const activityEvents = React.useMemo<ActivityEvent[]>(() => [
+    ...data.medications.filter((med) => med.tomadoHoje).map((med) => ({
+      id: `activity-med-${med.id}`,
+      icon: 'check_circle',
+      text: tt('activity.medicationTaken').replace('{name}', med.nome).replace('{person}', med.responsavel || caregiver.nome),
+      when: tt('activity.today'),
+      path: '/dashboard/medicamentos',
+    })),
+    ...data.tasks.filter((task) => task.status === 'concluido').slice(0, 5).map((task) => ({
+      id: `activity-task-${task.id}`,
+      icon: 'task_alt',
+      text: tt('activity.taskCompleted').replace('{name}', task.titulo).replace('{person}', task.concluidoPor || task.responsavel),
+      when: task.concluidoEm || tt('activity.recently'),
+      path: '/dashboard/tarefas',
+    })),
+    ...data.careNotes.slice(0, 3).map((note) => ({
+      id: `activity-note-${note.id}`,
+      icon: 'edit_note',
+      text: tt('activity.noteAdded').replace('{person}', note.autor),
+      when: note.dataHora,
+      path: '/dashboard/notas',
+    })),
+  ].slice(0, 7), [data.medications, data.tasks, data.careNotes]);
+
   // ---------------------------------------------------------------------------
   // Context value
   // ---------------------------------------------------------------------------
@@ -1021,6 +1289,8 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     cancelPendingInvite,
     reloadInvites,
     data,
+    notifications,
+    activityEvents,
     feedback,
     storageMode,
     syncStatus,
@@ -1030,6 +1300,7 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     addMedication,
     removeMedication,
     updateMedicationTaken,
+    updateMedicationDoseStatus,
     addAppointment,
     removeAppointment,
     addTask,
@@ -1059,4 +1330,14 @@ export const useCareData = (): CareDataContextValue => {
   return ctx;
 };
 
-export type { DocumentCategory, TaskStatus, TaskPriority, FamilyRole, CareNote, EmergencyContact };
+export type {
+  DocumentCategory,
+  TaskStatus,
+  TaskPriority,
+  TaskRecurrence,
+  FamilyRole,
+  CareNote,
+  EmergencyContact,
+  MedicationDoseStatus,
+  MedicationUnit,
+};
