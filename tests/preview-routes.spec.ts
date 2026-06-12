@@ -69,4 +69,39 @@ test.describe('CuidarJuntos preview routes', () => {
       expect(metrics.notificationButtons).toBeLessThanOrEqual(1);
     });
   }
+
+  for (const viewport of [
+    { name: 'desktop', width: 1440, height: 900 },
+    { name: 'mobile', width: 390, height: 844 },
+  ]) {
+    test(`notification panel is readable and inside viewport on ${viewport.name}`, async ({ page }) => {
+      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+      await page.goto('/dashboard');
+
+      const notificationButton = page.getByRole('button', { name: /notificações|notifications/i }).first();
+      await expect(notificationButton).toBeVisible();
+      await notificationButton.click();
+
+      const panel = page.getByRole('menu', { name: /notificações|notifications/i });
+      await expect(panel).toBeVisible();
+      await expect(panel.getByText(/dose em falta|missed dose/i)).toBeVisible();
+
+      const bounds = await panel.evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        return {
+          left: rect.left,
+          top: rect.top,
+          right: rect.right,
+          bottom: rect.bottom,
+          viewportWidth: window.innerWidth,
+          viewportHeight: window.innerHeight,
+        };
+      });
+
+      expect(bounds.left).toBeGreaterThanOrEqual(0);
+      expect(bounds.top).toBeGreaterThanOrEqual(0);
+      expect(bounds.right).toBeLessThanOrEqual(bounds.viewportWidth);
+      expect(bounds.bottom).toBeLessThanOrEqual(bounds.viewportHeight);
+    });
+  }
 });

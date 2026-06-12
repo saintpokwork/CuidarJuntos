@@ -7,7 +7,7 @@ Plataforma de organização familiar para cuidadores em Portugal. Ajuda família
 ## Stack tecnológica
 
 - React 18 + TypeScript
-- Create React App (CRACO)
+- Vite
 - Tailwind CSS
 - React Router v6
 - Estado com React Context, `localStorage` para demo e Supabase para contas
@@ -20,7 +20,7 @@ npm install
 npm run dev
 ```
 
-Abre em [http://localhost:3000](http://localhost:3000).
+Abre em [http://localhost:5173](http://localhost:5173) por omissão.
 
 ## Build de produção
 
@@ -86,9 +86,9 @@ design-reference/  # Exports originais do Stitch (referência)
 ## Deploy na Vercel
 
 1. Importar o repositório GitHub
-2. Framework: Create React App
+2. Framework: Vite
 3. **Build command:** `npm run build`
-4. **Output directory:** `build`
+4. **Output directory:** `dist`
 5. O ficheiro `vercel.json` já inclui rewrites para SPA routing
 
 ## Contacto

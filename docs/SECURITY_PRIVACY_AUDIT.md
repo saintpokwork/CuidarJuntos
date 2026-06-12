@@ -14,7 +14,7 @@
 | No service_role key exposed | ✅ Only anon key used in frontend |
 | No Stripe keys committed | ✅ `docs/PAYMENTS_PLAN.md` has placeholder `sk_live_xxxx` (documentation only) |
 | No Resend/UploadThing keys | ✅ Not present |
-| No `VITE_` env vars | ✅ Uses `REACT_APP_` prefix (Create React App standard) |
+| Frontend env vars | ✅ Vite exposes existing `REACT_APP_` keys through `envPrefix` to avoid deployment churn |
 
 ### Risk: None
 
