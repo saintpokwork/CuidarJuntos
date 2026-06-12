@@ -35,7 +35,7 @@ Pricing is based on Portuguese market research and similar SaaS tools in the EU 
 |---|---|---|---|
 | **Grátis / Free** | €0 | €0 | Individuals testing the tool |
 | **Família / Family** | €4.99/mês | €39/ano | Families actively managing care |
-| **Plus** | €8.99/mês | €79/ano | Professional caregivers, larger families |
+| **Famílias / Households** | €8.99/mês | €79/ano | Multi-relative caregivers and larger families |
 
 All prices include IVA/VAT where applicable.
 
@@ -73,7 +73,7 @@ All prices include IVA/VAT where applicable.
 - Exportable history
 - Email support
 
-### Plus Plan
+### Famílias / Households Plan
 
 - Up to 6 care profiles
 - Unlimited family members/caregivers
@@ -97,8 +97,8 @@ All prices include IVA/VAT where applicable.
 2. Add products/prices in Stripe Dashboard:
    - `family-monthly` — €4.99/mês
    - `family-yearly` — €39/ano
-   - `plus-monthly` — €8.99/mês
-   - `plus-yearly` — €79/ano
+   - `households-monthly` — €8.99/mês
+   - `households-yearly` — €79/ano
 3. Keep pricing configurable via environment variables
 
 ### Phase 2: Checkout Integration (future)
@@ -148,7 +148,7 @@ CREATE TABLE IF NOT EXISTS public.subscriptions (
   cancel_at_period_end  BOOLEAN DEFAULT false,
   created_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at            TIMESTAMPTZ NOT NULL DEFAULT now(),
-  CONSTRAINT chk_subscription_plan CHECK (plan IN ('free', 'family', 'plus')),
+  CONSTRAINT chk_subscription_plan CHECK (plan IN ('free', 'family', 'households')),
   CONSTRAINT chk_subscription_status CHECK (status IN ('active', 'past_due', 'canceled', 'trialing'))
 );
 
@@ -165,6 +165,10 @@ Enable RLS: users can SELECT their own subscription, no one can INSERT/UPDATE di
 REACT_APP_STRIPE_PUBLISHABLE_KEY=pk_live_xxxx
 STRIPE_SECRET_KEY=sk_live_xxxx          # Server only
 STRIPE_WEBHOOK_SECRET=whsec_xxxx       # Server only
+REACT_APP_STRIPE_PRICE_FAMILY_MONTHLY=price_1TgqLoJQtTgFX7PdL3WqWpn9
+REACT_APP_STRIPE_PRICE_FAMILY_YEARLY=price_1ThdIdJQtTgFX7Pdx6ZUBeaM
+REACT_APP_STRIPE_PRICE_HOUSEHOLDS_MONTHLY=price_1TgqLpJQtTgFX7Pd61QfPWgF
+REACT_APP_STRIPE_PRICE_HOUSEHOLDS_YEARLY=price_1ThdJ7JQtTgFX7PdmYVvh3nC
 ```
 
 Do not commit real keys to the repository. Use `.env.example` to document required variables.

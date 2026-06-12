@@ -104,4 +104,32 @@ test.describe('CuidarJuntos preview routes', () => {
       expect(bounds.bottom).toBeLessThanOrEqual(bounds.viewportHeight);
     });
   }
+
+  test('pricing uses new plan names, annual savings, and no sensor copy', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.getByRole('heading', { name: 'Famílias' })).toBeVisible();
+    await expect(page.getByText('Integração com Sensores')).toHaveCount(0);
+    await expect(page.getByText('Sensor integration')).toHaveCount(0);
+
+    await page.getByRole('button', { name: 'Anual' }).click();
+    await expect(page.getByText('39€')).toBeVisible();
+    await expect(page.getByText('79€')).toBeVisible();
+    await expect(page.getByText(/Poupe mais de 4 meses/)).toBeVisible();
+    await expect(page.getByText(/Poupe mais de 3 meses/)).toBeVisible();
+  });
+
+  test('english pricing uses Households naming and annual savings', async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem('cuidarjuntos-language', 'en');
+    });
+    await page.goto('/');
+    await expect(page.getByText('Households')).toBeVisible();
+    await expect(page.getByText('Sensor integration')).toHaveCount(0);
+
+    await page.getByRole('button', { name: 'Yearly' }).click();
+    await expect(page.getByText('€39')).toBeVisible();
+    await expect(page.getByText('€79')).toBeVisible();
+    await expect(page.getByText(/Save more than 4 months/)).toBeVisible();
+    await expect(page.getByText(/Save more than 3 months/)).toBeVisible();
+  });
 });

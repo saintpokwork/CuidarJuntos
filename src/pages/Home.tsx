@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import CuidarJuntosLogo from '../components/brand/CuidarJuntosLogo';
 import HeroDashboardPreview from '../components/brand/HeroDashboardPreview';
@@ -8,6 +8,7 @@ import LanguageToggle from '../components/LanguageToggle';
 
 const Home: React.FC = () => {
   const { t } = useLanguage();
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const features = [
     { icon: 'calendar_today', key: '0' },
     { icon: 'medical_services', key: '1' },
@@ -27,7 +28,7 @@ const Home: React.FC = () => {
   const pricingPlans = [
     { key: 'free', highlighted: false },
     { key: 'family', highlighted: true },
-    { key: 'plus', highlighted: false },
+    { key: 'households', highlighted: false },
   ];
   return (
     <div className="bg-background text-on-surface font-body-md selection:bg-primary/20">
@@ -182,28 +183,70 @@ const Home: React.FC = () => {
               </h2>
               <p className="text-on-surface-variant font-body-lg">{t('home.pricing.subtitle')}</p>
               <p className="text-label-md text-primary mt-2">{t('home.pricing.earlyNote')}</p>
+              <div className="mt-8 inline-flex rounded-full border border-cj-border bg-surface-container-lowest p-1 shadow-cj-sm">
+                {(['monthly', 'yearly'] as const).map((cycle) => (
+                  <button
+                    key={cycle}
+                    type="button"
+                    onClick={() => setBillingCycle(cycle)}
+                    className={`min-h-11 rounded-full px-5 text-label-md font-bold transition-all ${
+                      billingCycle === cycle
+                        ? 'bg-primary text-on-primary shadow-cj-sm'
+                        : 'text-on-surface-variant hover:text-primary'
+                    }`}
+                    aria-pressed={billingCycle === cycle}
+                  >
+                    {t(`home.pricing.${cycle === 'monthly' ? 'billingMonthly' : 'billingYearly'}`)}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {pricingPlans.map((plan) => {
                 const planKey = plan.key;
                 const isHighlighted = plan.highlighted;
+                const isYearly = billingCycle === 'yearly';
+                const priceKey = isYearly ? 'priceYearly' : 'priceMonthly';
+                const periodKey = isYearly ? 'periodYearly' : 'periodMonthly';
+                const trialBadge = t(`home.pricing.${planKey}.trialBadge`);
+                const savings = isYearly ? t(`home.pricing.${planKey}.yearlySavings`) : '';
+                const anchor = t(`home.pricing.${planKey}.anchor`);
+                const guarantee = t(`home.pricing.${planKey}.guarantee`);
                 return (
-                  <div key={planKey} className={`p-8 rounded-2xl soft-shadow flex flex-col ${isHighlighted ? 'bg-primary text-on-primary scale-105 z-10 relative' : 'bg-surface-container-lowest border border-outline-variant'}`}>
+                  <div key={planKey} className={`p-8 rounded-2xl soft-shadow flex flex-col ${isHighlighted ? 'bg-primary text-on-primary md:scale-105 z-10 relative' : 'bg-surface-container-lowest border border-outline-variant'}`}>
                     {isHighlighted && (
                       <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-cj-cobre text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
                         {t(`home.pricing.${planKey}.popularBadge`)}
                       </div>
                     )}
                     <h3 className={`font-headline-md text-headline-md mb-2 ${isHighlighted ? 'text-on-primary' : ''}`}>{t(`home.pricing.${planKey}.title`)}</h3>
-                    <div className={`flex items-baseline gap-1 mb-6 ${isHighlighted ? 'text-on-primary' : ''}`}>
-                      <span className="text-3xl font-bold">{t(`home.pricing.${planKey}.price`)}</span>
-                      <span className={isHighlighted ? 'opacity-80' : 'text-on-surface-variant'}>{t(`home.pricing.${planKey}.period`)}</span>
+                    <div className={`flex flex-wrap items-center gap-2 mb-3 ${isHighlighted ? 'text-on-primary' : ''}`}>
+                      <span className="text-3xl font-bold">{t(`home.pricing.${planKey}.${priceKey}`)}</span>
+                      <span className={isHighlighted ? 'opacity-80' : 'text-on-surface-variant'}>{t(`home.pricing.${planKey}.${periodKey}`)}</span>
+                      {trialBadge && (
+                        <span className={`rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wide ${isHighlighted ? 'bg-white/15 text-white' : 'bg-cj-verde-pale text-primary'}`}>
+                          {trialBadge}
+                        </span>
+                      )}
                     </div>
-                    <p className={`mb-8 flex-grow ${isHighlighted ? 'opacity-90' : 'text-on-surface-variant'}`}>
+                    {savings && (
+                      <p className={`mb-3 text-label-sm font-bold ${isHighlighted ? 'text-white/90' : 'text-primary'}`}>
+                        {savings}
+                      </p>
+                    )}
+                    {anchor && (
+                      <p className={`mb-3 text-label-sm ${isHighlighted ? 'text-white/80' : 'text-on-surface-variant'}`}>
+                        {anchor}
+                      </p>
+                    )}
+                    <p className={`mb-3 ${isHighlighted ? 'opacity-90' : 'text-on-surface-variant'}`}>
                       {t(`home.pricing.${planKey}.description`)}
                     </p>
-                    <ul className={`space-y-4 mb-8 ${isHighlighted ? '' : ''}`}>
-                      {[0, 1, 2, 3].map((fi) => {
+                    <p className={`mb-6 text-label-sm ${isHighlighted ? 'text-white/75' : 'text-on-surface-variant'}`}>
+                      {t(`home.pricing.${planKey}.finePrint`)}
+                    </p>
+                    <ul className="space-y-4 mb-8 flex-grow">
+                      {[0, 1, 2, 3, 4, 5].map((fi) => {
                         const featKey = `home.pricing.${planKey}.features.${fi}`;
                         const featVal = t(featKey);
                         if (!featVal) return null;
@@ -225,6 +268,11 @@ const Home: React.FC = () => {
                     >
                       {t(`home.pricing.${planKey}.cta`)}
                     </Link>
+                    {guarantee && (
+                      <p className={`mt-4 text-center text-label-sm ${isHighlighted ? 'text-white/75' : 'text-on-surface-variant'}`}>
+                        {guarantee}
+                      </p>
+                    )}
                   </div>
                 );
               })}

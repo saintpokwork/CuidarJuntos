@@ -68,6 +68,18 @@ const ComoFunciona: React.FC = () => {
           </p>
         </div>
 
+        <section className="glass-card mb-8 rounded-[24px] border border-white/40 p-6 soft-shadow">
+          <div className="flex items-start gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary-container text-on-primary-container">
+              <span className="material-symbols-outlined">redeem</span>
+            </div>
+            <div>
+              <h2 className="text-headline-md font-headline-md text-on-surface">{t('howItWorks.referralFaqTitle')}</h2>
+              <p className="mt-2 text-body-md text-on-surface-variant">{t('howItWorks.referralFaqText')}</p>
+            </div>
+          </div>
+        </section>
+
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             to="/dashboard"

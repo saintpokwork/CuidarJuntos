@@ -133,6 +133,17 @@ const Familia: React.FC = () => {
             </div>
           )}
 
+          <section className="mb-stack-lg rounded-2xl border border-cj-border bg-cj-verde-pale/50 p-5 shadow-cj-sm">
+            <div className="flex items-start gap-3">
+              <span className="material-symbols-outlined mt-1 text-primary">volunteer_activism</span>
+              <div>
+                <h2 className="text-headline-md font-headline-md text-on-surface">{t('referral.familyCardTitle')}</h2>
+                <p className="mt-1 text-label-md text-on-surface-variant">{t('referral.familyCardText')}</p>
+                <p className="mt-2 text-label-sm font-bold text-primary">{t('referral.rewardNote')}</p>
+              </div>
+            </div>
+          </section>
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-4">
 

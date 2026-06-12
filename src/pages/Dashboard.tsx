@@ -8,6 +8,7 @@ import { useLanguage } from '../i18n/LanguageContext';
 import FirstRunWizard from '../components/FirstRunWizard';
 import DashboardAlerts from '../components/DashboardAlerts';
 import ActivityFeed from '../components/ActivityFeed';
+import ReferralBanner from '../components/ReferralBanner';
 
 const parseAppointmentDate = (value?: string) => {
   if (!value) return null;
@@ -74,6 +75,7 @@ const Dashboard: React.FC = () => {
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
           <FirstRunWizard />
           <OnboardingChecklist />
+          <ReferralBanner />
           <DashboardAlerts />
 
           <section className="mb-stack-lg">
