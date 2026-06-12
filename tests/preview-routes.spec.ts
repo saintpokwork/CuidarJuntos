@@ -21,6 +21,7 @@ const publicRoutes = [
   '/entrar',
   '/criar-conta',
   '/recuperar-password',
+  '/atualizar-password',
   '/aceitar-convite?token=invalid-preview-token',
   '/blog',
   '/privacidade',

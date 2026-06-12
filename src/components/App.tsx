@@ -20,6 +20,7 @@ import Guia from '../pages/Guia';
 import Entrar from '../pages/Entrar';
 import CriarConta from '../pages/CriarConta';
 import RecuperarPassword from '../pages/RecuperarPassword';
+import AtualizarPassword from '../pages/AtualizarPassword';
 import AceitarConvite from '../pages/AceitarConvite';
 import Blog from '../pages/Blog';
 import BlogPost from '../pages/BlogPost';
@@ -39,6 +40,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/entrar" element={<Entrar />} />
         <Route path="/criar-conta" element={<CriarConta />} />
         <Route path="/recuperar-password" element={<RecuperarPassword />} />
+        <Route path="/atualizar-password" element={<AtualizarPassword />} />
         <Route path="/aceitar-convite" element={<AceitarConvite />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogPost />} />

@@ -88,7 +88,7 @@ CuidarJuntos can be **soft-launched** as a free/beta product before payments are
 - ✅ Manual QA (`docs/LAUNCH_QA_CHECKLIST.md`) passes
 - ✅ Legal text is accepted as provisional (with in-page review note)
 - ✅ Supabase generic auth emails are acceptable temporarily
-- ✅ Vercel temporary URL (`cuidar-juntos-nine.vercel.app`) is acceptable
+- ✅ Production domain (`www.cuidarjuntos.pt`) is connected
 - ✅ Pricing cards clearly state "Planos pagos serão ativados mais tarde"
 - ✅ Users are told about browser-only demo mode
 

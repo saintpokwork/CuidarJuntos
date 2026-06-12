@@ -7,4 +7,4 @@ Disallow: /entrar
 Disallow: /criar-conta
 Disallow: /recuperar-password
 
-Sitemap: https://cuidar-juntos-nine.vercel.app/sitemap.xml
+Sitemap: https://www.cuidarjuntos.pt/sitemap.xml

@@ -10,6 +10,7 @@ interface AuthContextValue {
   signIn: (email: string, password: string) => Promise<{ error: AuthError | Error | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: AuthError | Error | null }>;
+  updatePassword: (password: string) => Promise<{ error: AuthError | Error | null }>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -89,7 +90,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { error: new Error('O serviço de autenticação não está configurado.') };
     }
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/atualizar-password` : undefined;
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+    return { error: error ?? null };
+  };
+
+  const updatePassword = async (password: string) => {
+    if (!isSupabaseConfigured) {
+      return { error: new Error('O serviço de autenticação não está configurado.') };
+    }
+
+    const { error } = await supabase.auth.updateUser({ password });
     return { error: error ?? null };
   };
 
@@ -101,6 +112,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signIn,
     signOut,
     resetPassword,
+    updatePassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
