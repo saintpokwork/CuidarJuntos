@@ -78,11 +78,13 @@ create table if not exists public.medications (
   care_profile_id   uuid not null references public.care_profiles(id) on delete cascade,
   name              text not null,
   dosage            text,
+  unit              text,
   frequency         text,
   time              text,
   instructions      text,
   responsible_user_id uuid references auth.users(id) on delete set null,
   active            boolean not null default true,
+  end_date          date,
   created_at        timestamptz not null default now(),
   updated_at        timestamptz not null default now()
 );
@@ -111,6 +113,8 @@ create table if not exists public.appointments (
   doctor_or_service text,
   responsible_user_id uuid references auth.users(id) on delete set null,
   notes             text,
+  pre_visit_notes   text,
+  result_notes      text,
   reminder_at       timestamptz,
   created_at        timestamptz not null default now(),
   updated_at        timestamptz not null default now()
@@ -126,10 +130,14 @@ create table if not exists public.tasks (
   due_date          date,
   status            text not null default 'todo',
   priority          text not null default 'normal',
+  recurrence        text not null default 'none',
+  completed_at      timestamptz,
+  completed_by_name text,
   created_at        timestamptz not null default now(),
   updated_at        timestamptz not null default now(),
   constraint chk_task_status check (status in ('todo', 'in_progress', 'done')),
-  constraint chk_task_priority check (priority in ('low', 'normal', 'high', 'urgent'))
+  constraint chk_task_priority check (priority in ('low', 'normal', 'high', 'urgent')),
+  constraint chk_task_recurrence check (recurrence in ('none', 'daily', 'weekly', 'monthly'))
 );
 
 -- 3.8 documents
@@ -168,6 +176,15 @@ create table if not exists public.emergency_contacts (
   created_at        timestamptz not null default now(),
   updated_at        timestamptz not null default now()
 );
+
+-- Additive migrations for projects created from earlier versions of this file.
+alter table public.medications add column if not exists unit text;
+alter table public.medications add column if not exists end_date date;
+alter table public.appointments add column if not exists pre_visit_notes text;
+alter table public.appointments add column if not exists result_notes text;
+alter table public.tasks add column if not exists recurrence text not null default 'none';
+alter table public.tasks add column if not exists completed_at timestamptz;
+alter table public.tasks add column if not exists completed_by_name text;
 
 -- 4. INDEXES
 -- ============================================================================

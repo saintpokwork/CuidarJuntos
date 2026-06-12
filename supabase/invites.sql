@@ -83,12 +83,45 @@ create policy "invites_update_admin" on public.care_profile_invites
     public.is_care_profile_admin(care_profile_id)
   );
 
+-- 4.4b Update: invited users can mark their own pending invite as accepted
+drop policy if exists "invites_update_accept_self" on public.care_profile_invites;
+create policy "invites_update_accept_self" on public.care_profile_invites
+  for update
+  using (
+    invited_email = auth.email()
+    and status = 'pending'
+    and expires_at > now()
+  )
+  with check (
+    invited_email = auth.email()
+    and status = 'accepted'
+    and accepted_by = auth.uid()
+  );
+
 -- 4.5 Delete: admins can delete invites
 drop policy if exists "invites_delete_admin" on public.care_profile_invites;
 create policy "invites_delete_admin" on public.care_profile_invites
   for delete
   using (
     public.is_care_profile_admin(care_profile_id)
+  );
+
+-- 4.6 Members: invited users can create their own active membership
+drop policy if exists "members_insert_from_pending_invite" on public.care_profile_members;
+create policy "members_insert_from_pending_invite" on public.care_profile_members
+  for insert
+  with check (
+    user_id = auth.uid()
+    and status = 'active'
+    and exists (
+      select 1
+      from public.care_profile_invites invite
+      where invite.care_profile_id = care_profile_members.care_profile_id
+        and invite.invited_email = auth.email()
+        and invite.role = care_profile_members.role
+        and invite.status = 'pending'
+        and invite.expires_at > now()
+    )
   );
 
 -- 5. VERIFICATION QUERIES

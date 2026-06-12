@@ -44,11 +44,13 @@ interface DbMedication {
   care_profile_id: string;
   name: string;
   dosage: string | null;
+  unit: Medication['unidade'] | null;
   frequency: string | null;
   time: string | null;
   instructions: string | null;
   responsible_user_id: string | null;
   active: boolean;
+  end_date: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -62,6 +64,8 @@ interface DbAppointment {
   doctor_or_service: string | null;
   responsible_user_id: string | null;
   notes: string | null;
+  pre_visit_notes: string | null;
+  result_notes: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -75,6 +79,9 @@ interface DbTask {
   due_date: string | null;
   status: string;
   priority: string;
+  recurrence: Task['repetir'] | null;
+  completed_at: string | null;
+  completed_by_name: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -195,11 +202,13 @@ const mapMedication = (row: DbMedication): Medication => ({
   id: row.id,
   nome: row.name,
   dosagem: row.dosage || '',
+  unidade: row.unit || undefined,
   horario: row.time || '',
   frequencia: row.frequency || '',
   responsavel: '', // We don't join profiles for display name in v1
   estado: estadoFromActive(row.active),
   instrucoes: row.instructions || '',
+  dataFim: row.end_date || '',
   tomadoHoje: false,
 });
 
@@ -224,10 +233,13 @@ const mapAppointment = (row: DbAppointment): Appointment => {
     id: row.id,
     tipo: row.title,
     dataHora,
+    dataHoraIso: row.appointment_at || '',
     local: row.location || '',
     medico: row.doctor_or_service || '—',
     responsavel: '',
     notas: row.notes || '',
+    notasPreConsulta: row.pre_visit_notes || '',
+    resultadoConsulta: row.result_notes || '',
     estado: 'Agendada',
   };
 };
@@ -240,6 +252,9 @@ const mapTask = (row: DbTask): Task => ({
   dataLimite: row.due_date || 'Sem data',
   status: (statusFromDb[row.status] as Task['status']) || 'por_fazer',
   local: row.description || '', // description used as local in app
+  repetir: row.recurrence || 'none',
+  concluidoEm: row.completed_at || '',
+  concluidoPor: row.completed_by_name || '',
 });
 
 const mapDocument = (row: DbDocument): Document => ({
@@ -321,14 +336,26 @@ const medicationToDb = (
   care_profile_id: careProfileId,
   name: med.nome,
   dosage: med.dosagem,
+  unit: med.unidade || null,
   frequency: med.frequencia,
   time: med.horario,
   instructions: med.instrucoes || '',
+  end_date: med.dataFim || null,
   active: true,
 });
 
 const appointmentToDb = (
-  apt: { tipo: string; dataHora?: string; local?: string; medico?: string; responsavel?: string; notas?: string; id?: string },
+  apt: {
+    tipo: string;
+    dataHora?: string;
+    local?: string;
+    medico?: string;
+    responsavel?: string;
+    notas?: string;
+    notasPreConsulta?: string;
+    resultadoConsulta?: string;
+    id?: string;
+  },
   careProfileId: string,
 ) => ({
   care_profile_id: careProfileId,
@@ -337,6 +364,8 @@ const appointmentToDb = (
   location: apt.local,
   doctor_or_service: apt.medico || null,
   notes: apt.notas || null,
+  pre_visit_notes: apt.notasPreConsulta || null,
+  result_notes: apt.resultadoConsulta || null,
 });
 
 const taskToDb = (
@@ -349,6 +378,9 @@ const taskToDb = (
   due_date: task.dataLimite === 'Sem data' ? null : task.dataLimite,
   status: statusToDb[task.status] || 'todo',
   priority: priorityToDb[task.prioridade] || 'normal',
+  recurrence: task.repetir || 'none',
+  completed_at: task.concluidoEm || null,
+  completed_by_name: task.concluidoPor || null,
 });
 
 const documentToDb = (
@@ -660,15 +692,17 @@ export const createMedication = async (
 
 export const updateMedication = async (
   id: string,
-  updates: Partial<Pick<Medication, 'nome' | 'dosagem' | 'horario' | 'frequencia' | 'instrucoes' | 'estado'>>,
+  updates: Partial<Pick<Medication, 'nome' | 'dosagem' | 'unidade' | 'horario' | 'frequencia' | 'instrucoes' | 'estado' | 'dataFim'>>,
 ): Promise<Medication | null> => {
   const dbUpdates: Record<string, unknown> = {};
   if (updates.nome !== undefined) dbUpdates.name = updates.nome;
   if (updates.dosagem !== undefined) dbUpdates.dosage = updates.dosagem;
+  if (updates.unidade !== undefined) dbUpdates.unit = updates.unidade || null;
   if (updates.horario !== undefined) dbUpdates.time = updates.horario;
   if (updates.frequencia !== undefined) dbUpdates.frequency = updates.frequencia;
   if (updates.instrucoes !== undefined) dbUpdates.instructions = updates.instrucoes;
   if (updates.estado !== undefined) dbUpdates.active = updates.estado === 'Ativo';
+  if (updates.dataFim !== undefined) dbUpdates.end_date = updates.dataFim || null;
 
   const { data, error } = await supabase
     .from('medications')
@@ -704,6 +738,8 @@ export const createAppointment = async (
     medico?: string;
     responsavel?: string;
     notas?: string;
+    notasPreConsulta?: string;
+    resultadoConsulta?: string;
   },
 ): Promise<Appointment | null> => {
   const row = appointmentToDb(apt, careProfileId);
@@ -722,7 +758,7 @@ export const createAppointment = async (
 
 export const updateAppointment = async (
   id: string,
-  updates: Partial<Pick<Appointment, 'tipo' | 'dataHora' | 'local' | 'medico' | 'notas'>>,
+  updates: Partial<Pick<Appointment, 'tipo' | 'dataHora' | 'local' | 'medico' | 'notas' | 'notasPreConsulta' | 'resultadoConsulta'>>,
 ): Promise<Appointment | null> => {
   const dbUpdates: Record<string, unknown> = {};
   if (updates.tipo !== undefined) dbUpdates.title = updates.tipo;
@@ -730,6 +766,8 @@ export const updateAppointment = async (
   if (updates.local !== undefined) dbUpdates.location = updates.local;
   if (updates.medico !== undefined) dbUpdates.doctor_or_service = updates.medico;
   if (updates.notas !== undefined) dbUpdates.notes = updates.notas;
+  if (updates.notasPreConsulta !== undefined) dbUpdates.pre_visit_notes = updates.notasPreConsulta || null;
+  if (updates.resultadoConsulta !== undefined) dbUpdates.result_notes = updates.resultadoConsulta || null;
 
   const { data, error } = await supabase
     .from('appointments')
@@ -781,7 +819,7 @@ export const createTask = async (
 
 export const updateTask = async (
   id: string,
-  updates: Partial<Pick<Task, 'titulo' | 'responsavel' | 'prioridade' | 'dataLimite' | 'status' | 'local'>>,
+  updates: Partial<Pick<Task, 'titulo' | 'responsavel' | 'prioridade' | 'dataLimite' | 'status' | 'local' | 'repetir' | 'concluidoEm' | 'concluidoPor'>>,
 ): Promise<Task | null> => {
   const dbUpdates: Record<string, unknown> = {};
   if (updates.titulo !== undefined) dbUpdates.title = updates.titulo;
@@ -790,6 +828,9 @@ export const updateTask = async (
     dbUpdates.due_date = updates.dataLimite === 'Sem data' ? null : updates.dataLimite;
   if (updates.status !== undefined) dbUpdates.status = statusToDb[updates.status] || 'todo';
   if (updates.prioridade !== undefined) dbUpdates.priority = priorityToDb[updates.prioridade] || 'normal';
+  if (updates.repetir !== undefined) dbUpdates.recurrence = updates.repetir || 'none';
+  if (updates.concluidoEm !== undefined) dbUpdates.completed_at = updates.concluidoEm || null;
+  if (updates.concluidoPor !== undefined) dbUpdates.completed_by_name = updates.concluidoPor || null;
 
   const { data, error } = await supabase
     .from('tasks')
@@ -1096,6 +1137,7 @@ export interface DbInvite {
 
 export interface PendingInvite {
   id: string;
+  careProfileId: string;
   invitedEmail: string;
   invitedName: string;
   role: string;
@@ -1121,6 +1163,7 @@ export const generateInviteToken = (): string => {
 
 const mapInvite = (row: DbInvite): PendingInvite => ({
   id: row.id,
+  careProfileId: row.care_profile_id,
   invitedEmail: row.invited_email,
   invitedName: row.invited_name || '',
   role: roleFromDb[row.role] || 'Familiar',
@@ -1149,6 +1192,97 @@ export const getCareProfileInvites = async (
   }
 
   return (data || []).map(mapInvite);
+};
+
+export const getCareProfileInviteByToken = async (
+  token: string,
+): Promise<PendingInvite | null> => {
+  const { data, error } = await supabase
+    .from('care_profile_invites')
+    .select('*')
+    .eq('token', token)
+    .maybeSingle();
+
+  if (error) {
+    console.error('[supabaseDataAdapter] getCareProfileInviteByToken error:', error);
+    return null;
+  }
+
+  return data ? mapInvite(data as DbInvite) : null;
+};
+
+export const acceptCareProfileInvite = async (
+  token: string,
+  userId: string,
+): Promise<{ success: boolean; error?: 'not_found' | 'expired' | 'not_pending' | 'membership' | 'invite' }> => {
+  const { data: invite, error: inviteError } = await supabase
+    .from('care_profile_invites')
+    .select('*')
+    .eq('token', token)
+    .maybeSingle();
+
+  if (inviteError || !invite) {
+    console.error('[supabaseDataAdapter] accept invite lookup error:', inviteError);
+    return { success: false, error: 'not_found' };
+  }
+
+  const dbInvite = invite as DbInvite;
+  if (dbInvite.status !== 'pending') return { success: false, error: 'not_pending' };
+  if (new Date(dbInvite.expires_at).getTime() < Date.now()) return { success: false, error: 'expired' };
+
+  const { data: existingMember, error: existingError } = await supabase
+    .from('care_profile_members')
+    .select('id')
+    .eq('care_profile_id', dbInvite.care_profile_id)
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (existingError) {
+    console.error('[supabaseDataAdapter] accept invite membership lookup error:', existingError);
+    return { success: false, error: 'membership' };
+  }
+
+  if (existingMember?.id) {
+    const { error: updateMemberError } = await supabase
+      .from('care_profile_members')
+      .update({ role: dbInvite.role || 'family', status: 'active' })
+      .eq('id', existingMember.id);
+
+    if (updateMemberError) {
+      console.error('[supabaseDataAdapter] accept invite membership update error:', updateMemberError);
+      return { success: false, error: 'membership' };
+    }
+  } else {
+    const { error: insertMemberError } = await supabase
+      .from('care_profile_members')
+      .insert({
+        care_profile_id: dbInvite.care_profile_id,
+        user_id: userId,
+        role: dbInvite.role || 'family',
+        status: 'active',
+      });
+
+    if (insertMemberError) {
+      console.error('[supabaseDataAdapter] accept invite membership insert error:', insertMemberError);
+      return { success: false, error: 'membership' };
+    }
+  }
+
+  const { error: updateInviteError } = await supabase
+    .from('care_profile_invites')
+    .update({
+      status: 'accepted',
+      accepted_at: new Date().toISOString(),
+      accepted_by: userId,
+    })
+    .eq('id', dbInvite.id);
+
+  if (updateInviteError) {
+    console.error('[supabaseDataAdapter] accept invite update error:', updateInviteError);
+    return { success: false, error: 'invite' };
+  }
+
+  return { success: true };
 };
 
 /**

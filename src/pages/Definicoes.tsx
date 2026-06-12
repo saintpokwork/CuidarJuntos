@@ -235,12 +235,20 @@ const Definicoes: React.FC = () => {
                 <p className="text-label-md text-on-surface-variant mb-4">
                   {isCloud ? t('pages.settings.cloudActive') : t('pages.settings.localStored')}
                 </p>
-                <button
-                  type="button"
-                  className="w-full py-3 border border-primary text-primary font-bold rounded-full hover:bg-primary/5 transition-colors"
-                >
-                  {t('legal.privacy.backToHome')}
-                </button>
+                <div className="grid gap-3">
+                  <Link
+                    to="/privacidade"
+                    className="w-full py-3 border border-primary text-primary font-bold rounded-full hover:bg-primary/5 transition-colors text-center"
+                  >
+                    {t('footer.privacy')}
+                  </Link>
+                  <Link
+                    to="/termos"
+                    className="w-full py-3 bg-primary text-on-primary font-bold rounded-full hover:opacity-90 transition-colors text-center"
+                  >
+                    {t('footer.terms')}
+                  </Link>
+                </div>
               </div>
 
               <p className="text-label-sm text-on-surface-variant text-center opacity-70">

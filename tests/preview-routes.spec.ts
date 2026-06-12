@@ -2,14 +2,30 @@ import { expect, test } from '@playwright/test';
 
 const dashboardRoutes = [
   '/dashboard',
+  '/dashboard/guia',
+  '/dashboard/mais',
+  '/dashboard/perfil',
   '/dashboard/medicamentos',
   '/dashboard/consultas',
   '/dashboard/tarefas',
+  '/dashboard/documentos',
   '/dashboard/emergencia',
   '/dashboard/familia',
+  '/dashboard/notas',
+  '/dashboard/definicoes',
 ];
 
-const publicRoutes = ['/', '/privacidade', '/termos'];
+const publicRoutes = [
+  '/',
+  '/como-funciona',
+  '/entrar',
+  '/criar-conta',
+  '/recuperar-password',
+  '/aceitar-convite?token=invalid-preview-token',
+  '/blog',
+  '/privacidade',
+  '/termos',
+];
 
 test.describe('CuidarJuntos preview routes', () => {
   test.beforeEach(async ({ page }) => {

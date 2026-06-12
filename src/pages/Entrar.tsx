@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import CuidarJuntosLogo from '../components/brand/CuidarJuntosLogo';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -15,11 +15,13 @@ const Entrar: React.FC = () => {
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const { signIn, user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { t } = useLanguage();
+  const inviteToken = searchParams.get('invite') || localStorage.getItem('cuidarjuntos-pending-invite-token') || '';
 
   useEffect(() => {
-    if (user) navigate('/dashboard');
-  }, [user, navigate]);
+    if (user) navigate(inviteToken ? `/aceitar-convite?token=${encodeURIComponent(inviteToken)}` : '/dashboard');
+  }, [user, navigate, inviteToken]);
 
   const validate = (): boolean => {
     const errors: string[] = [];
@@ -45,6 +47,11 @@ const Entrar: React.FC = () => {
     }
 
     setMessage(t('auth.successSignIn'));
+    if (inviteToken) {
+      localStorage.removeItem('cuidarjuntos-pending-invite-token');
+      navigate(`/aceitar-convite?token=${encodeURIComponent(inviteToken)}`);
+      return;
+    }
     navigate('/dashboard');
   };
 
@@ -67,7 +74,7 @@ const Entrar: React.FC = () => {
           <div className="mb-8 text-center">
             <p className="text-label-sm text-cj-verde uppercase tracking-[0.3em] mb-3">{t('auth.titleSignIn')}</p>
             <h1 className="text-headline-2 font-headline-lg text-on-surface">{t('auth.titleSignIn')}</h1>
-            <p className="text-body-md text-on-surface-variant mt-3">{t('demo.notice')}</p>
+            <p className="text-body-md text-on-surface-variant mt-3">{t('auth.signInIntro')}</p>
           </div>
 
           <form className="space-y-5" onSubmit={handleSubmit}>

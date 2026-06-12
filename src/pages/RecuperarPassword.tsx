@@ -59,7 +59,7 @@ const RecuperarPassword: React.FC = () => {
           <div className="mb-8 text-center">
             <p className="text-label-sm text-cj-verde uppercase tracking-[0.3em] mb-3">{t('auth.titleReset')}</p>
             <h1 className="text-headline-2 font-headline-lg text-on-surface">{t('auth.titleReset')}</h1>
-            <p className="text-body-md text-on-surface-variant mt-3">{t('demo.notice')}</p>
+            <p className="text-body-md text-on-surface-variant mt-3">{t('auth.resetIntro')}</p>
           </div>
 
           <form className="space-y-5" onSubmit={handleSubmit}>

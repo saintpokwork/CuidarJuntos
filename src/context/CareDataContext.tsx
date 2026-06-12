@@ -465,10 +465,12 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     sbCreateMedication(careProfileId, {
       nome: med.nome.trim(),
       dosagem: med.dosagem.trim(),
+      unidade: med.unidade,
       horario: med.horario.trim(),
       frequencia: med.frequencia.trim(),
       responsavel: med.responsavel?.trim() || caregiver.nome,
       instrucoes: med.instrucoes?.trim() || '',
+      dataFim: med.dataFim?.trim() || '',
     }).then((created) => {
       if (created) {
         setData((prev) => ({ ...prev, medications: [...prev.medications, normalizeMedication(created)] }));
@@ -576,6 +578,8 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       medico: apt.medico?.trim(),
       responsavel: apt.responsavel?.trim(),
       notas: apt.notas?.trim(),
+      notasPreConsulta: apt.notasPreConsulta?.trim(),
+      resultadoConsulta: apt.resultadoConsulta?.trim(),
     }).then((created) => {
       if (created) {
         setData((prev) => ({ ...prev, appointments: [...prev.appointments, created] }));
@@ -685,7 +689,12 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       showFeedback('feedback.taskStatusUpdated');
       return;
     }
-    sbUpdateTask(id, { status }).then((updated) => {
+    const completedAt = status === 'concluido' ? formatNow() : '';
+    sbUpdateTask(id, {
+      status,
+      concluidoEm: completedAt,
+      concluidoPor: status === 'concluido' ? caregiver.nome : '',
+    }).then((updated) => {
       if (updated) {
         setData((prev) => ({
           ...prev,
@@ -693,8 +702,8 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             t.id === id
               ? normalizeTask({
                   ...updated,
-                  concluidoEm: status === 'concluido' ? formatNow() : '',
-                  concluidoPor: status === 'concluido' ? updated.responsavel || caregiver.nome : '',
+                  concluidoEm: status === 'concluido' ? updated.concluidoEm || completedAt : '',
+                  concluidoPor: status === 'concluido' ? updated.concluidoPor || t.responsavel || caregiver.nome : '',
                 })
               : t
           )),

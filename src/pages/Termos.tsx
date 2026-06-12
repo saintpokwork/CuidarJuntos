@@ -77,9 +77,9 @@ const Termos: React.FC = () => {
           <section className="mb-8 rounded-[24px] border border-error/20 bg-error-container/30 p-6 md:p-8">
             <div className="flex items-start gap-4">
               <span className="material-symbols-outlined text-error text-3xl shrink-0">emergency</span>
-              <div>
+              <div className="min-w-0">
                 <h2 className="text-headline-md font-headline-md text-on-surface mb-2">{t('legal.terms.emergencyTitle')}</h2>
-                <p className="text-body-md text-on-surface-variant leading-relaxed">{t('legal.terms.emergencyP1')}</p>
+                <p className="text-body-md text-on-surface-variant leading-relaxed break-words">{t('legal.terms.emergencyP1')}</p>
               </div>
             </div>
           </section>
@@ -90,9 +90,9 @@ const Termos: React.FC = () => {
                 <article key={item.title} className="bg-cj-branco border border-cj-border rounded-[20px] p-6">
                   <div className="flex items-start gap-4">
                     <span className="material-symbols-outlined text-primary text-2xl shrink-0">{item.icon}</span>
-                    <div>
+                    <div className="min-w-0">
                       <h2 className="text-headline-md font-headline-md text-on-surface mb-2">{item.title}</h2>
-                      <p className="text-body-md text-on-surface-variant leading-relaxed">{item.text}</p>
+                      <p className="text-body-md text-on-surface-variant leading-relaxed break-words">{item.text}</p>
                     </div>
                   </div>
                 </article>
@@ -103,7 +103,7 @@ const Termos: React.FC = () => {
               <div className="bg-primary text-on-primary rounded-[24px] p-6 soft-shadow">
                 <span className="material-symbols-outlined text-3xl mb-4">contact_support</span>
                 <h2 className="text-headline-md font-headline-md mb-3">{t('legal.terms.contactTitle')}</h2>
-                <a href="mailto:contato@cuidarjuntos.pt" className="text-on-primary underline decoration-white/50 underline-offset-4">
+                <a href="mailto:contato@cuidarjuntos.pt" className="text-on-primary underline decoration-white/50 underline-offset-4 break-words">
                   contato@cuidarjuntos.pt
                 </a>
                 <p className="mt-4 text-label-md text-white/85">{t('legal.terms.contactP1')}</p>

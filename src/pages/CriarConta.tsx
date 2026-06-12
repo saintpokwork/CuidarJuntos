@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import CuidarJuntosLogo from '../components/brand/CuidarJuntosLogo';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -17,13 +17,15 @@ const CriarConta: React.FC = () => {
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   const { signUp, user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { t } = useLanguage();
+  const inviteToken = searchParams.get('invite') || localStorage.getItem('cuidarjuntos-pending-invite-token') || '';
 
   useEffect(() => {
     if (user) {
-      navigate('/dashboard');
+      navigate(inviteToken ? `/aceitar-convite?token=${encodeURIComponent(inviteToken)}` : '/dashboard');
     }
-  }, [user, navigate]);
+  }, [user, navigate, inviteToken]);
 
   const validate = (): boolean => {
     const errors: string[] = [];
@@ -53,6 +55,7 @@ const CriarConta: React.FC = () => {
     }
 
     setMessage(t('auth.successSignUp'));
+    if (inviteToken) localStorage.setItem('cuidarjuntos-pending-invite-token', inviteToken);
   };
 
   return (
@@ -74,7 +77,7 @@ const CriarConta: React.FC = () => {
           <div className="mb-8 text-center">
             <p className="text-label-sm text-cj-verde uppercase tracking-[0.3em] mb-3">{t('auth.titleSignUp')}</p>
             <h1 className="text-headline-2 font-headline-lg text-on-surface">{t('auth.titleSignUp')}</h1>
-            <p className="text-body-md text-on-surface-variant mt-3">{t('demo.notice')}</p>
+            <p className="text-body-md text-on-surface-variant mt-3">{t('auth.signUpIntro')}</p>
           </div>
 
           <form className="space-y-5" onSubmit={handleSubmit}>
