@@ -508,17 +508,16 @@ export const getOrCreateDefaultCareProfile = async (
   const { data: profile, error: profErr } = await supabase
     .from('care_profiles')
     .insert({
-      full_name: 'Maria Fernandes',
+      full_name: 'Familiar cuidado',
       created_by: user.id,
-      date_of_birth: '1948-03-12',
-      address: 'Rua das Flores, 42, 3.º Esq., 1200-195 Lisboa',
-      sns_number: '123 456 789',
-      allergies: 'Penicilina, Amendoim',
-      conditions: 'Diabetes Tipo 2, Hipertensão arterial, Osteoartrite',
-      doctor_name: 'Dr. António Pereira — USF Campo de Ourique',
-      pharmacy_name: 'Farmácia Central do Chiado',
-      notes:
-        'Paciente com diabetes e hipertensão. Em caso de desmaio, verificar glicemia. Contactar sempre a filha Ana Silva em primeiro lugar.',
+      date_of_birth: null,
+      address: null,
+      sns_number: null,
+      allergies: null,
+      conditions: null,
+      doctor_name: null,
+      pharmacy_name: null,
+      notes: null,
     })
     .select('id')
     .single();
@@ -542,9 +541,6 @@ export const getOrCreateDefaultCareProfile = async (
     await supabase.from('care_profiles').delete().eq('id', profile.id);
     return null;
   }
-
-  // Seed starter data
-  await seedStarterData(profile.id);
 
   return profile.id;
 };

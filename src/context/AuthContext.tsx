@@ -2,14 +2,22 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { AuthError, Session, User } from '@supabase/supabase-js';
 import { supabase, isSupabaseConfigured } from '../lib/supabaseClient';
 
+interface SignUpResult {
+  error: AuthError | Error | null;
+  requiresEmailConfirmation?: boolean;
+  alreadyRegistered?: boolean;
+  email?: string;
+}
+
 interface AuthContextValue {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signUp: (email: string, password: string, name?: string) => Promise<{ error: AuthError | Error | null }>;
+  signUp: (email: string, password: string, name?: string) => Promise<SignUpResult>;
   signIn: (email: string, password: string) => Promise<{ error: AuthError | Error | null }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ error: AuthError | Error | null }>;
+  resendConfirmation: (email: string) => Promise<{ error: AuthError | Error | null }>;
   updatePassword: (password: string) => Promise<{ error: AuthError | Error | null }>;
 }
 
@@ -50,9 +58,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { error: new Error('O serviço de autenticação não está configurado.') };
     }
 
-    const emailRedirectTo = typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : undefined;
-    const { error } = await supabase.auth.signUp({
-      email,
+    const normalizedEmail = email.trim().toLowerCase();
+    const emailRedirectTo = typeof window !== 'undefined' ? `${window.location.origin}/entrar?confirmed=1` : undefined;
+    const { data, error } = await supabase.auth.signUp({
+      email: normalizedEmail,
       password,
       options: {
         emailRedirectTo,
@@ -62,7 +71,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       },
     });
 
-    return { error: error ?? null };
+    const identities = data.user?.identities || [];
+    const alreadyRegistered = Boolean(data.user && identities.length === 0);
+
+    return {
+      error: error ?? null,
+      requiresEmailConfirmation: Boolean(data.user && !data.session),
+      alreadyRegistered,
+      email: normalizedEmail,
+    };
   };
 
   const signIn = async (email: string, password: string) => {
@@ -97,6 +114,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error: error ?? null };
   };
 
+  const resendConfirmation = async (email: string) => {
+    if (!isSupabaseConfigured) {
+      return { error: new Error('O serviço de autenticação não está configurado.') };
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const emailRedirectTo = typeof window !== 'undefined' ? `${window.location.origin}/entrar?confirmed=1` : undefined;
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: normalizedEmail,
+      options: {
+        emailRedirectTo,
+      },
+    });
+    return { error: error ?? null };
+  };
+
   const updatePassword = async (password: string) => {
     if (!isSupabaseConfigured) {
       return { error: new Error('O serviço de autenticação não está configurado.') };
@@ -114,6 +148,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     signIn,
     signOut,
     resetPassword,
+    resendConfirmation,
     updatePassword,
   };
 

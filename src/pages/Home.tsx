@@ -264,7 +264,7 @@ const Home: React.FC = () => {
                           ? 'bg-on-primary text-primary hover:bg-primary-fixed-dim shadow-lg'
                           : 'border border-primary text-primary hover:bg-primary/5'
                       }`}
-                      to="/dashboard"
+                      to={planKey === 'free' ? '/criar-conta' : `/criar-conta?plan=${planKey}&billing=${billingCycle}`}
                     >
                       {t(`home.pricing.${planKey}.cta`)}
                     </Link>

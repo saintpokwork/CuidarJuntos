@@ -24,6 +24,11 @@ const AceitarConvite: React.FC = () => {
 
   useEffect(() => {
     if (!token || !isSupabaseConfigured) return;
+    if (!user) {
+      setInvite(null);
+      setStatus('idle');
+      return;
+    }
 
     let cancelled = false;
     setStatus('loading');
@@ -51,7 +56,7 @@ const AceitarConvite: React.FC = () => {
     return () => {
       cancelled = true;
     };
-  }, [token]);
+  }, [token, user]);
 
   const handleAccept = async () => {
     if (!token || !user) return;

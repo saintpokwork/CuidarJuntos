@@ -368,7 +368,8 @@ create policy "Members can select care profiles they belong to"
 drop policy if exists "Authenticated users can create care profiles" on public.care_profiles;
 create policy "Authenticated users can create care profiles"
   on public.care_profiles for insert
-  with check (auth.role() = 'authenticated');
+  to authenticated
+  with check ((select auth.uid()) is not null);
 
 drop policy if exists "Admins can update care profiles" on public.care_profiles;
 create policy "Admins can update care profiles"

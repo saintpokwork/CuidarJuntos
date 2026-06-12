@@ -20,7 +20,20 @@ const Entrar: React.FC = () => {
   const inviteToken = searchParams.get('invite') || localStorage.getItem('cuidarjuntos-pending-invite-token') || '';
 
   useEffect(() => {
-    if (user) navigate(inviteToken ? `/aceitar-convite?token=${encodeURIComponent(inviteToken)}` : '/dashboard');
+    if (searchParams.get('confirmed') === '1') {
+      setMessage(t('auth.emailConfirmed'));
+    }
+  }, [searchParams, t]);
+
+  useEffect(() => {
+    if (user) {
+      const pendingPlan = localStorage.getItem('cuidarjuntos-pending-plan');
+      navigate(inviteToken
+        ? `/aceitar-convite?token=${encodeURIComponent(inviteToken)}`
+        : pendingPlan
+          ? '/dashboard/definicoes?upgrade=1'
+          : '/dashboard');
+    }
   }, [user, navigate, inviteToken]);
 
   const validate = (): boolean => {

@@ -30,8 +30,8 @@
 
 | # | Test | Expected | Status |
 |---|---|---|---|
-| B1 | Create account (PT) | Sign up works, confirmation email sent (Supabase default) | ⬜ |
-| B2 | Create account (EN) | Same in English | ⬜ |
+| B1 | Create account (PT) | Sign up works, confirmation email sent with branded SMTP/Resend if configured | ⬜ |
+| B2 | Create account (EN) | Same in English, including clear confirmation/resend state | ⬜ |
 | B3 | Sign in (PT) | Sign in works, redirects to dashboard | ⬜ |
 | B4 | Sign in (EN) | Same in English | ⬜ |
 | B5 | Password reset | Reset email sent (Supabase default) | ⬜ |
@@ -87,8 +87,8 @@
 | F2 | Pending invites list shows | Email, name, role badge, status, expiry | ⬜ |
 | F3 | Copy invite link | Link copied to clipboard, toast appears | ⬜ |
 | F4 | Cancel invite | Invite removed from DB and list | ⬜ |
-| F5 | `/aceitar-convite?token=...` | Placeholder page shows invitation message | ⬜ |
-| F6 | No email sent | Confirmed — email sending is not yet active | ⬜ |
+| F5 | `/aceitar-convite?token=...` | Signed-out users are asked to create/sign in; signed-in invited users can accept | ⬜ |
+| F6 | Invite email sent | Email sent through `/api/send-invite` when Resend env vars are configured | ⬜ |
 | F7 | Demo mode invites | "Simular convite" only, local record | ⬜ |
 
 ## G. PT/EN QA
@@ -123,7 +123,7 @@
 | I2 | Terms — medical disclaimer | Clear not-medical-advice statement | ⬜ |
 | I3 | Terms — 112 emergency | "Ligue 112" in callout box | ⬜ |
 | I4 | Terms — demo vs cloud explained | Clear explanation | ⬜ |
-| I5 | Terms — paid plans not active | Clearly stated | ⬜ |
+| I5 | Terms — paid plans | Stripe checkout, cancellation, and explicit-payment wording clearly stated | ⬜ |
 | I6 | Privacy — data inventory listed | Medications, appointments, tasks, notes, contacts, documents | ⬜ |
 | I7 | Privacy — Supabase + Vercel mentioned | Subprocessors listed | ⬜ |
 | I8 | Privacy — GDPR rights | Access, correction, deletion, portability | ⬜ |
@@ -142,6 +142,8 @@
 | J5 | `care-documents` bucket exists | Created by `storage.sql` | ⬜ |
 | J6 | Storage RLS policies active | SELECT, INSERT, DELETE policies present | ⬜ |
 | J7 | Invite RLS policies active | 5 policies for `care_profile_invites` | ⬜ |
+| J8 | `subscriptions` table exists | Created by `billing.sql` | ⬜ |
+| J9 | Subscription RLS active | Users can read only their own subscription rows | ⬜ |
 
 ## K. SEO/Static Files QA
 
@@ -153,14 +155,12 @@
 | K4 | Meta description | Meaningful description in `<head>` | ⬜ |
 | K5 | Page title | "CuidarJuntos — Organize os cuidados da sua família" | ⬜ |
 
-## Known Limitations (Before Payments/Domain/Email)
+## Known Limitations Before Customer Launch
 
-- Payments (Stripe) are not integrated — see `docs/PAYMENTS_PLAN.md` for implementation plan
-- Branded email domain (`cuidarjuntos.pt`) is not activated
-- Real family invite emails are not sent (pending Resend/SMTP)
-- Supabase default auth emails are used for confirmation/reset
+- Stripe checkout requires `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`, and Stripe webhook configuration in production.
+- `supabase/billing.sql` must be applied before subscription status and customer portal management work.
+- Supabase Auth redirect URLs must include `https://www.cuidarjuntos.pt`, `https://cuidarjuntos.pt`, `/entrar`, and `/atualizar-password`.
 - Legal copy needs professional legal review (noted in-page)
 - Blog content is static (no CMS)
-- Analytics/marketing tools not yet added
-- Final security review still needed
+- Final production security review should be repeated after applying `billing.sql`
 - Production monitoring/error tracking not yet configured

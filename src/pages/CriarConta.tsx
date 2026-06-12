@@ -12,18 +12,27 @@ const CriarConta: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [confirmationEmail, setConfirmationEmail] = useState('');
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
-  const { signUp, user } = useAuth();
+  const { signUp, resendConfirmation, user } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { t } = useLanguage();
   const inviteToken = searchParams.get('invite') || localStorage.getItem('cuidarjuntos-pending-invite-token') || '';
+  const selectedPlan = searchParams.get('plan');
+  const selectedBilling = searchParams.get('billing');
 
   useEffect(() => {
     if (user) {
-      navigate(inviteToken ? `/aceitar-convite?token=${encodeURIComponent(inviteToken)}` : '/dashboard');
+      const pendingPlan = localStorage.getItem('cuidarjuntos-pending-plan');
+      navigate(inviteToken
+        ? `/aceitar-convite?token=${encodeURIComponent(inviteToken)}`
+        : pendingPlan
+          ? '/dashboard/definicoes?upgrade=1'
+          : '/dashboard');
     }
   }, [user, navigate, inviteToken]);
 
@@ -46,7 +55,7 @@ const CriarConta: React.FC = () => {
     setError('');
     setMessage('');
 
-    const { error: signUpError } = await signUp(email, password, nome);
+    const { error: signUpError, requiresEmailConfirmation, alreadyRegistered, email: createdEmail } = await signUp(email, password, nome);
     setLoading(false);
 
     if (signUpError) {
@@ -54,8 +63,42 @@ const CriarConta: React.FC = () => {
       return;
     }
 
-    setMessage(t('auth.successSignUp'));
+    if (alreadyRegistered) {
+      setError(t('auth.accountAlreadyExists'));
+      setConfirmationEmail(createdEmail || email.trim().toLowerCase());
+      return;
+    }
+
+    if (requiresEmailConfirmation) {
+      setMessage(t('auth.successSignUpConfirmEmail'));
+      setConfirmationEmail(createdEmail || email.trim().toLowerCase());
+    } else {
+      setMessage(t('auth.successSignUp'));
+      setConfirmationEmail('');
+    }
+
     if (inviteToken) localStorage.setItem('cuidarjuntos-pending-invite-token', inviteToken);
+    if (selectedPlan === 'family' || selectedPlan === 'households') {
+      const billing = selectedBilling === 'monthly' ? 'monthly' : 'yearly';
+      localStorage.setItem('cuidarjuntos-pending-plan', JSON.stringify({ plan: selectedPlan, billing }));
+    }
+  };
+
+  const handleResendConfirmation = async () => {
+    const targetEmail = confirmationEmail || email.trim().toLowerCase();
+    if (!targetEmail || resending) return;
+
+    setResending(true);
+    setError('');
+    const { error: resendError } = await resendConfirmation(targetEmail);
+    setResending(false);
+
+    if (resendError) {
+      setError(resendError.message || t('auth.errorResendConfirmation'));
+      return;
+    }
+
+    setMessage(t('auth.confirmationResent'));
   };
 
   return (
@@ -137,6 +180,24 @@ const CriarConta: React.FC = () => {
               }`}
             >
               {error || message}
+              {confirmationEmail && (
+                <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:justify-center">
+                  <button
+                    type="button"
+                    onClick={handleResendConfirmation}
+                    disabled={resending}
+                    className="inline-flex min-h-10 items-center justify-center rounded-full bg-primary px-4 text-on-primary font-bold disabled:opacity-60"
+                  >
+                    {resending ? t('auth.sending') : t('auth.resendConfirmation')}
+                  </button>
+                  <Link
+                    to="/entrar"
+                    className="inline-flex min-h-10 items-center justify-center rounded-full border border-primary px-4 text-primary font-bold"
+                  >
+                    {t('global.signIn')}
+                  </Link>
+                </div>
+              )}
             </div>
           )}
 

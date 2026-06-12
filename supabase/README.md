@@ -34,9 +34,21 @@ After running `schema.sql` and `storage.sql`, set up family invitations:
 
 > This creates the `care_profile_invites` table with RLS policies, indexes, and the updated-at trigger. Safe to re-run.
 
+## How to run the billing setup
+
+After running `schema.sql`, set up Stripe subscription status storage:
+
+1. Open your Supabase project dashboard → **SQL Editor**.
+2. Create a **New query**.
+3. Copy the entire contents of `supabase/billing.sql` and paste it into the editor.
+4. Click **Run**.
+5. Confirm the output shows no errors.
+
+> This creates the `subscriptions` table used by Stripe webhooks and the billing panel. Safe to re-run. Users can read only their own subscription rows; writes are server-side only through `SUPABASE_SERVICE_ROLE_KEY`.
+
 ## Verify the setup
 
-After running the schema files in order (schema.sql → storage.sql → invites.sql), verify everything is in place:
+After running the schema files in order (schema.sql → storage.sql → invites.sql → billing.sql), verify everything is in place:
 
 ```sql
 -- Check tables
@@ -77,6 +89,20 @@ where tablename = 'care_profile_invites';
 
 Expected: 1 table, 5 policies (select_members, select_self, insert_admin, update_admin, delete_admin).
 
+### Verify billing setup
+
+```sql
+-- Check subscriptions table exists
+select table_name from information_schema.tables
+where table_schema = 'public' and table_name = 'subscriptions';
+
+-- Check billing policies
+select policyname, permissive, cmd from pg_policies
+where tablename = 'subscriptions';
+```
+
+Expected: 1 table, 1 SELECT policy for authenticated users.
+
 ```sql
 -- Check tables
 select table_name from information_schema.tables
@@ -100,7 +126,7 @@ where event_object_schema = 'auth'
   and event_object_table = 'users';
 ```
 
-Expected tables: `profiles`, `care_profiles`, `care_profile_members`, `medications`, `medication_logs`, `appointments`, `tasks`, `documents`, `care_notes`, `emergency_contacts`.
+Expected tables: `profiles`, `care_profiles`, `care_profile_members`, `medications`, `medication_logs`, `appointments`, `tasks`, `documents`, `care_notes`, `emergency_contacts`, `care_profile_invites`, `subscriptions`.
 
 ## ⚠️ Important notes
 
@@ -113,7 +139,7 @@ Expected tables: `profiles`, `care_profiles`, `care_profile_members`, `medicatio
   ```
 - **Frontend data sync is connected.** Logged-in users sync data to Supabase via `CareDataContext` + `supabaseDataAdapter.ts`. Logged-out users use localStorage demo mode.
 - **Supabase Storage is connected** — `supabase/storage.sql` creates the private bucket and policies used by the document upload/download/delete UI.
-- **Payments are NOT implemented.** Pricing cards on the landing page are purely cosmetic.
+- **Payments are implemented through Stripe Checkout/Customer Portal.** Run `billing.sql`, configure the Stripe env vars, and add the `/api/stripe-webhook` endpoint in Stripe before accepting paid customers.
 
 ## Environment variables
 
@@ -122,6 +148,9 @@ Before connecting the frontend to Supabase data, set these in your Vercel projec
 ```
 REACT_APP_SUPABASE_URL=https://your-project.supabase.co
 REACT_APP_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+STRIPE_SECRET_KEY=sk_live_xxxx
+STRIPE_WEBHOOK_SECRET=whsec_xxxx
 ```
 
 The `.env.example` file at the project root already documents these variables.
@@ -131,4 +160,5 @@ The `.env.example` file at the project root already documents these variables.
 1. ✅ Connect logged-in dashboard to Supabase data (done).
 2. ✅ Supabase Storage SQL prepared and frontend upload integration connected.
 3. ✅ Implement invitation flow for family members.
-4. ⏳ Add real-time sync with Supabase Realtime.
+4. ✅ Stripe Checkout, Customer Portal and webhook endpoints added.
+5. ⏳ Add real-time sync with Supabase Realtime.
