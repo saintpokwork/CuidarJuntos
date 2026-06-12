@@ -1,57 +1,59 @@
-# Email Branding Plan — CuidarJuntos
+# Email Operations — CuidarJuntos
 
 ## Current State
 
-Supabase default authentication emails are currently used for:
-- Account confirmation
-- Password reset
-- Magic link (if enabled)
+Transactional email is active through two paths:
 
-These emails use Supabase's built-in templates, which are generic and unbranded.
+- **Supabase Auth SMTP** sends account confirmation and password reset emails through Resend SMTP.
+- **Vercel `/api/send-invite`** sends family invite emails through the Resend HTTP API after a pending invite is created.
 
-## Issue
+Production env required:
 
-Default Supabase auth emails:
-- Have no CuidarJuntos branding (logo, colors, typography)
-- Are in English only (no PT/EN templates)
-- Look generic and impersonal
-- Do not match the app's visual identity
+```bash
+REACT_APP_SUPABASE_URL=
+REACT_APP_SUPABASE_ANON_KEY=
+REACT_APP_PUBLIC_SITE_URL=https://www.cuidarjuntos.pt
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=no-reply@cuidarjuntos.pt
+```
 
-## Planned Solution (DO NOT IMPLEMENT YET)
+Do not expose `RESEND_API_KEY` in client code.
 
-### Domain Setup
-- Buy/connect `cuidarjuntos.pt` domain
-- Configure DNS for email sending
+## Branded Supabase Auth Templates
 
-### Email Provider
-- Use **Resend** or **custom SMTP** for transactional auth emails
-- Resend recommended for simplicity and React email template support
+Configure templates in Supabase Dashboard → Authentication → Emails.
 
-### Branded Templates
-Create custom email templates for:
-- Account confirmation (PT/EN)
-- Password reset (PT/EN)
-- Email change confirmation (future)
+Templates to keep branded:
 
-### Design Assets
-Use brand assets from `src/assets/brand/`:
-- `cuidarjuntos-logo.svg` — main logo
-- `cuidarjuntos-icon.svg` — icon
-- `cuidarjuntos-app-icon.svg` — app icon
-- Brand colors: `#2D6A52` (verde), `#C8623A` (terracota)
+- Confirm signup
+- Reset password
+- Magic link / OTP, if enabled
+- Change email address
+- Reauthentication, if enabled
 
-### Language Support
-- Detect user language preference from `profiles.language`
-- Send emails in PT by default, EN if user toggled language
-- Templates must support both languages
+Brand direction:
 
-### Implementation Steps (Future)
-1. Set up Resend account and verify domain
-2. Create React email templates
-3. Configure Supabase Auth hook to use custom SMTP
-4. Test all email flows in PT and EN
-5. Monitor delivery rates
+- Product name: CuidarJuntos
+- Primary color: `#165c46`
+- Background: `#f5efe6`
+- Tone: Portuguese first, clear and calm
+- Include support email: `contato@cuidarjuntos.pt`
 
-## Status
+## Family Invite Email
 
-**TODO — Do not implement until domain is ready.**
+The app-created invite email is sent by `api/send-invite.js`.
+
+Security controls:
+
+- Requires a Supabase bearer session.
+- Verifies the sender is an active admin in `care_profile_members`.
+- Uses Resend only server-side.
+- Keeps copy-link fallback if Resend fails.
+
+## QA Checklist
+
+- Create a new account and confirm the branded confirmation email arrives.
+- Trigger password reset and confirm it lands on `/atualizar-password`.
+- Create a family invite as admin and confirm the invite email arrives.
+- Accept invite with the invited email account.
+- Confirm Resend delivery logs show successful sends.

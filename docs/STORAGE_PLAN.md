@@ -3,9 +3,9 @@
 ## Current Status
 
 ✅ Storage SQL prepared — `supabase/storage.sql`
-⏳ Frontend upload UI — not implemented yet
+✅ Frontend upload/download/delete UI implemented in `/dashboard/documentos`
 
-The Supabase Storage infrastructure is ready. The SQL creates a private bucket with RLS policies scoped by care profile membership. Frontend integration is the next phase.
+The Supabase Storage infrastructure is active. The SQL creates a private bucket with RLS policies scoped by care profile membership, and the app uploads PDF/JPG/PNG files through the Supabase client.
 
 ---
 
@@ -94,13 +94,11 @@ All policies:
 
 ---
 
-## Expected Frontend Upload Flow (Future)
+## Frontend Upload Flow
 
-When the upload UI is implemented, the flow will be:
-
-1. User clicks "Upload document" on the documents page
-2. Frontend validates file type (PDF, JPG, PNG) and size (≤ 5MB)
-3. Frontend creates a `documents` table record (metadata) via the existing adapter
+1. User selects a file on `/dashboard/documentos`.
+2. Frontend validates file type (PDF, JPG, PNG) and size (≤ 5MB).
+3. Frontend creates a `documents` table record (metadata) via the Supabase adapter.
 4. Frontend uploads the file to Supabase Storage:
    ```typescript
    const filePath = `care-profiles/${careProfileId}/${documentId}/${safeFilename}`;
@@ -111,18 +109,18 @@ When the upload UI is implemented, the flow will be:
        upsert: false,
      });
    ```
-5. Frontend updates the `documents` record with `file_path` and `file_name`
-6. File is now accessible only to care profile members
+5. Frontend updates the `documents` record with `file_path` and `file_name`.
+6. Opening a document creates a signed URL.
+7. Deleting a document removes the storage object and metadata.
 
 ---
 
 ## Known Limitations
 
-1. **Frontend upload not implemented yet** — Storage SQL and policies are prepared, but no upload UI exists in the app.
-2. **5MB limit per file** — Enforced at bucket level. Can be increased later if needed.
-3. **No image thumbnails** — Future enhancement.
-4. **No virus scanning** — Future enhancement (e.g., Supabase + ClamAV or third-party).
-5. **File type restrictions are bucket-level** — Could be further restricted per-care-profile in the future.
+1. **5MB limit per file** — Enforced at bucket level. Can be increased later if needed.
+2. **No image thumbnails** — Future enhancement.
+3. **No virus scanning** — Future enhancement (e.g., Supabase + ClamAV or third-party).
+4. **File type restrictions are bucket-level** — Could be further restricted per-care-profile later.
 
 ---
 

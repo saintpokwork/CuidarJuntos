@@ -1,6 +1,6 @@
 # Security & Privacy Readiness Audit — CuidarJuntos
 
-> Date: June 2025
+> Date: June 2026
 > Status: ✅ No critical blockers found
 
 ---
@@ -10,7 +10,7 @@
 | Check | Result |
 |---|---|
 | `.env` files gitignored | ✅ `.gitignore` excludes `.env`, `.env.local`, `.env.*.local`, `.vercel` |
-| `.env.example` uses placeholders | ✅ Only `REACT_APP_SUPABASE_URL=` and `REACT_APP_SUPABASE_ANON_KEY=` (empty) |
+| `.env.example` uses placeholders | ✅ Supabase, public site URL and Resend variable names only — no real secrets |
 | No service_role key exposed | ✅ Only anon key used in frontend |
 | No Stripe keys committed | ✅ `docs/PAYMENTS_PLAN.md` has placeholder `sk_live_xxxx` (documentation only) |
 | No Resend/UploadThing keys | ✅ Not present |
@@ -72,6 +72,7 @@
 - ✅ Document upload: creates metadata → uploads file → updates metadata. Rollback on failure
 - ✅ Document delete: removes storage file first, then deletes metadata
 - ✅ Invite create: generates token via `crypto.randomUUID()` (secure, unpredictable)
+- ✅ Invite emails are sent server-side through `/api/send-invite`; Resend API key is not exposed to the browser
 - ✅ Invite delete: removes from DB directly (RLS enforced)
 - ✅ Console errors log operation name only, not user data
 - ❓ **Minor**: Console logs include field-level errors from Supabase; these may contain column names but not user data
@@ -119,7 +120,8 @@
 
 - ✅ Token generated via `crypto.randomUUID()` (not `Math.random()`)
 - ✅ `expires_at` = `now() + 7 days`
-- ✅ `/aceitar-convite` is a placeholder page — does NOT grant access
+- ✅ `/aceitar-convite` validates token state and creates/updates membership only for the invited email
+- ✅ `/api/send-invite` requires a Supabase bearer session and verifies active admin membership before sending
 - ✅ Invite links show what they are ("Recebeu um convite...") without exposing profile data
 - ✅ Pending invite list is behind RLS — only members can see invites
 - ⚠️ Copy invite link feature copies the full token in URL — tokens are random UUIDs, not reversible

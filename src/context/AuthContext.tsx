@@ -50,10 +50,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { error: new Error('O serviço de autenticação não está configurado.') };
     }
 
+    const emailRedirectTo = typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : undefined;
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
+        emailRedirectTo,
         data: {
           full_name: name,
         },

@@ -9,6 +9,33 @@ import FirstRunWizard from '../components/FirstRunWizard';
 import DashboardAlerts from '../components/DashboardAlerts';
 import ActivityFeed from '../components/ActivityFeed';
 
+const parseAppointmentDate = (value?: string) => {
+  if (!value) return null;
+  const parsed = new Date(value);
+  if (!Number.isNaN(parsed.getTime())) return parsed;
+
+  const ptMatch = value.match(/^(\d{1,2}) de ([a-zç]+) de (\d{4}),?\s*(\d{1,2}):(\d{2})?/i);
+  if (!ptMatch) return null;
+  const months: Record<string, number> = {
+    janeiro: 0,
+    fevereiro: 1,
+    marco: 2,
+    março: 2,
+    abril: 3,
+    maio: 4,
+    junho: 5,
+    julho: 6,
+    agosto: 7,
+    setembro: 8,
+    outubro: 9,
+    novembro: 10,
+    dezembro: 11,
+  };
+  const month = months[ptMatch[2].toLowerCase()];
+  if (month === undefined) return null;
+  return new Date(Number(ptMatch[3]), month, Number(ptMatch[1]), Number(ptMatch[4] || 0), Number(ptMatch[5] || 0));
+};
+
 const Dashboard: React.FC = () => {
   const { data, dashboardSummary, updateMedicationTaken } = useCareData();
   const { t } = useLanguage();
@@ -26,6 +53,18 @@ const Dashboard: React.FC = () => {
 
   const pendingTasks = tasks.filter((t) => t.status === 'por_fazer');
   const latestCareNote = careNotes[0];
+  const now = new Date();
+  const upcomingAppointments = appointments
+    .map((appointment) => ({ appointment, date: parseAppointmentDate(appointment.dataHora) }))
+    .filter((item) => !item.date || item.date.getTime() >= now.getTime())
+    .sort((a, b) => {
+      if (!a.date && !b.date) return 0;
+      if (!a.date) return 1;
+      if (!b.date) return -1;
+      return a.date.getTime() - b.date.getTime();
+    })
+    .map((item) => item.appointment);
+  const nextAppointment = upcomingAppointments[0];
 
   return (
     <DashboardLayout>
@@ -61,13 +100,13 @@ const Dashboard: React.FC = () => {
                   <div>
                     <p className="text-label-sm text-on-surface-variant">{t('dashboard.nextAppointment')}</p>
                     <p className="text-headline-md font-headline-md text-on-surface">
-                      {appointments[0]?.tipo || '-'}
+                      {nextAppointment?.tipo || '-'}
                     </p>
                   </div>
                   <span className="material-symbols-outlined text-secondary text-3xl">calendar_today</span>
                 </div>
                 <p className="text-label-sm text-on-surface-variant">
-                  {appointments[0]?.dataHora || t('dashboard.noAppointments')}
+                  {nextAppointment?.dataHora || t('dashboard.noAppointments')}
                 </p>
               </div>
               <div className="glass-card rounded-[24px] p-6 soft-shadow border border-white/40">
@@ -210,7 +249,7 @@ const Dashboard: React.FC = () => {
                 </div>
                 <span className="material-symbols-outlined text-secondary text-3xl">calendar_today</span>
               </div>
-              {appointments.length === 0 ? (
+              {upcomingAppointments.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
                   <div className="w-16 h-16 bg-secondary-container/30 rounded-full flex items-center justify-center mb-4">
                     <span className="material-symbols-outlined text-secondary text-2xl">event_busy</span>
@@ -219,7 +258,7 @@ const Dashboard: React.FC = () => {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {appointments.slice(0, 2).map((apt) => (
+                  {upcomingAppointments.slice(0, 2).map((apt) => (
                     <div key={apt.id} className="p-3 bg-surface-container rounded-xl">
                       <p className="text-label-md font-bold">{apt.tipo}</p>
                       <p className="text-label-sm text-on-surface-variant">{apt.dataHora}</p>
@@ -231,7 +270,7 @@ const Dashboard: React.FC = () => {
                 to="/dashboard/consultas"
                 className="mt-6 flex min-h-11 w-full items-center justify-center text-center text-secondary font-bold text-label-md hover:bg-secondary-fixed/10 rounded-lg transition-colors"
               >
-                {appointments.length === 0 ? t('dashboard.scheduleNewAppointment') : t('dashboard.viewAllAppointments')}
+                {upcomingAppointments.length === 0 ? t('dashboard.scheduleNewAppointment') : t('dashboard.viewAllAppointments')}
               </Link>
             </div>
 

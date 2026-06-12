@@ -46,6 +46,7 @@ import {
   getCareProfileInvites as sbGetInvites,
   createCareProfileInvite as sbCreateInvite,
   cancelCareProfileInvite as sbCancelInvite,
+  removeCareProfileMember as sbRemoveCareProfileMember,
   type PendingInvite,
 } from '../lib/data/supabaseDataAdapter';
 import { isSupabaseConfigured } from '../lib/supabaseClient';
@@ -277,7 +278,7 @@ interface CareDataContextValue {
   isCurrentUserAdmin: boolean;
   canManageMembers: boolean;
   pendingInvites: PendingInvite[];
-  createPendingInvite: (input: { invitedEmail: string; invitedName?: string; role: string; relationship?: string }) => Promise<{ success: boolean; error?: string }>;
+  createPendingInvite: (input: { invitedEmail: string; invitedName?: string; role: string; relationship?: string }) => Promise<{ success: boolean; error?: string; emailSent?: boolean }>;
   cancelPendingInvite: (inviteId: string) => Promise<boolean>;
   reloadInvites: () => Promise<void>;
   data: CareData;
@@ -305,7 +306,7 @@ interface CareDataContextValue {
   addCareNote: (texto: string) => boolean;
   removeCareNote: (id: string) => void;
   addFamilyMember: (member: { nome: string; contacto: string; relacao: string; funcao: FamilyRole }) => boolean;
-  removeFamilyMember: (id: string) => void;
+  removeFamilyMember: (id: string) => Promise<boolean>;
   updateCareProfile: (profile: Partial<CareData['careProfile']>) => void;
   importDemoData: (data: CareData) => void;
   resetDemoData: () => void;
@@ -325,7 +326,7 @@ interface CareDataContextValue {
 const CareDataContext = createContext<CareDataContextValue | null>(null);
 
 export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const [data, setData] = useState<CareData>(loadFromStorage);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [storageMode, setStorageMode] = useState<StorageMode>('demo');
@@ -953,6 +954,30 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [storageMode, showFeedback]);
 
   // ---------------------------------------------------------------------------
+  // Current user role within the care profile
+  // ---------------------------------------------------------------------------
+  const currentUserRoleRef = useRef<string | null>(null);
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
+  const [isCurrentUserAdmin, setIsCurrentUserAdmin] = useState(false);
+
+  useEffect(() => {
+    if (storageMode === 'cloud' && user && careProfileId) {
+      sbGetCurrentUserRole(careProfileId, user.id).then((result) => {
+        if (result) {
+          setCurrentUserRole(result.role);
+          setIsCurrentUserAdmin(result.isAdmin);
+          currentUserRoleRef.current = result.role;
+        }
+      });
+    } else {
+      setCurrentUserRole(null);
+      setIsCurrentUserAdmin(false);
+    }
+  }, [storageMode, user, careProfileId]);
+
+  const canManageMembers = storageMode !== 'cloud' || isCurrentUserAdmin;
+
+  // ---------------------------------------------------------------------------
   // CRUD: Family Members
   // ---------------------------------------------------------------------------
   const addFamilyMember: CareDataContextValue['addFamilyMember'] = useCallback((member) => {
@@ -971,10 +996,27 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return true;
   }, [showFeedback]);
 
-  const removeFamilyMember = useCallback((id: string) => {
+  const removeFamilyMember: CareDataContextValue['removeFamilyMember'] = useCallback(async (id) => {
+    if (storageMode === 'cloud') {
+      if (!isCurrentUserAdmin) {
+        showFeedback('pages.family.onlyAdminsCanManage');
+        return false;
+      }
+
+      setSyncStatus('saving');
+      const ok = await sbRemoveCareProfileMember(id);
+      if (!ok) {
+        setSyncStatus('error');
+        showFeedback('pages.family.failedRemoveMember');
+        return false;
+      }
+      setSyncStatus('synced');
+    }
+
     setData((prev) => ({ ...prev, familyMembers: prev.familyMembers.filter((m) => m.id !== id) }));
     showFeedback('feedback.familyRemoved');
-  }, [showFeedback]);
+    return true;
+  }, [storageMode, isCurrentUserAdmin, showFeedback]);
 
   // ---------------------------------------------------------------------------
   // CRUD: Emergency Contacts
@@ -1147,30 +1189,6 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [data.medications, data.tasks, data.appointments, data.emergencyContacts, data.careProfile]);
 
   // ---------------------------------------------------------------------------
-  // Current user role within the care profile
-  // ---------------------------------------------------------------------------
-  const currentUserRoleRef = useRef<string | null>(null);
-  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
-  const [isCurrentUserAdmin, setIsCurrentUserAdmin] = useState(false);
-
-  useEffect(() => {
-    if (storageMode === 'cloud' && user && careProfileId) {
-      sbGetCurrentUserRole(careProfileId, user.id).then((result) => {
-        if (result) {
-          setCurrentUserRole(result.role);
-          setIsCurrentUserAdmin(result.isAdmin);
-          currentUserRoleRef.current = result.role;
-        }
-      });
-    } else {
-      setCurrentUserRole(null);
-      setIsCurrentUserAdmin(false);
-    }
-  }, [storageMode, user, careProfileId]);
-
-  const canManageMembers = storageMode !== 'cloud' || isCurrentUserAdmin;
-
-  // ---------------------------------------------------------------------------
   // Pending invites state (cloud mode only)
   // ---------------------------------------------------------------------------
   const [pendingInvites, setPendingInvites] = useState<PendingInvite[]>([]);
@@ -1206,10 +1224,34 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         return { success: false, error: tt('pages.family.failedCreateInvite') };
       }
       setPendingInvites((prev) => [created, ...prev]);
-      showFeedback('pages.family.inviteSavedPending');
-      return { success: true };
+      let emailSent = false;
+      if (session?.access_token) {
+        try {
+          const response = await fetch('/api/send-invite', {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${session.access_token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              careProfileId,
+              invitedEmail: created.invitedEmail,
+              invitedName: created.invitedName,
+              relationship: created.relationship,
+              role: created.role,
+              token: created.token,
+            }),
+          });
+          emailSent = response.ok;
+        } catch {
+          emailSent = false;
+        }
+      }
+
+      showFeedback(emailSent ? 'pages.family.inviteEmailSent' : 'pages.family.inviteSavedPending');
+      return { success: true, emailSent };
     },
-    [storageMode, careProfileId, user, isCurrentUserAdmin, showFeedback],
+    [storageMode, careProfileId, user, session, isCurrentUserAdmin, showFeedback],
   );
 
   const cancelPendingInvite: CareDataContextValue['cancelPendingInvite'] = useCallback(

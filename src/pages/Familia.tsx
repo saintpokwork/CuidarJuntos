@@ -78,18 +78,24 @@ const Familia: React.FC = () => {
       setContacto('');
       setRelacao('');
       setFuncao('Familiar');
+      setErro(result.emailSent === false ? t('pages.family.inviteEmailFallback') : '');
     } else {
       setErro(result.error || t('global.error'));
     }
     setSubmitting(false);
   };
 
-  const handleRemove = (memberId: string) => {
+  const handleRemove = async (memberId: string) => {
     if (!canManageMembers) {
       setErro(t('pages.family.onlyAdminsCanManage'));
       return;
     }
-    removeFamilyMember(memberId);
+    const ok = await removeFamilyMember(memberId);
+    if (!ok) {
+      setErro(t('pages.family.failedRemoveMember'));
+    } else {
+      setErro('');
+    }
   };
 
   const handleCopyLink = (token: string) => {

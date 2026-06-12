@@ -221,7 +221,7 @@ const Documentos: React.FC = () => {
                               </span>
                             </div>
                             <div className="flex gap-1 shrink-0">
-                              {(doc.filePath || storageMode === 'cloud') && (
+                              {doc.filePath && (
                                 <button
                                   type="button"
                                   onClick={() => handleOpenDocument(doc.id)}
@@ -250,6 +250,11 @@ const Documentos: React.FC = () => {
                             >
                               {getValidity(doc.dataValidade).label}
                             </span>
+                            {!doc.filePath && (
+                              <span className="ml-2 inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-surface-container-high text-on-surface-variant">
+                                {t('pages.documents.metadataOnly')}
+                              </span>
+                            )}
                           </div>
                           {doc.dataValidade && (
                             <p className="text-label-sm text-on-surface-variant">

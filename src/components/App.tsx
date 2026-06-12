@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import Home from '../pages/Home';
 import Dashboard from '../pages/Dashboard';
 import Perfil from '../pages/Perfil';
@@ -26,6 +27,7 @@ import Blog from '../pages/Blog';
 import BlogPost from '../pages/BlogPost';
 import FeedbackMessage from './FeedbackMessage';
 import ScrollToTop from './ScrollToTop';
+import RouteMeta from './RouteMeta';
 import { useCareData } from '../context/CareDataContext';
 
 const AppRoutes: React.FC = () => {
@@ -34,6 +36,8 @@ const AppRoutes: React.FC = () => {
     <>
       <FeedbackMessage message={feedback} />
       <ScrollToTop />
+      <Analytics />
+      <RouteMeta />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/como-funciona" element={<ComoFunciona />} />

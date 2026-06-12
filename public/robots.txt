@@ -6,5 +6,6 @@ Disallow: /aceitar-convite
 Disallow: /entrar
 Disallow: /criar-conta
 Disallow: /recuperar-password
+Disallow: /atualizar-password
 
 Sitemap: https://www.cuidarjuntos.pt/sitemap.xml

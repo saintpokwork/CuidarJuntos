@@ -16,7 +16,7 @@ const Privacidade: React.FC = () => {
   const sections = [
     { icon: 'business', title: t('legal.privacy.providerTitle'), text: t('legal.privacy.providerP1') },
     { icon: 'mail', title: t('legal.privacy.authEmailsTitle'), text: t('legal.privacy.authEmailsP1') },
-    { icon: 'folder_secure', title: t('legal.privacy.documentsTitle'), text: t('legal.privacy.documentsP1') },
+    { icon: 'folder', title: t('legal.privacy.documentsTitle'), text: t('legal.privacy.documentsP1') },
     { icon: 'hub', title: t('legal.privacy.subprocessorsTitle'), text: t('legal.privacy.subprocessorsP1') },
     { icon: 'cookie', title: t('legal.privacy.cookiesTitle'), text: t('legal.privacy.cookiesP1') },
   ];
@@ -24,7 +24,7 @@ const Privacidade: React.FC = () => {
   return (
     <div className="bg-background text-on-surface min-h-screen">
       <header className="border-b border-cj-border bg-cj-branco/90 backdrop-blur-md">
-        <nav className="max-w-[800px] mx-auto flex justify-between items-center px-container-padding-mobile md:px-container-padding-desktop h-16">
+        <nav className="max-w-[1100px] mx-auto flex justify-between items-center px-container-padding-mobile md:px-container-padding-desktop h-16">
           <Link to="/">
             <CuidarJuntosLogo variant="default" size="sm" />
           </Link>
@@ -60,6 +60,18 @@ const Privacidade: React.FC = () => {
                 <p className="text-label-sm text-on-surface-variant mb-2">{t('legal.privacy.lastUpdated')}</p>
                 <p className="text-label-md text-on-surface">{t('legal.privacy.providerP1')}</p>
               </div>
+            </div>
+            <div className="mt-8 grid gap-3 md:grid-cols-3">
+              {[
+                { icon: 'lock', label: t('legal.privacy.cloudTitle') },
+                { icon: 'verified_user', label: t('legal.privacy.gdprTitle') },
+                { icon: 'mail', label: t('legal.privacy.contactTitle') },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center gap-3 rounded-2xl border border-cj-border bg-cj-branco/70 px-4 py-3">
+                  <span className="material-symbols-outlined text-primary">{item.icon}</span>
+                  <span className="text-label-md font-bold text-on-surface">{item.label}</span>
+                </div>
+              ))}
             </div>
           </div>
         </section>

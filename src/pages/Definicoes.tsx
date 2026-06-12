@@ -68,6 +68,12 @@ const Definicoes: React.FC = () => {
   };
 
   const isCloud = storageMode === 'cloud';
+  const accountName = isCloud && user
+    ? String(user.user_metadata?.full_name || user.email || caregiver.nome)
+    : caregiver.nome;
+  const accountRole = isCloud ? t('pages.settings.accountOwner') : caregiver.funcao;
+  const accountEmail = isCloud && user ? user.email : 'ana.silva@cuidarjuntos.pt';
+  const accountInitial = accountName.trim().charAt(0).toUpperCase() || 'C';
 
   return (
     <DashboardLayout>
@@ -92,25 +98,26 @@ const Definicoes: React.FC = () => {
                     </div>
                     <h2 className="text-headline-md font-headline-md">{t('pages.profile.title')}</h2>
                   </div>
-                  <button type="button" className="text-primary font-bold text-label-md hover:underline">
+                  <Link to="/dashboard/perfil" className="text-primary font-bold text-label-md hover:underline">
                     {t('global.edit')}
-                  </button>
+                  </Link>
                 </div>
                 <div className="flex items-center gap-4">
-                  <img
-                    alt={caregiver.nome}
-                    className="w-16 h-16 rounded-full object-cover"
-                    src={caregiver.avatar}
-                  />
+                  {isCloud ? (
+                    <div className="w-16 h-16 rounded-full bg-primary text-on-primary flex items-center justify-center text-headline-md font-bold">
+                      {accountInitial}
+                    </div>
+                  ) : (
+                    <img
+                      alt={caregiver.nome}
+                      className="w-16 h-16 rounded-full object-cover"
+                      src={caregiver.avatar}
+                    />
+                  )}
                   <div>
-                    <p className="text-headline-md font-headline-md text-on-surface">{caregiver.nome}</p>
-                    <p className="text-label-md text-on-surface-variant">{caregiver.funcao}</p>
-                    {isCloud && user && (
-                      <p className="text-label-sm text-primary">{user.email}</p>
-                    )}
-                    {!isCloud && (
-                      <p className="text-label-sm text-primary">ana.silva@cuidarjuntos.pt</p>
-                    )}
+                    <p className="text-headline-md font-headline-md text-on-surface">{accountName}</p>
+                    <p className="text-label-md text-on-surface-variant">{accountRole}</p>
+                    <p className="text-label-sm text-primary">{accountEmail}</p>
                   </div>
                 </div>
               </div>
@@ -126,7 +133,7 @@ const Definicoes: React.FC = () => {
                 </div>
                 {isCloud && user ? (
                   <div className="mb-6 rounded-[24px] border border-primary/20 bg-primary/5 p-6">
-                    <p className="text-label-md text-on-surface">{t('global.signIn')} <strong>{user.email}</strong></p>
+                    <p className="text-label-md text-on-surface">{t('pages.settings.signedInAs')} <strong>{user.email}</strong></p>
                     <p className="text-label-sm text-on-surface-variant mt-2">{t('pages.settings.cloudActive')}</p>
                     <p className="text-label-sm text-on-surface-variant mt-1">{t('pages.settings.uploadNotActive')}</p>
                     <div className="mt-4 flex flex-wrap gap-3">

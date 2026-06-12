@@ -2,7 +2,7 @@
 
 Plataforma de organização familiar para cuidadores em Portugal. Ajuda famílias a gerir medicamentos, consultas, documentos, tarefas e contactos de emergência num só lugar.
 
-**Estado atual:** 🚀 Em preparação para lançamento (beta). Supabase Auth, cloud sync, Storage e family invites implementados. Documentação completa de lançamento em `docs/LAUNCH_TRACKER.md`.
+**Estado atual:** 🚀 Em preparação para lançamento público em `https://www.cuidarjuntos.pt`. Supabase Auth, cloud sync, Storage, convites familiares e emails via Resend estão implementados. Documentação completa de lançamento em `docs/LAUNCH_TRACKER.md`.
 
 ## Stack tecnológica
 
@@ -10,7 +10,8 @@ Plataforma de organização familiar para cuidadores em Portugal. Ajuda família
 - Create React App (CRACO)
 - Tailwind CSS
 - React Router v6
-- Estado local com React Context + `localStorage`
+- Estado com React Context, `localStorage` para demo e Supabase para contas
+- Vercel Serverless Functions para emails transacionais da app
 
 ## Executar localmente
 
@@ -32,9 +33,11 @@ npm run build
 | Rota | Página |
 |------|--------|
 | `/` | Landing page |
-| `/entrar` | Páginas de autenticação (placeholder) |
-| `/criar-conta` | Página de criação de conta (placeholder) |
-| `/recuperar-password` | Página de recuperação de palavra-passe (placeholder) |
+| `/entrar` | Página de autenticação |
+| `/criar-conta` | Página de criação de conta |
+| `/recuperar-password` | Página de recuperação de palavra-passe |
+| `/atualizar-password` | Página de atualização de palavra-passe |
+| `/aceitar-convite` | Aceitação de convite familiar |
 | `/como-funciona` | Como usar o CuidarJuntos (público) |
 | `/privacidade` | Política de privacidade |
 | `/termos` | Termos de utilização |
@@ -51,9 +54,7 @@ npm run build
 | `/dashboard/definicoes` | Definições |
 | `/dashboard/mais` | Mais opções (mobile) |
 
-> A integração com Supabase está planeada para uma versão futura. Veja o plano em `docs/SUPABASE_PLAN.md`.
->
-> O ficheiro de exemplo de ambiente está em `.env.example`.
+> O ficheiro de exemplo de ambiente está em `.env.example`. Nunca adicionar chaves reais ao repositório.
 
 ## Estrutura do projeto
 
@@ -67,14 +68,20 @@ src/
 design-reference/  # Exports originais do Stitch (referência)
 ```
 
-## O que ainda não está incluído
+## Funcionalidades ativas
 
-- Autenticação / contas de utilizador
-- Supabase ou base de dados na cloud
-- Upload real de ficheiros
+- Autenticação e recuperação de palavra-passe com Supabase Auth
+- Sincronização cloud para contas autenticadas
+- Upload, download e remoção de documentos privados no Supabase Storage
+- Convites familiares com token seguro e envio por email via Resend
+- Modo demo local para experimentar sem conta
+- Páginas legais, blog, sitemap e robots para lançamento
+
+## Ainda fora desta fase
+
 - Pagamentos / subscrições
-- Notificações push ou por email
-- Sincronização entre dispositivos
+- Notificações push
+- Revisão jurídica profissional final
 
 ## Deploy na Vercel
 

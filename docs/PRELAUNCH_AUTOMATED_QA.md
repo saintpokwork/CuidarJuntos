@@ -62,7 +62,7 @@
 | "Choose this" / "Escolher este" | ✅ Not found |
 | "MVP" in user-facing code | ✅ Not present |
 | "real accounts" / "contas reais" | ✅ Not present |
-| "TODO" in user-facing code | ⚠️ Found in `supabaseAdapter.placeholder.ts` only — placeholder file, not used in runtime |
+| "TODO" in user-facing code | ✅ Not found in runtime source |
 | Hardcoded English in PT mode | ✅ Not detected (all UI uses `t()` translation function) |
 | Missing translation keys | ✅ All keys referenced in `t()` calls exist in `translations.ts` for both PT and EN |
 | Blog titles/excerpts/body | ✅ Fully bilingual in `src/data/blogPosts.ts` |
@@ -100,7 +100,7 @@
 |---|---|
 | `.env.local` gitignored | ✅ `.gitignore` includes `.env.local` and `.env.*.local` |
 | `.vercel` gitignored | ✅ `.gitignore` includes `.vercel` |
-| `.env.example` has placeholders only | ✅ Empty `REACT_APP_SUPABASE_URL=` and `REACT_APP_SUPABASE_ANON_KEY=` |
+| `.env.example` has placeholders only | ✅ Supabase, public site URL and Resend variable names only — no real secrets |
 | No `service_role` key | ✅ Not present anywhere in `src/` |
 | No Stripe keys | ✅ Not present anywhere in `src/` |
 | No Resend keys | ✅ Not present anywhere |
@@ -119,11 +119,11 @@
 | Cloud sync (Supabase) | ✅ Implemented via `CareDataContext` | `src/lib/data/supabaseDataAdapter.ts` |
 | Document upload / download / delete | ✅ Implemented via Supabase Storage | `src/lib/data/supabaseDataAdapter.ts` |
 | Family pending invites (DB records) | ✅ Implemented via `care_profile_invites` | `supabase/invites.sql`, `docs/FAMILY_INVITES_PLAN.md` |
-| Invite acceptance placeholder | ✅ Route exists, page is placeholder | `src/pages/AceitarConvite.tsx` |
-| Email invite sending (Resend/SMTP) | ⏳ Not implemented | `docs/FAMILY_INVITES_PLAN.md` |
+| Invite acceptance | ✅ Implemented | `src/pages/AceitarConvite.tsx` |
+| Email invite sending (Resend/SMTP) | ✅ Implemented | `api/send-invite.js`, `docs/FAMILY_INVITES_PLAN.md` |
 | Payments / Stripe | ⏳ Not implemented | `docs/PAYMENTS_PLAN.md` |
-| Branded emails (Resend) | ⏳ Not implemented | Using Supabase default emails |
-| Domain (cuidarjuntos.pt) | ⏳ Not configured | Using Vercel temporary URL |
+| Branded emails (Resend) | ✅ Implemented | Supabase SMTP + invite endpoint |
+| Domain (cuidarjuntos.pt) | ✅ Configured | `https://www.cuidarjuntos.pt` |
 | Blog / resources | ✅ Implemented — 4 articles | `src/pages/Blog.tsx`, `src/pages/BlogPost.tsx`, `src/data/blogPosts.ts` |
 | Legal / trust pages | ✅ Implemented | `src/pages/Privacidade.tsx`, `src/pages/Termos.tsx` |
 | Security / privacy audit | ✅ Completed | `docs/SECURITY_PRIVACY_AUDIT.md` |

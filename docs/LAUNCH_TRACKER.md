@@ -1,7 +1,7 @@
 # CuidarJuntos — Launch Readiness Tracker
 
-> Last updated: June 2025
-> Target: Soft launch (free/beta) → Paid launch (with Stripe)
+> Last updated: June 2026
+> Target: Public launch readiness on `https://www.cuidarjuntos.pt` → Paid launch later with Stripe
 
 ---
 
@@ -22,21 +22,21 @@
 | 11 | Care notes | ✅ Complete | Add/delete |
 | 12 | Family member management (UI + roles) | ✅ Complete | Admin/viewer roles, member list from DB |
 | 13 | Pending invite records (DB) | ✅ Complete | Create/cancel/copy link from `care_profile_invites` |
-| 14 | Invite acceptance (real) | ⏳ Pending | Placeholder page exists at `/aceitar-convite` |
-| 15 | Email invite sending (Resend/SMTP) | ⏳ Pending | Not yet integrated |
+| 14 | Invite acceptance (real) | ✅ Complete | `/aceitar-convite` validates token and creates membership |
+| 15 | Email invite sending (Resend/SMTP) | ✅ Complete | Server-side `/api/send-invite`, Resend API, copy-link fallback |
 | 16 | Blog / resources | ✅ Complete | 4 PT/EN articles, branded layout |
 | 17 | Legal / trust pages | ✅ Complete | Terms, Privacy with Nebula Craft Design attribution, GDPR, 112 |
 | 18 | Security / privacy audit | ✅ Complete | No critical blockers found |
 | 19 | Automated / static QA | ✅ Complete | See `docs/PRELAUNCH_AUTOMATED_QA.md` |
-| 20 | Payments / Stripe | ⏳ Pending | Plan created (`docs/PAYMENTS_PLAN.md`), not implemented |
-| 20 | Branded emails (Resend/custom SMTP) | ⏳ Later | Using Supabase default auth emails temporarily |
-| 21 | Custom domain (cuidarjuntos.pt) | ⏳ Later | Using Vercel temporary URL |
+| 20 | Payments / Stripe | ⏳ Later | Plan created (`docs/PAYMENTS_PLAN.md`), not implemented |
+| 21 | Branded emails (Resend/custom SMTP) | ✅ Complete | Supabase Auth SMTP + branded invite endpoint |
+| 22 | Custom domain (cuidarjuntos.pt) | ✅ Complete | Production domain connected |
 | 22 | Final professional legal review | ⏳ Later | Noted in-page on Terms and Privacy |
+| 23 | Production analytics | ✅ Complete | Vercel Analytics wired in app root |
 
 ### Counts
-- **Complete**: 15
-- **Pending**: 5 (real invite acceptance, email sending, payments, branded emails, domain)
-- **Later**: 2 (domain, professional legal review)
+- **Complete**: 20
+- **Later**: 2 (payments, professional legal review)
 
 ---
 
@@ -54,8 +54,8 @@ Refer to `docs/LAUNCH_QA_CHECKLIST.md` for the full list. Key items:
 | QA6 | Upload PDF/JPG/PNG document | Critical |
 | QA7 | Open signed document URL | Critical |
 | QA8 | Delete document (cloud — storage + metadata) | Critical |
-| QA9 | Create pending invite | High |
-| QA10 | Copy invite link | High |
+| QA9 | Create pending invite and send email | Critical |
+| QA10 | Copy invite link fallback | High |
 | QA11 | Cancel invite | High |
 | QA12 | Switch PT/EN across all pages | High |
 | QA13 | Mobile responsive check | High |
@@ -63,6 +63,8 @@ Refer to `docs/LAUNCH_QA_CHECKLIST.md` for the full list. Key items:
 | QA15 | Terms page content check | Critical |
 | QA16 | Verify Supabase documents table rows | Critical |
 | QA17 | Verify Supabase Storage objects | Critical |
+| QA18 | Accept invite with a second account | Critical |
+| QA19 | Admin removes accepted family member | Critical |
 
 ---
 
@@ -71,13 +73,11 @@ Refer to `docs/LAUNCH_QA_CHECKLIST.md` for the full list. Key items:
 | Blocker | Status | Resolution |
 |---|---|---|
 | Manual QA not completed | ⚠️ Open | Run `docs/LAUNCH_QA_CHECKLIST.md` before public launch |
-| Domain not connected | ⚠️ Open | Only blocks if `cuidarjuntos.pt` is required for launch. Vercel URL is usable for beta. |
-| Branded emails not configured | ⚠️ Open | Supabase default emails are functional but unbranded. Acceptable for beta/soft launch. |
 | Professional legal review not completed | ⚠️ Open | In-page disclaimer notes this. Acceptable for beta if disclosed. |
 | Payments not active | ⚠️ Open | Only blocks if launching paid plans. Free/beta mode bypasses this. |
 | Security review of RLS | ⚠️ Open | Audit found no critical issues but professional review recommended. |
 
-**Conclusion**: No hard blockers for a free/beta soft launch with Vercel URL and Supabase default emails, provided manual QA passes and legal review is noted as pending.
+**Conclusion**: No hard blockers for a free launch once manual production QA passes. Payments and final legal review remain separate launch-stage decisions.
 
 ---
 
@@ -87,8 +87,8 @@ CuidarJuntos can be **soft-launched** as a free/beta product before payments are
 
 - ✅ Manual QA (`docs/LAUNCH_QA_CHECKLIST.md`) passes
 - ✅ Legal text is accepted as provisional (with in-page review note)
-- ✅ Supabase generic auth emails are acceptable temporarily
 - ✅ Production domain (`www.cuidarjuntos.pt`) is connected
+- ✅ Branded account and invite emails are configured through Supabase SMTP / Resend
 - ✅ Pricing cards clearly state "Planos pagos serão ativados mais tarde"
 - ✅ Users are told about browser-only demo mode
 
@@ -102,22 +102,19 @@ This allows real users to test the product, give feedback, and build initial tra
 |---|---|---|---|
 | 1 | **Manual QA** | None — use `docs/LAUNCH_QA_CHECKLIST.md` | 2-4 hours |
 | 2 | Fix bugs from manual QA | Manual QA results | Variable |
-| 3 | Domain setup (`cuidarjuntos.pt`) | DNS access, Vercel domain config | 1 hour |
-| 4 | Branded email / Resend setup | Domain setup, Resend account | 2-4 hours |
-| 5 | Stripe implementation | Per `docs/PAYMENTS_PLAN.md` | 8-16 hours |
-| 6 | Final professional legal review | Stripe integration complete | 2-4 hours |
-| 7 | Paid launch | All above complete | — |
+| 3 | Verify Resend delivery logs | Test account flows | 30 minutes |
+| 4 | Stripe implementation | Per `docs/PAYMENTS_PLAN.md` | 8-16 hours |
+| 5 | Final professional legal review | Stable product/legal copy | 2-4 hours |
+| 6 | Paid launch | All above complete | — |
 
 ---
 
 ## F) What Not to Touch Yet
 
 - ❌ Stripe code — until Stripe account + products/prices are ready
-- ❌ Resend / branded email — until domain is configured
-- ❌ Domain DNS changes — until DNS access is available
 - ❌ Plan limits enforcement — until payments/subscriptions exist
 - ❌ Database schema changes — until Stripe integration phase
-- ❌ Production monitoring / Sentry — nice-to-have, not blocking
+- ❌ Sentry — nice-to-have, not blocking
 
 ---
 

@@ -16,14 +16,14 @@ const Termos: React.FC = () => {
   const sections = [
     { icon: 'business', title: t('legal.terms.providerTitle'), text: t('legal.terms.providerP1') },
     { icon: 'fact_check', title: t('legal.terms.userResponsibilityTitle'), text: t('legal.terms.userResponsibilityP1') },
-    { icon: 'folder_secure', title: t('legal.terms.documentsTitle'), text: t('legal.terms.documentsP1') },
+    { icon: 'folder', title: t('legal.terms.documentsTitle'), text: t('legal.terms.documentsP1') },
     { icon: 'settings_heart', title: t('legal.terms.availabilityTitle'), text: t('legal.terms.availabilityP1') },
   ];
 
   return (
     <div className="bg-background text-on-surface min-h-screen">
       <header className="border-b border-cj-border bg-cj-branco/90 backdrop-blur-md">
-        <nav className="max-w-[800px] mx-auto flex justify-between items-center px-container-padding-mobile md:px-container-padding-desktop h-16">
+        <nav className="max-w-[1100px] mx-auto flex justify-between items-center px-container-padding-mobile md:px-container-padding-desktop h-16">
           <Link to="/">
             <CuidarJuntosLogo variant="default" size="sm" />
           </Link>
@@ -59,6 +59,18 @@ const Termos: React.FC = () => {
                 <p className="text-label-sm text-on-surface-variant mb-2">{t('legal.terms.lastUpdated')}</p>
                 <p className="text-label-md text-on-surface">{t('legal.terms.providerP1')}</p>
               </div>
+            </div>
+            <div className="mt-8 grid gap-3 md:grid-cols-3">
+              {[
+                { icon: 'medical_information', label: t('legal.terms.notMedicalTitle') },
+                { icon: 'emergency', label: t('legal.terms.emergencyTitle') },
+                { icon: 'contact_support', label: t('legal.terms.contactTitle') },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center gap-3 rounded-2xl border border-cj-border bg-cj-branco/70 px-4 py-3">
+                  <span className="material-symbols-outlined text-primary">{item.icon}</span>
+                  <span className="text-label-md font-bold text-on-surface">{item.label}</span>
+                </div>
+              ))}
             </div>
           </div>
         </section>

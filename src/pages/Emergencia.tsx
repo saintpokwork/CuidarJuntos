@@ -206,8 +206,9 @@ const Emergencia: React.FC = () => {
                         )}
                         <div className="flex-1 min-w-0">
                           <p className="text-label-md font-bold text-cj-terra truncate">{contact.nome}</p>
-                          <p className="text-label-sm text-cj-cinza">{contact.relacao || contact.funcao}</p>
-                          <p className="text-label-sm text-cj-cinza">{contact.funcao}</p>
+                          <p className="text-label-sm text-cj-cinza">
+                            {[contact.relacao, contact.funcao].filter(Boolean).join(' · ')}
+                          </p>
                           <a
                             href={`tel:${contact.telefone.replace(/\s+/g, '')}`}
                             className="mt-2 inline-flex min-h-11 items-center gap-2 rounded-full bg-primary px-4 text-label-sm font-bold text-on-primary print:bg-transparent print:px-0 print:text-primary"

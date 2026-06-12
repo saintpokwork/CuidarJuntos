@@ -129,7 +129,7 @@
 
 - **Tested by**: _________________________
 - **Date**: _________________________
-- **Ready for beta**: ⬜ Yes / ⬜ No
+- **Ready for public client testing**: ⬜ Yes / ⬜ No
 - **Blockers** (if any): _________________________
 
 ---
