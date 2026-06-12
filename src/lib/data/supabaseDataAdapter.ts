@@ -55,6 +55,17 @@ interface DbMedication {
   updated_at: string;
 }
 
+interface DbMedicationLog {
+  id: string;
+  medication_id: string;
+  care_profile_id: string;
+  taken_by: string | null;
+  taken_date: string;
+  status: 'taken' | 'skipped' | 'pending';
+  notes: string | null;
+  created_at: string;
+}
+
 interface DbAppointment {
   id: string;
   care_profile_id: string;
@@ -198,19 +209,39 @@ const memberStatusToDb: Record<string, string> = {
 // Row → App mappers
 // ---------------------------------------------------------------------------
 
-const mapMedication = (row: DbMedication): Medication => ({
-  id: row.id,
-  nome: row.name,
-  dosagem: row.dosage || '',
-  unidade: row.unit || undefined,
-  horario: row.time || '',
-  frequencia: row.frequency || '',
-  responsavel: '', // We don't join profiles for display name in v1
-  estado: estadoFromActive(row.active),
-  instrucoes: row.instructions || '',
-  dataFim: row.end_date || '',
-  tomadoHoje: false,
-});
+const parseMedicationLogNotes = (notes: string | null): Pick<Medication, 'dosesHoje' | 'tomadoHoje' | 'doseDate'> => {
+  if (!notes) return {};
+  try {
+    const parsed = JSON.parse(notes) as Pick<Medication, 'dosesHoje' | 'tomadoHoje' | 'doseDate'>;
+    return {
+      dosesHoje: Array.isArray(parsed.dosesHoje) ? parsed.dosesHoje : undefined,
+      tomadoHoje: typeof parsed.tomadoHoje === 'boolean' ? parsed.tomadoHoje : undefined,
+      doseDate: typeof parsed.doseDate === 'string' ? parsed.doseDate : undefined,
+    };
+  } catch {
+    return {};
+  }
+};
+
+const mapMedication = (row: DbMedication, log?: DbMedicationLog): Medication => {
+  const logState = parseMedicationLogNotes(log?.notes || null);
+  const logTakenToday = log ? log.status === 'taken' : false;
+  return {
+    id: row.id,
+    nome: row.name,
+    dosagem: row.dosage || '',
+    unidade: row.unit || undefined,
+    horario: row.time || '',
+    frequencia: row.frequency || '',
+    responsavel: '', // We don't join profiles for display name in v1
+    estado: estadoFromActive(row.active),
+    instrucoes: row.instructions || '',
+    dataFim: row.end_date || '',
+    doseDate: logState.doseDate || log?.taken_date || undefined,
+    dosesHoje: logState.dosesHoje,
+    tomadoHoje: logState.tomadoHoje ?? logTakenToday,
+  };
+};
 
 const mapAppointment = (row: DbAppointment): Appointment => {
   let dataHora = '';
@@ -629,9 +660,11 @@ const seedStarterData = async (careProfileId: string) => {
 export const loadCareDataFromSupabase = async (
   careProfileId: string,
 ): Promise<CareData | null> => {
-  const [medsRes, aptsRes, tasksRes, docsRes, notesRes, ecRes, cpRes, membersRes] =
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const [medsRes, medLogsRes, aptsRes, tasksRes, docsRes, notesRes, ecRes, cpRes, membersRes] =
     await Promise.all([
       supabase.from('medications').select('*').eq('care_profile_id', careProfileId),
+      supabase.from('medication_logs').select('*').eq('care_profile_id', careProfileId).eq('taken_date', todayKey),
       supabase.from('appointments').select('*').eq('care_profile_id', careProfileId).order('appointment_at', { ascending: true }),
       supabase.from('tasks').select('*').eq('care_profile_id', careProfileId).order('created_at', { ascending: false }),
       supabase.from('documents').select('*').eq('care_profile_id', careProfileId).order('created_at', { ascending: false }),
@@ -643,6 +676,7 @@ export const loadCareDataFromSupabase = async (
 
   // Log errors but don't crash
   if (medsRes.error) console.error('[load] medications error:', medsRes.error);
+  if (medLogsRes.error) console.error('[load] medication_logs error:', medLogsRes.error);
   if (aptsRes.error) console.error('[load] appointments error:', aptsRes.error);
   if (tasksRes.error) console.error('[load] tasks error:', tasksRes.error);
   if (docsRes.error) console.error('[load] documents error:', docsRes.error);
@@ -653,8 +687,12 @@ export const loadCareDataFromSupabase = async (
 
   if (cpRes.error || !cpRes.data) return null;
 
+  const medicationLogsByMedication = new Map(
+    ((medLogsRes.data || []) as DbMedicationLog[]).map((log) => [log.medication_id, log]),
+  );
+
   return {
-    medications: (medsRes.data || []).map(mapMedication),
+    medications: (medsRes.data || []).map((med) => mapMedication(med as DbMedication, medicationLogsByMedication.get(med.id))),
     appointments: (aptsRes.data || []).map(mapAppointment),
     tasks: (tasksRes.data || []).map(mapTask),
     documents: (docsRes.data || []).map(mapDocument),
@@ -722,6 +760,40 @@ export const deleteMedication = async (id: string): Promise<boolean> => {
   const { error } = await supabase.from('medications').delete().eq('id', id);
   if (error) {
     console.error('[supabaseDataAdapter] deleteMedication error:', error);
+    return false;
+  }
+  return true;
+};
+
+export const upsertMedicationDailyLog = async (
+  careProfileId: string,
+  medication: Pick<Medication, 'id' | 'doseDate' | 'dosesHoje' | 'tomadoHoje'>,
+): Promise<boolean> => {
+  const doseDate = medication.doseDate || new Date().toISOString().slice(0, 10);
+  const doses = medication.dosesHoje || [];
+  const hasSkippedDose = doses.some((dose) => dose.status === 'em_falta');
+  const hasTakenDose = doses.some((dose) => dose.status === 'tomado');
+  const status = hasSkippedDose ? 'skipped' : hasTakenDose || medication.tomadoHoje ? 'taken' : 'pending';
+
+  const { error } = await supabase
+    .from('medication_logs')
+    .upsert(
+      {
+        medication_id: medication.id,
+        care_profile_id: careProfileId,
+        taken_date: doseDate,
+        status,
+        notes: JSON.stringify({
+          doseDate,
+          tomadoHoje: Boolean(medication.tomadoHoje),
+          dosesHoje: doses,
+        }),
+      },
+      { onConflict: 'medication_id,taken_date' },
+    );
+
+  if (error) {
+    console.error('[supabaseDataAdapter] upsertMedicationDailyLog error:', error);
     return false;
   }
   return true;

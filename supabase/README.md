@@ -112,7 +112,7 @@ Expected tables: `profiles`, `care_profiles`, `care_profile_members`, `medicatio
     for each row execute function public.handle_new_user();
   ```
 - **Frontend data sync is connected.** Logged-in users sync data to Supabase via `CareDataContext` + `supabaseDataAdapter.ts`. Logged-out users use localStorage demo mode.
-- **Supabase Storage is prepared** — `supabase/storage.sql` creates the bucket and policies. Frontend upload UI is the next phase. See `docs/STORAGE_PLAN.md`.
+- **Supabase Storage is connected** — `supabase/storage.sql` creates the private bucket and policies used by the document upload/download/delete UI.
 - **Payments are NOT implemented.** Pricing cards on the landing page are purely cosmetic.
 
 ## Environment variables
@@ -129,6 +129,6 @@ The `.env.example` file at the project root already documents these variables.
 ## Next phase
 
 1. ✅ Connect logged-in dashboard to Supabase data (done).
-2. ✅ Supabase Storage SQL prepared (`supabase/storage.sql`). Frontend upload integration is next.
-3. ⏳ Implement invitation flow for family members.
+2. ✅ Supabase Storage SQL prepared and frontend upload integration connected.
+3. ✅ Implement invitation flow for family members.
 4. ⏳ Add real-time sync with Supabase Realtime.

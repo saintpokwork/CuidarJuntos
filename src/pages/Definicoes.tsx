@@ -161,7 +161,7 @@ const Definicoes: React.FC = () => {
                     },
                     {
                       title: t('pages.settings.language'),
-                      description: t('demo.notice'),
+                      description: t('pages.settings.languageDescription'),
                       icon: 'devices',
                     },
                   ].map((item) => (

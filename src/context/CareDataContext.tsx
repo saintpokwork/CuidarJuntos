@@ -26,6 +26,7 @@ import {
   loadCareDataFromSupabase,
   createMedication as sbCreateMedication,
   deleteMedication as sbDeleteMedication,
+  upsertMedicationDailyLog as sbUpsertMedicationDailyLog,
   createAppointment as sbCreateAppointment,
   deleteAppointment as sbDeleteAppointment,
   createTask as sbCreateTask,
@@ -501,49 +502,60 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [storageMode, showFeedback]);
 
   const updateMedicationTaken = useCallback((id: string, tomadoHoje: boolean) => {
+    const currentMedication = data.medications.find((m) => m.id === id);
+    if (!currentMedication) return;
+    const updatedMedication: Medication = {
+      ...currentMedication,
+      doseDate: getTodayKey(),
+      tomadoHoje,
+      dosesHoje: (currentMedication.dosesHoje || []).map((dose) => ({
+        ...dose,
+        status: tomadoHoje ? 'tomado' : 'por_tomar',
+        markedAt: tomadoHoje ? formatNow() : undefined,
+        markedBy: tomadoHoje ? caregiver.nome : undefined,
+      })),
+    };
+
     setData((prev) => ({
       ...prev,
-      medications: prev.medications.map((m) => (
-        m.id === id
-          ? {
-              ...m,
-              doseDate: getTodayKey(),
-              tomadoHoje,
-              dosesHoje: (m.dosesHoje || []).map((dose) => ({
-                ...dose,
-                status: tomadoHoje ? 'tomado' : 'por_tomar',
-                markedAt: tomadoHoje ? formatNow() : undefined,
-                markedBy: tomadoHoje ? caregiver.nome : undefined,
-              })),
-            }
-          : m
-      )),
+      medications: prev.medications.map((m) => (m.id === id ? updatedMedication : m)),
     }));
     showFeedback(tomadoHoje ? 'feedback.medicationTaken' : 'feedback.medicationUntaken');
-  }, [showFeedback]);
+    if (storageMode === 'cloud' && careProfileId) {
+      sbUpsertMedicationDailyLog(careProfileId, updatedMedication).then((ok) => {
+        setSyncStatus(ok ? 'synced' : 'error');
+      });
+    }
+  }, [data.medications, storageMode, careProfileId, showFeedback]);
 
   const updateMedicationDoseStatus = useCallback((medicationId: string, doseId: string, status: MedicationDoseStatus) => {
     const markedAt = formatNow();
+    const currentMedication = data.medications.find((med) => med.id === medicationId);
+    if (!currentMedication) return;
+    const dosesHoje = (currentMedication.dosesHoje || []).map((dose) =>
+      dose.id === doseId
+        ? {
+            ...dose,
+            status,
+            markedAt: status === 'tomado' ? markedAt : undefined,
+            markedBy: status === 'tomado' ? caregiver.nome : undefined,
+          }
+        : dose,
+    );
+    const tomadoHoje = dosesHoje.length > 0 && dosesHoje.every((dose) => dose.status === 'tomado');
+    const updatedMedication: Medication = { ...currentMedication, doseDate: getTodayKey(), dosesHoje, tomadoHoje };
+
     setData((prev) => ({
       ...prev,
-      medications: prev.medications.map((med) => {
-        if (med.id !== medicationId) return med;
-        const dosesHoje = (med.dosesHoje || []).map((dose) =>
-          dose.id === doseId
-            ? {
-                ...dose,
-                status,
-                markedAt: status === 'tomado' ? markedAt : undefined,
-                markedBy: status === 'tomado' ? caregiver.nome : undefined,
-              }
-            : dose,
-        );
-        const tomadoHoje = dosesHoje.length > 0 && dosesHoje.every((dose) => dose.status === 'tomado');
-        return { ...med, doseDate: getTodayKey(), dosesHoje, tomadoHoje };
-      }),
+      medications: prev.medications.map((med) => (med.id === medicationId ? updatedMedication : med)),
     }));
     showFeedback(status === 'tomado' ? 'feedback.medicationTaken' : 'feedback.medicationUntaken');
-  }, [showFeedback]);
+    if (storageMode === 'cloud' && careProfileId) {
+      sbUpsertMedicationDailyLog(careProfileId, updatedMedication).then((ok) => {
+        setSyncStatus(ok ? 'synced' : 'error');
+      });
+    }
+  }, [data.medications, storageMode, careProfileId, showFeedback]);
 
   // ---------------------------------------------------------------------------
   // CRUD: Appointments
