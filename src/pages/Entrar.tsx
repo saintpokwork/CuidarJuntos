@@ -6,6 +6,7 @@ import { useLanguage } from '../i18n/LanguageContext';
 import LanguageToggle from '../components/LanguageToggle';
 import PublicFooter from '../components/PublicFooter';
 import { getEmailValidationKey, getFriendlyAuthErrorKey, normalizeEmail } from '../lib/authValidation';
+import { getPostAuthDestination } from '../lib/navigation';
 
 const Entrar: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -28,12 +29,7 @@ const Entrar: React.FC = () => {
 
   useEffect(() => {
     if (user) {
-      const pendingPlan = localStorage.getItem('cuidarjuntos-pending-plan');
-      navigate(inviteToken
-        ? `/aceitar-convite?token=${encodeURIComponent(inviteToken)}`
-        : pendingPlan
-          ? '/dashboard/definicoes?upgrade=1'
-          : '/dashboard');
+      navigate(getPostAuthDestination(inviteToken));
     }
   }, [user, navigate, inviteToken]);
 
@@ -67,7 +63,7 @@ const Entrar: React.FC = () => {
       navigate(`/aceitar-convite?token=${encodeURIComponent(inviteToken)}`);
       return;
     }
-    navigate('/dashboard');
+    navigate(getPostAuthDestination());
   };
 
   return (

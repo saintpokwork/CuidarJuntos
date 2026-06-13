@@ -2,32 +2,29 @@ import React, { useEffect, useState } from 'react';
 import { BillingCycle, PaidPlanKey, createBillingPortalSession, createCheckoutSession, loadSubscriptionStatus, SubscriptionStatus } from '../lib/billing';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../i18n/LanguageContext';
+import { clearPendingPlan, getPendingPlan } from '../lib/navigation';
 
 const BillingPanel: React.FC = () => {
   const { user } = useAuth();
   const { t } = useLanguage();
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('yearly');
   const [subscription, setSubscription] = useState<SubscriptionStatus | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<PaidPlanKey>('family');
+  const [hasPendingPlan, setHasPendingPlan] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
     if (!user) return;
     loadSubscriptionStatus().then(setSubscription);
-    const pending = localStorage.getItem('cuidarjuntos-pending-plan');
-    if (!pending) return;
-    try {
-      const parsed = JSON.parse(pending) as { plan?: string; billing?: BillingCycle };
-      if (parsed.billing === 'monthly' || parsed.billing === 'yearly') {
-        setBillingCycle(parsed.billing);
-      }
-      if (parsed.plan === 'family' || parsed.plan === 'households') {
-        setMessage(t('billing.pendingPlan'));
-      }
-    } catch {
-      localStorage.removeItem('cuidarjuntos-pending-plan');
+    const pending = getPendingPlan();
+    if (pending) {
+      setBillingCycle(pending.billing);
+      setSelectedPlan(pending.plan);
+      setHasPendingPlan(true);
+      setMessage(t('billing.pendingPlan'));
     }
-  }, [user]);
+  }, [user, t]);
 
   const handleCheckout = async (planKey: PaidPlanKey) => {
     setLoading(true);
@@ -36,7 +33,8 @@ const BillingPanel: React.FC = () => {
     if (result.error) {
       setMessage(t(`billing.errors.${result.error}`) || t('billing.errors.checkout_failed'));
     } else {
-      localStorage.removeItem('cuidarjuntos-pending-plan');
+      clearPendingPlan();
+      setHasPendingPlan(false);
     }
     setLoading(false);
   };
@@ -52,7 +50,7 @@ const BillingPanel: React.FC = () => {
   };
 
   return (
-    <div className="bg-white p-8 rounded-[24px] soft-shadow mb-6">
+    <div id="billing" className="bg-white p-8 rounded-[24px] soft-shadow mb-6 scroll-mt-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between mb-6">
         <div>
           <h2 className="text-headline-md font-headline-md">{t('billing.title')}</h2>
@@ -74,6 +72,28 @@ const BillingPanel: React.FC = () => {
         </div>
       </div>
 
+      {hasPendingPlan && (
+        <div className="mb-5 rounded-2xl border border-primary/25 bg-cj-verde-pale/60 p-5">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-label-sm font-bold uppercase tracking-[0.16em] text-primary">{t('billing.trial')}</p>
+              <h3 className="text-headline-sm font-headline-sm text-on-surface">
+                {t('billing.pendingTitle')} {t(`billing.plans.${selectedPlan}`)}
+              </h3>
+              <p className="mt-1 text-label-md text-on-surface-variant">{t('billing.noChargeToday')}</p>
+            </div>
+            <button
+              type="button"
+              disabled={loading || !user}
+              onClick={() => handleCheckout(selectedPlan)}
+              className="inline-flex min-h-12 items-center justify-center rounded-full bg-primary px-6 text-label-md font-bold text-on-primary transition-opacity hover:opacity-90 disabled:opacity-60"
+            >
+              {loading ? t('global.loading') : t('billing.startTrial')}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="mb-5 rounded-2xl border border-outline-variant bg-surface-container-low p-4">
         <p className="text-label-md font-bold text-on-surface">
           {t('billing.currentPlan')}: {subscription ? t(`billing.plans.${subscription.planKey}`) : t('billing.plans.free')}
@@ -85,7 +105,12 @@ const BillingPanel: React.FC = () => {
 
       <div className="grid gap-4 md:grid-cols-2">
         {(['family', 'households'] as PaidPlanKey[]).map((planKey) => (
-          <div key={planKey} className="rounded-2xl border border-cj-border bg-cj-branco p-5">
+          <div
+            key={planKey}
+            className={`rounded-2xl border bg-cj-branco p-5 ${
+              selectedPlan === planKey ? 'border-primary shadow-cj-sm' : 'border-cj-border'
+            }`}
+          >
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="text-headline-sm font-headline-sm text-on-surface">{t(`billing.plans.${planKey}`)}</h3>
@@ -98,11 +123,15 @@ const BillingPanel: React.FC = () => {
             <button
               type="button"
               disabled={loading || !user}
-              onClick={() => handleCheckout(planKey)}
+              onClick={() => {
+                setSelectedPlan(planKey);
+                handleCheckout(planKey);
+              }}
               className="mt-5 w-full rounded-full bg-primary px-5 py-3 text-label-md font-bold text-on-primary transition-opacity hover:opacity-90 disabled:opacity-60"
             >
-              {loading ? t('global.loading') : t('billing.startCheckout')}
+              {loading ? t('global.loading') : t('billing.startTrial')}
             </button>
+            <p className="mt-2 text-center text-label-sm text-on-surface-variant">{t('billing.noChargeToday')}</p>
           </div>
         ))}
       </div>

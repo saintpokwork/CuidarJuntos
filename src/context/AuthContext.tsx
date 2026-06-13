@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { AuthError, Session, User } from '@supabase/supabase-js';
 import { supabase, isSupabaseConfigured } from '../lib/supabaseClient';
 import { normalizeEmail } from '../lib/authValidation';
+import { getPublicSiteUrl } from '../lib/siteUrl';
 
 interface SignUpResult {
   error: AuthError | Error | null;
@@ -101,7 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
 
-    const emailRedirectTo = typeof window !== 'undefined' ? `${window.location.origin}/entrar?confirmed=1` : undefined;
+    const emailRedirectTo = `${getPublicSiteUrl()}/entrar?confirmed=1`;
     const { data, error } = await supabase.auth.signUp({
       email: normalizedEmail,
       password,
@@ -151,7 +152,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { error: new Error('O serviço de autenticação não está configurado.') };
     }
 
-    const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/atualizar-password` : undefined;
+    const redirectTo = `${getPublicSiteUrl()}/atualizar-password`;
     const { error } = await supabase.auth.resetPasswordForEmail(normalizeEmail(email), { redirectTo });
     return { error: error ?? null };
   };
@@ -185,7 +186,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     }
 
-    const emailRedirectTo = typeof window !== 'undefined' ? `${window.location.origin}/entrar?confirmed=1` : undefined;
+    const emailRedirectTo = `${getPublicSiteUrl()}/entrar?confirmed=1`;
     const { error } = await supabase.auth.resend({
       type: 'signup',
       email: normalizedEmail,

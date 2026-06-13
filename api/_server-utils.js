@@ -13,6 +13,7 @@ const getSiteUrl = (req) => {
   const configured = process.env.REACT_APP_PUBLIC_SITE_URL || process.env.PUBLIC_SITE_URL;
   if (configured) return configured.replace(/\/$/, '');
   const host = req.headers['x-forwarded-host'] || req.headers.host;
+  if (String(host || '').endsWith('.vercel.app')) return 'https://cuidarjuntos.pt';
   const proto = req.headers['x-forwarded-proto'] || 'https';
   return `${proto}://${host}`;
 };

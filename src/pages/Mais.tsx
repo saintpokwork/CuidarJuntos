@@ -11,6 +11,7 @@ const maisLinks = [
   { path: '/dashboard/emergencia', labelKey: 'emergency', descKey: 'emergencyDesc', icon: 'emergency' },
   { path: '/dashboard/familia', labelKey: 'family', descKey: 'familyDesc', icon: 'group' },
   { path: '/dashboard/notas', labelKey: 'notes', descKey: 'notesDesc', icon: 'event_note' },
+  { path: '/dashboard/definicoes?upgrade=1', labelKey: 'plan', descKey: 'planDesc', icon: 'workspace_premium' },
   { path: '/dashboard/definicoes', labelKey: 'settings', descKey: 'settingsDesc', icon: 'settings' },
 ];
 

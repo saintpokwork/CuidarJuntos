@@ -37,6 +37,7 @@ const menuGroups = [
       { path: '/dashboard/familia', labelKey: 'nav.family', icon: 'group', exact: false },
       { path: '/dashboard/perfil', labelKey: 'nav.profile', icon: 'person', exact: false },
       { path: '/dashboard/guia', labelKey: 'nav.quickGuide', icon: 'menu_book', exact: false },
+      { path: '/dashboard/definicoes?upgrade=1', labelKey: 'nav.plan', icon: 'workspace_premium', exact: false },
       { path: '/dashboard/definicoes', labelKey: 'nav.settings', icon: 'settings', exact: false },
     ],
   },
@@ -62,8 +63,9 @@ const maisPaths = [
 ];
 
 const isActive = (pathname: string, path: string, exact: boolean, maisGroup?: boolean) => {
+  const targetPath = path.split('?')[0];
   if (maisGroup) return maisPaths.includes(pathname);
-  return exact ? pathname === path : pathname === path || pathname.startsWith(`${path}/`);
+  return exact ? pathname === targetPath : pathname === targetPath || pathname.startsWith(`${targetPath}/`);
 };
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {

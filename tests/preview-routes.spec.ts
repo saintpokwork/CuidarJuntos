@@ -110,6 +110,8 @@ test.describe('CuidarJuntos preview routes', () => {
     await expect(page.getByRole('heading', { name: 'Famílias' })).toBeVisible();
     await expect(page.getByText('Integração com Sensores')).toHaveCount(0);
     await expect(page.getByText('Sensor integration')).toHaveCount(0);
+    await expect(page.getByRole('link', { name: 'Começar grátis' })).toBeVisible();
+    await expect(page.getByText('Comece agora — grátis para sempre')).toHaveCount(0);
 
     await page.getByRole('button', { name: 'Anual' }).click();
     await expect(page.getByText('39€')).toBeVisible();
@@ -131,6 +133,19 @@ test.describe('CuidarJuntos preview routes', () => {
     await expect(page.getByText('€79')).toBeVisible();
     await expect(page.getByText(/Save more than 4 months/)).toBeVisible();
     await expect(page.getByText(/Save more than 3 months/)).toBeVisible();
+  });
+
+  test('paid pricing CTA stores selected trial plan before signup is submitted', async ({ page }) => {
+    await page.goto('/criar-conta?plan=households&billing=yearly');
+
+    const pendingPlan = await page.evaluate(() => window.localStorage.getItem('cuidarjuntos-pending-plan'));
+    expect(pendingPlan).toBe(JSON.stringify({ plan: 'households', billing: 'yearly' }));
+  });
+
+  test('dashboard shows one first-time setup surface, not duplicate setup cards', async ({ page }) => {
+    await page.goto('/dashboard');
+
+    await expect(page.getByText('Configuração inicial')).toHaveCount(0);
   });
 
   test('signup catches common email domain typos before auth request', async ({ page }) => {

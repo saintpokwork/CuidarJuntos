@@ -41,6 +41,7 @@ const translations = {
       family: 'Família',
       notes: 'Notas',
       settings: 'Definições',
+      plan: 'Plano',
       quickGuide: 'Guia rápido',
       more: 'Mais',
       features: 'Funcionalidades',
@@ -74,9 +75,12 @@ const translations = {
       noPaidPlan: 'Ainda não há plano pago associado a esta conta.',
       trial: '14 dias grátis',
       startCheckout: 'Escolher este plano',
+      startTrial: 'Começar 14 dias grátis',
       manageBilling: 'Gerir faturação',
       guarantee: 'Cancele quando quiser, em 1 clique. Sem perguntas.',
       pendingPlan: 'Plano escolhido guardado. Confirme abaixo para abrir o checkout seguro.',
+      pendingTitle: 'Pronto para começar o plano',
+      noChargeToday: 'A Stripe recolhe os dados de pagamento, mas não cobra hoje.',
       plans: {
         free: 'Grátis',
         family: 'Família',
@@ -217,7 +221,7 @@ const translations = {
             'Lembretes diários de medicação',
             'Ficha de emergência básica',
           ],
-          cta: 'Comece agora — grátis para sempre',
+          cta: 'Começar grátis',
         },
         family: {
           title: 'Família',
@@ -399,6 +403,12 @@ const translations = {
       greeting: 'Bom dia, {{name}}',
       summary: 'Hoje há {{medications}} medicamentos, {{tasks}} tarefas pendentes e {{appointments}}.',
       searchPlaceholder: 'Procurar medicamentos, tarefas...',
+    },
+    upgradeCard: {
+      title: 'Desbloquear o plano Família',
+      subtitle: 'Documentos ilimitados, família ilimitada e ficha de emergência completa.',
+      body: 'Comece com 14 dias grátis. A Stripe recolhe os dados de pagamento, mas não cobra hoje.',
+      cta: 'Experimentar 14 dias grátis',
     },
     guideBanner: {
       title: 'Novo no CuidarJuntos?',
@@ -745,6 +755,8 @@ const translations = {
         links: {
           quickGuide: 'Guia rápido',
           quickGuideDesc: 'Como usar o CuidarJuntos',
+          plan: 'Plano',
+          planDesc: 'Teste grátis e gestão da subscrição',
           profile: 'Perfil',
           profileDesc: 'Dados do familiar ao cuidado',
           documents: 'Documentos',
@@ -937,6 +949,7 @@ const translations = {
       family: 'Family',
       notes: 'Notes',
       settings: 'Settings',
+      plan: 'Plan',
       quickGuide: 'Quick guide',
       more: 'More',
       features: 'Features',
@@ -967,9 +980,12 @@ const translations = {
       noPaidPlan: 'No paid plan is associated with this account yet.',
       trial: '14 days free',
       startCheckout: 'Choose this plan',
+      startTrial: 'Start 14-day trial',
       manageBilling: 'Manage billing',
       guarantee: 'Cancel anytime, in 1 click. No questions asked.',
       pendingPlan: 'Selected plan saved. Confirm below to open secure checkout.',
+      pendingTitle: 'Ready to start the',
+      noChargeToday: 'Stripe collects payment details, but you are not charged today.',
       plans: {
         free: 'Free',
         family: 'Family',
@@ -1110,7 +1126,7 @@ const translations = {
             'Daily medication reminders',
             'Basic emergency card',
           ],
-          cta: 'Start now — free forever',
+          cta: 'Start free',
         },
         family: {
           title: 'Family',
@@ -1292,6 +1308,12 @@ const translations = {
       greeting: 'Good morning, {{name}}',
       summary: 'Today there are {{medications}} medications, {{tasks}} pending tasks and {{appointments}}.',
       searchPlaceholder: 'Search medications, tasks...',
+    },
+    upgradeCard: {
+      title: 'Unlock the Family plan',
+      subtitle: 'Unlimited documents, unlimited family helpers and a complete emergency card.',
+      body: 'Start with 14 days free. Stripe collects payment details, but you are not charged today.',
+      cta: 'Try 14 days free',
     },
     guideBanner: {
       title: 'New to CuidarJuntos?',
@@ -1640,6 +1662,8 @@ const translations = {
         links: {
           quickGuide: 'Quick guide',
           quickGuideDesc: 'How to use CuidarJuntos',
+          plan: 'Plan',
+          planDesc: 'Free trial and subscription management',
           profile: 'Profile',
           profileDesc: 'Care recipient data',
           documents: 'Documents',

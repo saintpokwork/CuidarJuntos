@@ -6,6 +6,12 @@ import { useLanguage } from '../i18n/LanguageContext';
 import LanguageToggle from '../components/LanguageToggle';
 import PublicFooter from '../components/PublicFooter';
 import { getEmailValidationKey, getFriendlyAuthErrorKey, normalizeEmail } from '../lib/authValidation';
+import {
+  getPostAuthDestination,
+  isPaidPlanKey,
+  normaliseBillingCycle,
+  savePendingPlan,
+} from '../lib/navigation';
 
 const CriarConta: React.FC = () => {
   const [nome, setNome] = useState('');
@@ -27,13 +33,14 @@ const CriarConta: React.FC = () => {
   const selectedBilling = searchParams.get('billing');
 
   useEffect(() => {
+    if (isPaidPlanKey(selectedPlan)) {
+      savePendingPlan(selectedPlan, normaliseBillingCycle(selectedBilling));
+    }
+  }, [selectedPlan, selectedBilling]);
+
+  useEffect(() => {
     if (user) {
-      const pendingPlan = localStorage.getItem('cuidarjuntos-pending-plan');
-      navigate(inviteToken
-        ? `/aceitar-convite?token=${encodeURIComponent(inviteToken)}`
-        : pendingPlan
-          ? '/dashboard/definicoes?upgrade=1'
-          : '/dashboard');
+      navigate(getPostAuthDestination(inviteToken));
     }
   }, [user, navigate, inviteToken]);
 
@@ -81,10 +88,7 @@ const CriarConta: React.FC = () => {
     }
 
     if (inviteToken) localStorage.setItem('cuidarjuntos-pending-invite-token', inviteToken);
-    if (selectedPlan === 'family' || selectedPlan === 'households') {
-      const billing = selectedBilling === 'monthly' ? 'monthly' : 'yearly';
-      localStorage.setItem('cuidarjuntos-pending-plan', JSON.stringify({ plan: selectedPlan, billing }));
-    }
+    if (isPaidPlanKey(selectedPlan)) savePendingPlan(selectedPlan, normaliseBillingCycle(selectedBilling));
   };
 
   const handleResendConfirmation = async () => {

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
 import { useCareData } from '../context/CareDataContext';
@@ -17,7 +17,16 @@ const Definicoes: React.FC = () => {
 
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { t } = useLanguage();
+
+  React.useEffect(() => {
+    if (searchParams.get('upgrade') === '1' || searchParams.get('checkout')) {
+      window.setTimeout(() => {
+        document.getElementById('billing')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [searchParams]);
 
   const handleSignOut = async () => {
     await signOut();

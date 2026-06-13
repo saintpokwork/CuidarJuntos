@@ -32,7 +32,7 @@ const NotificationBell: React.FC = () => {
       const isDesktopSidebar = rect.left < 260 && window.innerWidth >= 1024;
 
       const preferredLeft = isDesktopSidebar ? SIDEBAR_WIDTH + 16 : rect.right - panelWidth;
-      const preferredTop = isDesktopSidebar ? rect.bottom - panelHeight : rect.bottom + 8;
+      const preferredTop = isDesktopSidebar ? rect.top : rect.bottom + 8;
 
       setPosition({
         left: clamp(preferredLeft, VIEWPORT_MARGIN, window.innerWidth - panelWidth - VIEWPORT_MARGIN),
@@ -75,14 +75,14 @@ const NotificationBell: React.FC = () => {
         ref={buttonRef}
         type="button"
         onClick={() => setOpen((value) => !value)}
-        className="relative flex min-h-11 min-w-11 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/15 lg:bg-primary-fixed/20 lg:text-primary"
+        className="relative flex min-h-11 min-w-11 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white transition-colors hover:bg-white/18 focus:outline-none focus:ring-2 focus:ring-white/35"
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label={t('notifications.title')}
       >
         <span className="material-symbols-outlined">notifications</span>
         {count > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-cj-terracota px-1 text-[10px] font-bold text-white">
+          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-cj-cobre px-1 text-[10px] font-bold text-white">
             {count}
           </span>
         )}

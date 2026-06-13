@@ -1,6 +1,32 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.cuidarjuntos.pt" }],
+      "destination": "https://cuidarjuntos.pt/$1",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "cuidar-juntos-nine.vercel.app" }],
+      "destination": "https://cuidarjuntos.pt/$1",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "cuidar-juntos-saintpokwork-8585s-projects.vercel.app" }],
+      "destination": "https://cuidarjuntos.pt/$1",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "cuidar-juntos-git-main-saintpokwork-8585s-projects.vercel.app" }],
+      "destination": "https://cuidarjuntos.pt/$1",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]

@@ -3,12 +3,12 @@ import { Link } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
 import { useCareData } from '../context/CareDataContext';
-import OnboardingChecklist from '../components/OnboardingChecklist';
 import { useLanguage } from '../i18n/LanguageContext';
 import FirstRunWizard from '../components/FirstRunWizard';
 import DashboardAlerts from '../components/DashboardAlerts';
 import ActivityFeed from '../components/ActivityFeed';
 import ReferralBanner from '../components/ReferralBanner';
+import DashboardUpgradeCard from '../components/DashboardUpgradeCard';
 
 const parseAppointmentDate = (value?: string) => {
   if (!value) return null;
@@ -74,7 +74,7 @@ const Dashboard: React.FC = () => {
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
           <FirstRunWizard />
-          <OnboardingChecklist />
+          <DashboardUpgradeCard />
           <ReferralBanner />
           <DashboardAlerts />
 
