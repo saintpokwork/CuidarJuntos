@@ -88,7 +88,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             };
           }
 
-          return { error: new Error(body.error || 'signup_failed'), email: normalizedEmail };
+          if (body.error === 'signup_not_configured') {
+            console.warn('[auth] Custom signup endpoint is not configured; falling back to Supabase Auth signup.');
+          } else {
+            return { error: new Error(body.error || 'signup_failed'), email: normalizedEmail };
+          }
         }
       } catch (apiError) {
         if (import.meta.env.PROD) {
