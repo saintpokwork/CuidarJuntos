@@ -502,9 +502,6 @@ export const getCareProfilesForUser = async (
 export const getOrCreateDefaultCareProfile = async (
   user: { id: string; email?: string; user_metadata?: Record<string, unknown> },
 ): Promise<string | null> => {
-  const existing = await getCareProfilesForUser(user.id);
-  if (existing.length > 0) return existing[0].id;
-
   const ensureCareProfileViaServer = async (): Promise<string | null> => {
     const { data: sessionData } = await supabase.auth.getSession();
     const token = sessionData.session?.access_token;
@@ -527,6 +524,12 @@ export const getOrCreateDefaultCareProfile = async (
     const body = await response.json();
     return body.careProfileId || null;
   };
+
+  const ensuredId = await ensureCareProfileViaServer();
+  if (ensuredId) return ensuredId;
+
+  const existing = await getCareProfilesForUser(user.id);
+  if (existing.length > 0) return existing[0].id;
 
   const { data: profile, error: profErr } = await supabase
     .from('care_profiles')
@@ -680,7 +683,7 @@ export const loadCareDataFromSupabase = async (
   careProfileId: string,
 ): Promise<CareData | null> => {
   const todayKey = new Date().toISOString().slice(0, 10);
-  const [medsRes, medLogsRes, aptsRes, tasksRes, docsRes, notesRes, ecRes, cpRes, membersRes] =
+  const [medsRes, medLogsRes, aptsRes, tasksRes, docsRes, notesRes, ecRes, cpRes] =
     await Promise.all([
       supabase.from('medications').select('*').eq('care_profile_id', careProfileId),
       supabase.from('medication_logs').select('*').eq('care_profile_id', careProfileId).eq('taken_date', todayKey),
@@ -690,7 +693,6 @@ export const loadCareDataFromSupabase = async (
       supabase.from('care_notes').select('*').eq('care_profile_id', careProfileId).order('created_at', { ascending: false }),
       supabase.from('emergency_contacts').select('*').eq('care_profile_id', careProfileId).order('priority', { ascending: true }),
       supabase.from('care_profiles').select('*').eq('id', careProfileId).single(),
-      supabase.from('care_profile_members').select('*, profiles:user_id(full_name, email)').eq('care_profile_id', careProfileId),
     ]);
 
   // Log errors but don't crash
@@ -702,7 +704,6 @@ export const loadCareDataFromSupabase = async (
   if (notesRes.error) console.error('[load] care_notes error:', notesRes.error);
   if (ecRes.error) console.error('[load] emergency_contacts error:', ecRes.error);
   if (cpRes.error) console.error('[load] care_profiles error:', cpRes.error);
-  if (membersRes.error) console.error('[load] care_profile_members error:', membersRes.error);
 
   if (cpRes.error || !cpRes.data) return null;
 
@@ -718,7 +719,7 @@ export const loadCareDataFromSupabase = async (
     careNotes: (notesRes.data || []).map(mapCareNote),
     emergencyContacts: (ecRes.data || []).map(mapEmergencyContact),
     careProfile: mapCareProfile(cpRes.data),
-    familyMembers: (membersRes.data || []).map(mapFamilyMember),
+    familyMembers: [],
   };
 };
 
@@ -1100,7 +1101,7 @@ export const getCareProfileMembers = async (
 ): Promise<FamilyMember[]> => {
   const { data, error } = await supabase
     .from('care_profile_members')
-    .select('*, profiles:user_id(full_name, email)')
+    .select('*')
     .eq('care_profile_id', careProfileId);
 
   if (error) {
@@ -1187,12 +1188,9 @@ export const getCurrentUserRole = async (
   careProfileId: string,
   userId: string,
 ): Promise<{ role: string; isAdmin: boolean } | null> => {
-  const { data, error } = await supabase
-    .from('care_profile_members')
-    .select('role')
-    .eq('care_profile_id', careProfileId)
-    .eq('user_id', userId)
-    .single();
+  const { data, error } = await supabase.rpc('get_care_profile_role', {
+    profile_id: careProfileId,
+  });
 
   if (error || !data) {
     console.error('[supabaseDataAdapter] getCurrentUserRole error:', error);
@@ -1200,8 +1198,8 @@ export const getCurrentUserRole = async (
   }
 
   return {
-    role: roleFromDb[data.role] || 'Familiar',
-    isAdmin: data.role === 'admin',
+    role: roleFromDb[data as string] || 'Familiar',
+    isAdmin: data === 'admin',
   };
 };
 
