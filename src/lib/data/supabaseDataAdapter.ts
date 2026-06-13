@@ -505,6 +505,29 @@ export const getOrCreateDefaultCareProfile = async (
   const existing = await getCareProfilesForUser(user.id);
   if (existing.length > 0) return existing[0].id;
 
+  const ensureCareProfileViaServer = async (): Promise<string | null> => {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData.session?.access_token;
+    if (!token) return null;
+
+    const response = await fetch('/api/ensure-care-profile', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('[supabaseDataAdapter] ensure care profile API failed:', errorText);
+      return null;
+    }
+
+    const body = await response.json();
+    return body.careProfileId || null;
+  };
+
   const { data: profile, error: profErr } = await supabase
     .from('care_profiles')
     .insert({
@@ -524,7 +547,7 @@ export const getOrCreateDefaultCareProfile = async (
 
   if (profErr || !profile) {
     console.error('[supabaseDataAdapter] Failed to create care profile:', profErr);
-    return null;
+    return ensureCareProfileViaServer();
   }
 
   // Create membership
@@ -539,7 +562,7 @@ export const getOrCreateDefaultCareProfile = async (
     console.error('[supabaseDataAdapter] Failed to create membership:', memErr);
     // Clean up orphaned profile to prevent duplicates on next login
     await supabase.from('care_profiles').delete().eq('id', profile.id);
-    return null;
+    return ensureCareProfileViaServer();
   }
 
   return profile.id;
