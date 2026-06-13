@@ -531,9 +531,11 @@ export const getOrCreateDefaultCareProfile = async (
   const existing = await getCareProfilesForUser(user.id);
   if (existing.length > 0) return existing[0].id;
 
-  const { data: profile, error: profErr } = await supabase
+  const profileId = crypto.randomUUID();
+  const { error: profErr } = await supabase
     .from('care_profiles')
     .insert({
+      id: profileId,
       full_name: 'Familiar cuidado',
       created_by: user.id,
       date_of_birth: null,
@@ -544,18 +546,16 @@ export const getOrCreateDefaultCareProfile = async (
       doctor_name: null,
       pharmacy_name: null,
       notes: null,
-    })
-    .select('id')
-    .single();
+    });
 
-  if (profErr || !profile) {
+  if (profErr) {
     console.error('[supabaseDataAdapter] Failed to create care profile:', profErr);
     return ensureCareProfileViaServer();
   }
 
   // Create membership
   const { error: memErr } = await supabase.from('care_profile_members').insert({
-    care_profile_id: profile.id,
+    care_profile_id: profileId,
     user_id: user.id,
     role: 'admin',
     status: 'active',
@@ -564,11 +564,11 @@ export const getOrCreateDefaultCareProfile = async (
   if (memErr) {
     console.error('[supabaseDataAdapter] Failed to create membership:', memErr);
     // Clean up orphaned profile to prevent duplicates on next login
-    await supabase.from('care_profiles').delete().eq('id', profile.id);
+    await supabase.from('care_profiles').delete().eq('id', profileId);
     return ensureCareProfileViaServer();
   }
 
-  return profile.id;
+  return profileId;
 };
 
 // ---------------------------------------------------------------------------
