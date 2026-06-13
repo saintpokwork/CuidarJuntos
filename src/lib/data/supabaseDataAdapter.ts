@@ -9,6 +9,8 @@ import type {
   CareData,
   CareProfile,
   Medication,
+  MedicationAdministration,
+  MedicationAdministrationStatus,
   Appointment,
   Task,
   Document,
@@ -45,14 +47,34 @@ interface DbMedication {
   name: string;
   dosage: string | null;
   unit: Medication['unidade'] | null;
+  form: Medication['forma'] | null;
+  route: Medication['via'] | null;
   frequency: string | null;
   time: string | null;
+  schedule_type: string | null;
+  schedule_times: string[] | null;
+  schedule_days: string[] | null;
+  is_prn: boolean | null;
   instructions: string | null;
   responsible_user_id: string | null;
   active: boolean;
   end_date: string | null;
   created_at: string;
   updated_at: string;
+}
+
+interface DbMedicationAdministration {
+  id: string;
+  medication_id: string;
+  care_profile_id: string;
+  scheduled_date: string;
+  scheduled_time: string;
+  status: 'pending' | 'taken' | 'skipped' | 'missed';
+  marked_by: string | null;
+  marked_by_name: string | null;
+  marked_at: string | null;
+  notes: string | null;
+  medications?: Pick<DbMedication, 'name' | 'dosage' | 'instructions'> | null;
 }
 
 interface DbMedicationLog {
@@ -231,6 +253,8 @@ const mapMedication = (row: DbMedication, log?: DbMedicationLog): Medication => 
     nome: row.name,
     dosagem: row.dosage || '',
     unidade: row.unit || undefined,
+    forma: row.form || undefined,
+    via: row.route || undefined,
     horario: row.time || '',
     frequencia: row.frequency || '',
     responsavel: '', // We don't join profiles for display name in v1
@@ -242,6 +266,33 @@ const mapMedication = (row: DbMedication, log?: DbMedicationLog): Medication => 
     tomadoHoje: logState.tomadoHoje ?? logTakenToday,
   };
 };
+
+const adminStatusFromDb: Record<DbMedicationAdministration['status'], MedicationAdministrationStatus> = {
+  pending: 'por_tomar',
+  taken: 'tomado',
+  skipped: 'em_falta',
+  missed: 'em_falta',
+};
+
+const adminStatusToDb: Record<MedicationAdministrationStatus, DbMedicationAdministration['status']> = {
+  por_tomar: 'pending',
+  tomado: 'taken',
+  em_falta: 'missed',
+};
+
+const mapMedicationAdministration = (row: DbMedicationAdministration): MedicationAdministration => ({
+  id: row.id,
+  medicationId: row.medication_id,
+  medicationName: row.medications?.name || '',
+  dosage: row.medications?.dosage || '',
+  scheduledDate: row.scheduled_date,
+  scheduledTime: row.scheduled_time,
+  status: adminStatusFromDb[row.status] || 'por_tomar',
+  instructions: row.medications?.instructions || '',
+  markedBy: row.marked_by_name || '',
+  markedAt: row.marked_at || '',
+  notes: row.notes || '',
+});
 
 const mapAppointment = (row: DbAppointment): Appointment => {
   let dataHora = '';
@@ -363,11 +414,22 @@ const medicationToDb = (
     id?: string;
   },
   careProfileId: string,
+  includeRichFields = true,
 ) => ({
   care_profile_id: careProfileId,
   name: med.nome,
   dosage: med.dosagem,
   unit: med.unidade || null,
+  ...(includeRichFields
+    ? {
+        form: med.forma || null,
+        route: med.via || null,
+        schedule_type: med.horario === 'PRN' ? 'as_needed' : null,
+        schedule_times: med.horario === 'PRN' ? [] : med.horario.split(',').map((time) => time.trim()).filter(Boolean),
+        schedule_days: [],
+        is_prn: med.horario === 'PRN',
+      }
+    : {}),
   frequency: med.frequencia,
   time: med.horario,
   instructions: med.instrucoes || '',
@@ -683,10 +745,17 @@ export const loadCareDataFromSupabase = async (
   careProfileId: string,
 ): Promise<CareData | null> => {
   const todayKey = new Date().toISOString().slice(0, 10);
-  const [medsRes, medLogsRes, aptsRes, tasksRes, docsRes, notesRes, ecRes, cpRes] =
+  const [medsRes, medLogsRes, medAdminsRes, aptsRes, tasksRes, docsRes, notesRes, ecRes, cpRes] =
     await Promise.all([
       supabase.from('medications').select('*').eq('care_profile_id', careProfileId),
       supabase.from('medication_logs').select('*').eq('care_profile_id', careProfileId).eq('taken_date', todayKey),
+      supabase
+        .from('medication_administrations')
+        .select('*, medications(name,dosage,instructions)')
+        .eq('care_profile_id', careProfileId)
+        .gte('scheduled_date', todayKey)
+        .lte('scheduled_date', todayKey)
+        .order('scheduled_time', { ascending: true }),
       supabase.from('appointments').select('*').eq('care_profile_id', careProfileId).order('appointment_at', { ascending: true }),
       supabase.from('tasks').select('*').eq('care_profile_id', careProfileId).order('created_at', { ascending: false }),
       supabase.from('documents').select('*').eq('care_profile_id', careProfileId).order('created_at', { ascending: false }),
@@ -698,6 +767,9 @@ export const loadCareDataFromSupabase = async (
   // Log errors but don't crash
   if (medsRes.error) console.error('[load] medications error:', medsRes.error);
   if (medLogsRes.error) console.error('[load] medication_logs error:', medLogsRes.error);
+  if (medAdminsRes.error && !/does not exist|schema cache/i.test(medAdminsRes.error.message || '')) {
+    console.error('[load] medication_administrations error:', medAdminsRes.error);
+  }
   if (aptsRes.error) console.error('[load] appointments error:', aptsRes.error);
   if (tasksRes.error) console.error('[load] tasks error:', tasksRes.error);
   if (docsRes.error) console.error('[load] documents error:', docsRes.error);
@@ -713,6 +785,7 @@ export const loadCareDataFromSupabase = async (
 
   return {
     medications: (medsRes.data || []).map((med) => mapMedication(med as DbMedication, medicationLogsByMedication.get(med.id))),
+    medicationAdministrations: ((medAdminsRes.data || []) as DbMedicationAdministration[]).map(mapMedicationAdministration),
     appointments: (aptsRes.data || []).map(mapAppointment),
     tasks: (tasksRes.data || []).map(mapTask),
     documents: (docsRes.data || []).map(mapDocument),
@@ -734,12 +807,23 @@ export const createMedication = async (
     instrucoes?: string;
   },
 ): Promise<Medication | null> => {
-  const row = medicationToDb(med, careProfileId);
-  const { data, error } = await supabase
+  const richRow = medicationToDb(med, careProfileId);
+  let { data, error } = await supabase
     .from('medications')
-    .insert(row)
+    .insert(richRow)
     .select()
     .single();
+
+  if (error && /form|route|schedule_type|schedule_times|schedule_days|is_prn|column/i.test(error.message || '')) {
+    const legacyRow = medicationToDb(med, careProfileId, false);
+    const retry = await supabase
+      .from('medications')
+      .insert(legacyRow)
+      .select()
+      .single();
+    data = retry.data;
+    error = retry.error;
+  }
 
   if (error) {
     console.error('[supabaseDataAdapter] createMedication error:', error);
@@ -795,6 +879,27 @@ export const upsertMedicationDailyLog = async (
   const hasTakenDose = doses.some((dose) => dose.status === 'tomado');
   const status = hasSkippedDose ? 'skipped' : hasTakenDose || medication.tomadoHoje ? 'taken' : 'pending';
 
+  const administrationRows = doses.map((dose) => ({
+    medication_id: medication.id,
+    care_profile_id: careProfileId,
+    scheduled_date: doseDate,
+    scheduled_time: dose.horario,
+    status: adminStatusToDb[dose.status],
+    marked_by_name: dose.markedBy || null,
+    marked_at: dose.markedAt ? new Date().toISOString() : null,
+    notes: dose.note || null,
+  }));
+
+  if (administrationRows.length > 0) {
+    const { error: administrationError } = await supabase
+      .from('medication_administrations')
+      .upsert(administrationRows, { onConflict: 'medication_id,scheduled_date,scheduled_time' });
+
+    if (administrationError && !/does not exist|schema cache|column/i.test(administrationError.message || '')) {
+      console.error('[supabaseDataAdapter] upsert medication_administrations error:', administrationError);
+    }
+  }
+
   const { error } = await supabase
     .from('medication_logs')
     .upsert(
@@ -817,6 +922,30 @@ export const upsertMedicationDailyLog = async (
     return false;
   }
   return true;
+};
+
+export const loadMedicationAdministrations = async (
+  careProfileId: string,
+  startDate: string,
+  endDate: string,
+): Promise<MedicationAdministration[]> => {
+  const { data, error } = await supabase
+    .from('medication_administrations')
+    .select('*, medications(name,dosage,instructions)')
+    .eq('care_profile_id', careProfileId)
+    .gte('scheduled_date', startDate)
+    .lte('scheduled_date', endDate)
+    .order('scheduled_date', { ascending: false })
+    .order('scheduled_time', { ascending: true });
+
+  if (error) {
+    if (!/does not exist|schema cache/i.test(error.message || '')) {
+      console.error('[supabaseDataAdapter] loadMedicationAdministrations error:', error);
+    }
+    return [];
+  }
+
+  return ((data || []) as DbMedicationAdministration[]).map(mapMedicationAdministration);
 };
 
 // ---------------------------------------------------------------------------

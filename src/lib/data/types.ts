@@ -9,6 +9,8 @@ export type {
   FamilyMember,
   FamilyRole,
   Medication,
+  MedicationAdministration,
+  MedicationAdministrationStatus,
   MedicationEstado,
   MemberStatus,
   Task,

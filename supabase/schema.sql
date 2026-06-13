@@ -79,8 +79,14 @@ create table if not exists public.medications (
   name              text not null,
   dosage            text,
   unit              text,
+  form              text,
+  route             text,
   frequency         text,
   time              text,
+  schedule_type     text,
+  schedule_times    jsonb not null default '[]'::jsonb,
+  schedule_days     jsonb not null default '[]'::jsonb,
+  is_prn            boolean not null default false,
   instructions      text,
   responsible_user_id uuid references auth.users(id) on delete set null,
   active            boolean not null default true,
@@ -101,6 +107,24 @@ create table if not exists public.medication_logs (
   created_at        timestamptz not null default now(),
   constraint uq_medication_log unique (medication_id, taken_date),
   constraint chk_medication_log_status check (status in ('taken', 'skipped', 'pending'))
+);
+
+-- 3.5.1 medication_administrations
+create table if not exists public.medication_administrations (
+  id                uuid primary key default gen_random_uuid(),
+  medication_id     uuid not null references public.medications(id) on delete cascade,
+  care_profile_id   uuid not null references public.care_profiles(id) on delete cascade,
+  scheduled_date    date not null,
+  scheduled_time    text not null,
+  status            text not null default 'pending',
+  marked_by         uuid references auth.users(id) on delete set null,
+  marked_by_name    text,
+  marked_at         timestamptz,
+  notes             text,
+  created_at        timestamptz not null default now(),
+  updated_at        timestamptz not null default now(),
+  constraint uq_medication_administration unique (medication_id, scheduled_date, scheduled_time),
+  constraint chk_medication_administration_status check (status in ('pending', 'taken', 'skipped', 'missed'))
 );
 
 -- 3.6 appointments
@@ -180,6 +204,12 @@ create table if not exists public.emergency_contacts (
 -- Additive migrations for projects created from earlier versions of this file.
 alter table public.medications add column if not exists unit text;
 alter table public.medications add column if not exists end_date date;
+alter table public.medications add column if not exists form text;
+alter table public.medications add column if not exists route text;
+alter table public.medications add column if not exists schedule_type text;
+alter table public.medications add column if not exists schedule_times jsonb not null default '[]'::jsonb;
+alter table public.medications add column if not exists schedule_days jsonb not null default '[]'::jsonb;
+alter table public.medications add column if not exists is_prn boolean not null default false;
 alter table public.appointments add column if not exists pre_visit_notes text;
 alter table public.appointments add column if not exists result_notes text;
 alter table public.tasks add column if not exists recurrence text not null default 'none';
@@ -195,6 +225,8 @@ create index if not exists idx_care_profile_members_profile on public.care_profi
 create index if not exists idx_medications_profile on public.medications(care_profile_id);
 create index if not exists idx_medication_logs_profile on public.medication_logs(care_profile_id);
 create index if not exists idx_medication_logs_date on public.medication_logs(taken_date);
+create index if not exists idx_medication_administrations_profile_date on public.medication_administrations(care_profile_id, scheduled_date);
+create index if not exists idx_medication_administrations_medication_date on public.medication_administrations(medication_id, scheduled_date);
 
 create index if not exists idx_appointments_profile on public.appointments(care_profile_id);
 create index if not exists idx_appointments_date on public.appointments(appointment_at);
@@ -230,6 +262,11 @@ create trigger trg_care_profile_members_updated_at
 drop trigger if exists trg_medications_updated_at on public.medications;
 create trigger trg_medications_updated_at
   before update on public.medications
+  for each row execute function public.set_updated_at();
+
+drop trigger if exists trg_medication_administrations_updated_at on public.medication_administrations;
+create trigger trg_medication_administrations_updated_at
+  before update on public.medication_administrations
   for each row execute function public.set_updated_at();
 
 drop trigger if exists trg_appointments_updated_at on public.appointments;
@@ -481,7 +518,37 @@ create policy "Admins can delete medication logs"
   on public.medication_logs for delete
   using (public.is_care_profile_admin(care_profile_id));
 
--- 8.6 appointments
+-- 8.6 medication_administrations
+alter table public.medication_administrations enable row level security;
+
+drop policy if exists "Members can select medication administrations" on public.medication_administrations;
+create policy "Members can select medication administrations"
+  on public.medication_administrations for select
+  using (public.is_care_profile_member(care_profile_id));
+
+drop policy if exists "Admin/family/caregiver can insert medication administrations" on public.medication_administrations;
+create policy "Admin/family/caregiver can insert medication administrations"
+  on public.medication_administrations for insert
+  with check (
+    public.get_care_profile_role(care_profile_id) in ('admin', 'family', 'caregiver')
+  );
+
+drop policy if exists "Admin/family/caregiver can update medication administrations" on public.medication_administrations;
+create policy "Admin/family/caregiver can update medication administrations"
+  on public.medication_administrations for update
+  using (
+    public.get_care_profile_role(care_profile_id) in ('admin', 'family', 'caregiver')
+  )
+  with check (
+    public.get_care_profile_role(care_profile_id) in ('admin', 'family', 'caregiver')
+  );
+
+drop policy if exists "Admins can delete medication administrations" on public.medication_administrations;
+create policy "Admins can delete medication administrations"
+  on public.medication_administrations for delete
+  using (public.is_care_profile_admin(care_profile_id));
+
+-- 8.7 appointments
 alter table public.appointments enable row level security;
 
 drop policy if exists "Members can select appointments" on public.appointments;
@@ -608,3 +675,10 @@ drop policy if exists "Admins can delete emergency contacts" on public.emergency
 create policy "Admins can delete emergency contacts"
   on public.emergency_contacts for delete
   using (public.is_care_profile_admin(care_profile_id));
+
+-- 9. DATA API GRANTS
+-- ============================================================================
+-- Newer Supabase projects may not expose new public tables to the Data API by
+-- default. RLS above still controls row access after these grants.
+
+grant select, insert, update, delete on public.medication_administrations to authenticated;

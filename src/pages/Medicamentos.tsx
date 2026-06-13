@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
 import EmptyState from '../components/EmptyState';
@@ -11,10 +11,12 @@ import {
   getMedicationDoseTimeline,
   type MedicationScheduleType,
 } from '../lib/medicationSchedule';
-import type { MedicationDoseStatus, MedicationForm, MedicationRoute, MedicationUnit } from '../context/CareDataContext';
+import type { MedicationAdministration, MedicationDoseStatus, MedicationForm, MedicationRoute, MedicationUnit } from '../context/CareDataContext';
+
+const getTodayKey = () => new Date().toISOString().slice(0, 10);
 
 const Medicamentos: React.FC = () => {
-  const { data, addMedication, removeMedication, updateMedicationTaken, updateMedicationDoseStatus } = useCareData();
+  const { data, addMedication, removeMedication, updateMedicationTaken, updateMedicationDoseStatus, loadMedicationAdministrationHistory } = useCareData();
   const { t } = useLanguage();
   const { medications } = data;
   const [nome, setNome] = useState('');
@@ -33,6 +35,10 @@ const Medicamentos: React.FC = () => {
   const [responsavel, setResponsavel] = useState(caregiver.nome);
   const [dataFim, setDataFim] = useState('');
   const [erro, setErro] = useState('');
+  const [marStartDate, setMarStartDate] = useState(getTodayKey());
+  const [marEndDate, setMarEndDate] = useState(getTodayKey());
+  const [marHistory, setMarHistory] = useState<MedicationAdministration[]>([]);
+  const [marLoading, setMarLoading] = useState(false);
 
   const medsAtivos = medications.filter((m) => m.estado === 'Ativo');
   const takenHoje = medsAtivos.flatMap((m) => m.dosesHoje || []).filter((dose) => dose.status === 'tomado').length;
@@ -120,6 +126,40 @@ const Medicamentos: React.FC = () => {
   const toggleValue = (value: string, values: string[], setter: React.Dispatch<React.SetStateAction<string[]>>) => {
     setter(values.includes(value) ? values.filter((item) => item !== value) : [...values, value]);
   };
+
+  const isTodayRange = marStartDate === getTodayKey() && marEndDate === getTodayKey();
+  const liveMarRows = useMemo<MedicationAdministration[]>(
+    () => todayDoses.map((item) => ({
+      id: `${item.medicationId}-${item.dose.id}`,
+      medicationId: item.medicationId,
+      medicationName: item.medicationName,
+      dosage: item.dosage,
+      scheduledDate: getTodayKey(),
+      scheduledTime: item.dose.horario,
+      status: item.dose.status,
+      instructions: item.instructions,
+      markedBy: item.dose.markedBy,
+      markedAt: item.dose.markedAt,
+      notes: item.dose.note,
+    })),
+    [todayDoses],
+  );
+  const marRows = isTodayRange && marHistory.length === 0 ? liveMarRows : marHistory;
+
+  useEffect(() => {
+    let active = true;
+    setMarLoading(true);
+    loadMedicationAdministrationHistory(marStartDate, marEndDate)
+      .then((rows) => {
+        if (active) setMarHistory(rows);
+      })
+      .finally(() => {
+        if (active) setMarLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [marStartDate, marEndDate, loadMedicationAdministrationHistory]);
 
   return (
     <DashboardLayout>
@@ -497,19 +537,32 @@ const Medicamentos: React.FC = () => {
                 <h2 className="text-headline-md font-headline-md text-on-surface">{t('pages.medications.marTitle')}</h2>
                 <p className="text-label-sm text-on-surface-variant">{t('pages.medications.marSubtitle')}</p>
               </div>
-              <button
-                type="button"
-                onClick={() => window.print()}
-                className="inline-flex min-h-11 items-center justify-center rounded-full border border-primary px-4 text-label-sm font-bold text-primary"
-              >
-                <span className="material-symbols-outlined mr-2 text-[18px]">print</span>
-                {t('pages.medications.printMar')}
-              </button>
+              <div className="flex flex-col gap-2 sm:items-end">
+                <div className="grid grid-cols-2 gap-2">
+                  <label className="text-label-sm font-bold text-on-surface">
+                    {t('pages.medications.marFrom')}
+                    <input value={marStartDate} onChange={(e) => setMarStartDate(e.target.value)} type="date" className="mt-1 h-11 w-full rounded-xl border border-outline-variant bg-surface px-3 font-normal" />
+                  </label>
+                  <label className="text-label-sm font-bold text-on-surface">
+                    {t('pages.medications.marTo')}
+                    <input value={marEndDate} onChange={(e) => setMarEndDate(e.target.value)} type="date" className="mt-1 h-11 w-full rounded-xl border border-outline-variant bg-surface px-3 font-normal" />
+                  </label>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="inline-flex min-h-11 items-center justify-center rounded-full border border-primary px-4 text-label-sm font-bold text-primary"
+                >
+                  <span className="material-symbols-outlined mr-2 text-[18px]">print</span>
+                  {t('pages.medications.printMar')}
+                </button>
+              </div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[760px] border-separate border-spacing-y-2 text-left">
                 <thead>
                   <tr className="text-label-sm text-on-surface-variant">
+                    <th className="px-3 py-2">{t('pages.medications.marDate')}</th>
                     <th className="px-3 py-2">{t('pages.medications.marTime')}</th>
                     <th className="px-3 py-2">{t('pages.medications.marMedication')}</th>
                     <th className="px-3 py-2">{t('pages.medications.marInstruction')}</th>
@@ -518,20 +571,27 @@ const Medicamentos: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {todayDoses.length === 0 ? (
+                  {marLoading ? (
                     <tr>
-                      <td colSpan={5} className="rounded-2xl bg-surface-container-low px-3 py-5 text-label-md text-on-surface-variant">
+                      <td colSpan={6} className="rounded-2xl bg-surface-container-low px-3 py-5 text-label-md text-on-surface-variant">
+                        {t('global.loading')}
+                      </td>
+                    </tr>
+                  ) : marRows.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="rounded-2xl bg-surface-container-low px-3 py-5 text-label-md text-on-surface-variant">
                         {t('pages.medications.marEmpty')}
                       </td>
                     </tr>
-                  ) : todayDoses.map((item) => (
-                    <tr key={`mar-${item.medicationId}-${item.dose.id}`} className="bg-surface-container-low">
-                      <td className="rounded-l-2xl px-3 py-3 text-label-md font-bold text-on-surface">{item.dose.horario}</td>
+                  ) : marRows.map((item) => (
+                    <tr key={`mar-${item.id}`} className="bg-surface-container-low">
+                      <td className="rounded-l-2xl px-3 py-3 text-label-sm text-on-surface-variant">{item.scheduledDate}</td>
+                      <td className="px-3 py-3 text-label-md font-bold text-on-surface">{item.scheduledTime}</td>
                       <td className="px-3 py-3 text-label-md text-on-surface">{item.medicationName} {item.dosage}</td>
                       <td className="px-3 py-3 text-label-sm text-on-surface-variant">{item.instructions || '—'}</td>
-                      <td className="px-3 py-3 text-label-sm font-bold text-on-surface">{item.dose.status === 'por_tomar' ? timingLabel[item.timing] : doseStatusLabel[item.dose.status]}</td>
+                      <td className="px-3 py-3 text-label-sm font-bold text-on-surface">{doseStatusLabel[item.status]}</td>
                       <td className="rounded-r-2xl px-3 py-3 text-label-sm text-on-surface-variant">
-                        {item.dose.markedBy ? `${item.dose.markedBy} · ${item.dose.markedAt || ''}` : '—'}
+                        {item.markedBy ? `${item.markedBy} · ${item.markedAt || ''}` : '—'}
                       </td>
                     </tr>
                   ))}

@@ -12,6 +12,7 @@ import {
 
 export type MedicationEstado = 'Ativo' | 'Em falta';
 export type MedicationDoseStatus = 'por_tomar' | 'tomado' | 'em_falta';
+export type MedicationAdministrationStatus = MedicationDoseStatus;
 export type MedicationUnit = 'comprimidos' | 'mg' | 'ml' | 'gotas' | 'unidades';
 export type MedicationForm = 'comprimido' | 'capsula' | 'gotas' | 'xarope' | 'inalador' | 'injecao' | 'creme' | 'outro';
 export type MedicationRoute = 'oral' | 'topica' | 'inalada' | 'injetavel' | 'outra';
@@ -53,6 +54,20 @@ export interface Medication {
   dataFim?: string;
   dosesHoje?: MedicationDose[];
   doseDate?: string;
+}
+
+export interface MedicationAdministration {
+  id: string;
+  medicationId: string;
+  medicationName: string;
+  dosage: string;
+  scheduledDate: string;
+  scheduledTime: string;
+  status: MedicationAdministrationStatus;
+  instructions?: string;
+  markedBy?: string;
+  markedAt?: string;
+  notes?: string;
 }
 
 export interface Appointment {
@@ -135,6 +150,7 @@ export interface CareProfile {
 
 export interface CareData {
   medications: Medication[];
+  medicationAdministrations: MedicationAdministration[];
   appointments: Appointment[];
   tasks: Task[];
   documents: Document[];
@@ -146,6 +162,7 @@ export interface CareData {
 
 export const getInitialCareData = (): CareData => ({
   medications: JSON.parse(JSON.stringify(initialMedications)),
+  medicationAdministrations: [],
   appointments: JSON.parse(JSON.stringify(initialAppointments)),
   tasks: JSON.parse(JSON.stringify(initialTasks)),
   documents: JSON.parse(JSON.stringify(initialDocuments)),

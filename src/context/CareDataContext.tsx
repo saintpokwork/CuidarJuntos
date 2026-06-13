@@ -9,6 +9,7 @@ import {
   FamilyMember,
   FamilyRole,
   Medication,
+  MedicationAdministration,
   MedicationForm,
   MedicationDoseStatus,
   MedicationRoute,
@@ -35,6 +36,7 @@ import {
   createMedication as sbCreateMedication,
   deleteMedication as sbDeleteMedication,
   upsertMedicationDailyLog as sbUpsertMedicationDailyLog,
+  loadMedicationAdministrations as sbLoadMedicationAdministrations,
   createAppointment as sbCreateAppointment,
   deleteAppointment as sbDeleteAppointment,
   createTask as sbCreateTask,
@@ -178,6 +180,7 @@ const normalizeTask = (task: Task): Task => ({
 const normalizeCareData = (raw: CareData): CareData => ({
   ...raw,
   medications: raw.medications.map(normalizeMedication),
+  medicationAdministrations: raw.medicationAdministrations || [],
   tasks: raw.tasks.map(normalizeTask),
   appointments: raw.appointments.map((apt) => ({
     ...apt,
@@ -191,6 +194,23 @@ const normalizeCareData = (raw: CareData): CareData => ({
   })),
 });
 
+const buildMedicationAdministrationsForToday = (medication: Medication): MedicationAdministration[] => {
+  const scheduledDate = medication.doseDate || getTodayKey();
+  return (medication.dosesHoje || []).map((dose) => ({
+    id: `${medication.id}-${scheduledDate}-${dose.horario}`,
+    medicationId: medication.id,
+    medicationName: medication.nome,
+    dosage: medication.dosagem,
+    scheduledDate,
+    scheduledTime: dose.horario,
+    status: dose.status,
+    instructions: medication.instrucoes,
+    markedBy: dose.markedBy,
+    markedAt: dose.markedAt,
+    notes: dose.note,
+  }));
+};
+
 const loadFromStorage = (): CareData => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -201,6 +221,7 @@ const loadFromStorage = (): CareData => {
         ...initial,
         ...parsed,
         medications: parsed.medications ?? initial.medications,
+        medicationAdministrations: parsed.medicationAdministrations ?? initial.medicationAdministrations,
         appointments: parsed.appointments ?? initial.appointments,
         tasks: parsed.tasks ?? initial.tasks,
         documents: parsed.documents ?? initial.documents,
@@ -290,6 +311,7 @@ interface CareDataContextValue {
   removeMedication: (id: string) => void;
   updateMedicationTaken: (id: string, tomadoHoje: boolean) => void;
   updateMedicationDoseStatus: (medicationId: string, doseId: string, status: MedicationDoseStatus) => void;
+  loadMedicationAdministrationHistory: (startDate: string, endDate: string) => Promise<MedicationAdministration[]>;
   addAppointment: (apt: Omit<Appointment, 'id' | 'estado' | 'dataHora' | 'medico' | 'responsavel' | 'notas'> & { dataHora: string; medico?: string; responsavel?: string; notas?: string; notasPreConsulta?: string; resultadoConsulta?: string }) => boolean;
   removeAppointment: (id: string) => void;
   addTask: (task: Omit<Task, 'id' | 'status'> & { status?: TaskStatus; repetir?: TaskRecurrence }) => boolean;
@@ -517,9 +539,14 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       })),
     };
 
+    const administrations = buildMedicationAdministrationsForToday(updatedMedication);
     setData((prev) => ({
       ...prev,
       medications: prev.medications.map((m) => (m.id === id ? updatedMedication : m)),
+      medicationAdministrations: [
+        ...prev.medicationAdministrations.filter((item) => item.medicationId !== id || item.scheduledDate !== updatedMedication.doseDate),
+        ...administrations,
+      ],
     }));
     showFeedback(tomadoHoje ? 'feedback.medicationTaken' : 'feedback.medicationUntaken');
     if (storageMode === 'cloud' && careProfileId) {
@@ -546,9 +573,14 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const tomadoHoje = dosesHoje.length > 0 && dosesHoje.every((dose) => dose.status === 'tomado');
     const updatedMedication: Medication = { ...currentMedication, doseDate: getTodayKey(), dosesHoje, tomadoHoje };
 
+    const administrations = buildMedicationAdministrationsForToday(updatedMedication);
     setData((prev) => ({
       ...prev,
       medications: prev.medications.map((med) => (med.id === medicationId ? updatedMedication : med)),
+      medicationAdministrations: [
+        ...prev.medicationAdministrations.filter((item) => item.medicationId !== medicationId || item.scheduledDate !== updatedMedication.doseDate),
+        ...administrations,
+      ],
     }));
     showFeedback(status === 'tomado' ? 'feedback.medicationTaken' : 'feedback.medicationUntaken');
     if (storageMode === 'cloud' && careProfileId) {
@@ -557,6 +589,18 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       });
     }
   }, [data.medications, storageMode, careProfileId, showFeedback]);
+
+  const loadMedicationAdministrationHistory = useCallback(
+    async (startDate: string, endDate: string): Promise<MedicationAdministration[]> => {
+      if (storageMode === 'cloud' && careProfileId) {
+        return sbLoadMedicationAdministrations(careProfileId, startDate, endDate);
+      }
+      return data.medicationAdministrations.filter(
+        (item) => item.scheduledDate >= startDate && item.scheduledDate <= endDate,
+      );
+    },
+    [storageMode, careProfileId, data.medicationAdministrations],
+  );
 
   // ---------------------------------------------------------------------------
   // CRUD: Appointments
@@ -1383,6 +1427,7 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     removeMedication,
     updateMedicationTaken,
     updateMedicationDoseStatus,
+    loadMedicationAdministrationHistory,
     addAppointment,
     removeAppointment,
     addTask,
@@ -1420,6 +1465,7 @@ export type {
   FamilyRole,
   CareNote,
   EmergencyContact,
+  MedicationAdministration,
   MedicationDoseStatus,
   MedicationForm,
   MedicationRoute,
