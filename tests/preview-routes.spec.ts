@@ -37,6 +37,12 @@ test.describe('CuidarJuntos preview routes', () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {
       window.localStorage.setItem('cuidarjuntos-language', 'pt');
+      window.localStorage.setItem('cuidarjuntos-privacy-consent-v1', JSON.stringify({
+        version: 1,
+        choice: 'essential',
+        metrics: false,
+        decidedAt: new Date().toISOString(),
+      }));
     });
   });
 
@@ -192,6 +198,23 @@ test.describe('CuidarJuntos preview routes', () => {
     await expect(page.getByRole('contentinfo').getByText('Supabase')).toHaveCount(0);
     await expect(page.getByRole('contentinfo').getByText('Vercel')).toHaveCount(0);
     await expect(page.getByRole('contentinfo').getByText('Resend')).toHaveCount(0);
+  });
+
+  test('privacy banner stores consent and footer can reopen preferences', async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.removeItem('cuidarjuntos-privacy-consent-v1');
+    });
+    await page.goto('/');
+
+    await expect(page.getByText('Privacidade e métricas')).toBeVisible();
+    await page.getByRole('button', { name: 'Apenas essenciais' }).click();
+    await expect(page.getByText('Privacidade e métricas')).toHaveCount(0);
+
+    const consent = await page.evaluate(() => window.localStorage.getItem('cuidarjuntos-privacy-consent-v1'));
+    expect(consent).toContain('"metrics":false');
+
+    await page.getByRole('button', { name: 'Preferências de privacidade' }).click();
+    await expect(page.getByText('Privacidade e métricas')).toBeVisible();
   });
 
   test('footer quick guide opens the public guide, not the dashboard guide', async ({ page }) => {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
@@ -34,15 +34,23 @@ import FeedbackMessage from './FeedbackMessage';
 import ScrollToTop from './ScrollToTop';
 import RouteMeta from './RouteMeta';
 import { useCareData } from '../context/CareDataContext';
+import PrivacyConsent from './PrivacyConsent';
+import { getPrivacyConsent, PrivacyConsentRecord } from '../lib/privacyConsent';
 
 const AppRoutes: React.FC = () => {
   const { feedback } = useCareData();
+  const [privacyConsent, setPrivacyConsent] = useState<PrivacyConsentRecord | null>(() => getPrivacyConsent());
   return (
     <>
       <FeedbackMessage message={feedback} />
       <ScrollToTop />
-      <Analytics />
-      <SpeedInsights />
+      {privacyConsent?.metrics && (
+        <>
+          <Analytics />
+          <SpeedInsights />
+        </>
+      )}
+      <PrivacyConsent onConsentChange={setPrivacyConsent} />
       <RouteMeta />
       <Routes>
         <Route path="/" element={<Home />} />

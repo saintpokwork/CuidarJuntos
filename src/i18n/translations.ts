@@ -54,6 +54,13 @@ const translations = {
       disclaimer:
         'CuidarJuntos não substitui médicos, hospitais, farmácias, o SNS ou serviços de emergência. Em caso de emergência, ligue 112.',
     },
+    privacyConsent: {
+      title: 'Privacidade e métricas',
+      body: 'Usamos armazenamento essencial para a aplicação funcionar. As métricas de performance ajudam-nos a perceber se o site carrega bem e só são ativadas se aceitar.',
+      acceptMetrics: 'Aceitar métricas',
+      essentialOnly: 'Apenas essenciais',
+      manageHint: 'Pode alterar esta escolha mais tarde no rodapé.',
+    },
     demo: {
       notice: 'Está a usar o CuidarJuntos em modo de demonstração. Os seus dados ficam guardados apenas neste navegador. Crie uma conta gratuita para guardar na nuvem e aceder de qualquer dispositivo.',
       signedInNotice:
@@ -383,6 +390,7 @@ const translations = {
       dataSecurity: 'Segurança dos dados',
       cancellation: 'Cancelamento',
       refunds: 'Reembolsos e cancelamento',
+      privacyPreferences: 'Preferências de privacidade',
       contactPrompt: 'Precisa de ajuda?',
       copyright: '© 2026 CuidarJuntos by Nebula Craft Design',
       trust: {
@@ -962,19 +970,19 @@ const translations = {
       cookies: {
         title: 'Política de Cookies',
         lastUpdated: 'Última atualização: junho de 2026',
-        intro: 'O CuidarJuntos usa apenas armazenamento técnico necessário para a aplicação funcionar, manter sessão e compreender a estabilidade do serviço.',
+        intro: 'O CuidarJuntos usa armazenamento técnico necessário para a aplicação funcionar. Métricas de performance e disponibilidade só devem ser ativadas quando aceita essa opção.',
         heroNote: 'Não usamos cookies de publicidade ou marketing comportamental.',
         summary: [
           { title: 'Essencial para funcionar', text: 'Usamos armazenamento local e de sessão para idioma, demonstração, autenticação e preferências básicas.' },
           { title: 'Sessão e segurança', text: 'Quando inicia sessão, a aplicação usa dados técnicos para manter a conta ativa e segura no navegador.' },
-          { title: 'Métricas técnicas', text: 'Usamos métricas agregadas de performance e disponibilidade para perceber se o site carrega corretamente.' },
+          { title: 'Métricas opcionais', text: 'As métricas de performance e disponibilidade ajudam-nos a perceber se o site carrega corretamente e respeitam a sua escolha de consentimento.' },
           { title: 'Sem marketing', text: 'Não usamos cookies de publicidade, retargeting ou venda de dados pessoais.' },
         ],
         sections: [
           { title: 'Armazenamento local', text: 'No modo demo, alguns dados ficam guardados no seu navegador para que possa experimentar a aplicação. Pode apagar estes dados limpando os dados do site no navegador ou usando as opções de reposição quando disponíveis.' },
           { title: 'Autenticação', text: 'No modo com conta, a sessão técnica permite manter o utilizador autenticado e aceder aos dados autorizados. Sem este armazenamento, a conta não funcionaria corretamente.' },
-          { title: 'Analytics de performance', text: 'As métricas técnicas ajudam-nos a perceber disponibilidade, velocidade e erros agregados. Estas métricas não são usadas para publicidade personalizada.' },
-          { title: 'Como controlar', text: 'Pode bloquear ou apagar cookies e armazenamento no seu navegador. Algumas funcionalidades, como sessão, idioma e demo, podem deixar de funcionar corretamente.' },
+          { title: 'Métricas de performance', text: 'Quando aceita métricas, usamos ferramentas de performance e disponibilidade para compreender carregamentos, erros agregados e estabilidade. Estas métricas não são usadas para publicidade personalizada.' },
+          { title: 'Como controlar', text: 'Pode alterar as preferências no rodapé, bloquear ou apagar cookies e armazenamento no navegador. Algumas funcionalidades essenciais, como sessão, idioma e demo, podem deixar de funcionar corretamente se bloquear todo o armazenamento.' },
         ],
         viewPrivacy: 'Ver política de privacidade',
       },
@@ -1097,6 +1105,13 @@ const translations = {
     safety: {
       disclaimer:
         'CuidarJuntos does not replace doctors, hospitals, pharmacies, the Portuguese NHS/SNS or emergency services. In an emergency, call 112.',
+    },
+    privacyConsent: {
+      title: 'Privacy and metrics',
+      body: 'We use essential storage for the app to work. Performance metrics help us understand whether the site loads well and are only enabled if you accept them.',
+      acceptMetrics: 'Accept metrics',
+      essentialOnly: 'Essential only',
+      manageHint: 'You can change this choice later in the footer.',
     },
     demo: {
       notice: 'You are using CuidarJuntos in demo mode. Your data is saved only in this browser. Create a free account to save to the cloud and access from any device.',
@@ -1424,6 +1439,7 @@ const translations = {
       dataSecurity: 'Data security',
       cancellation: 'Cancellation',
       refunds: 'Refunds and cancellation',
+      privacyPreferences: 'Privacy preferences',
       contactPrompt: 'Need help?',
       copyright: '© 2026 CuidarJuntos by Nebula Craft Design',
       trust: {
@@ -2005,19 +2021,19 @@ const translations = {
       cookies: {
         title: 'Cookie Policy',
         lastUpdated: 'Last updated: June 2026',
-        intro: 'CuidarJuntos uses only technical storage needed for the app to work, keep sessions active and understand service stability.',
+        intro: 'CuidarJuntos uses technical storage needed for the app to work. Performance and availability metrics should only be enabled when you accept that option.',
         heroNote: 'We do not use advertising or behavioural marketing cookies.',
         summary: [
           { title: 'Essential operation', text: 'We use local and session storage for language, demo mode, authentication and basic preferences.' },
           { title: 'Session and security', text: 'When you sign in, the app uses technical data to keep your account active and secure in the browser.' },
-          { title: 'Technical metrics', text: 'We use aggregate performance and availability metrics to understand whether the site loads correctly.' },
+          { title: 'Optional metrics', text: 'Performance and availability metrics help us understand whether the site loads correctly and respect your consent choice.' },
           { title: 'No marketing', text: 'We do not use advertising cookies, retargeting or sell personal data.' },
         ],
         sections: [
           { title: 'Local storage', text: 'In demo mode, some data is stored in your browser so you can try the app. You can remove this by clearing site data in your browser or using reset options where available.' },
           { title: 'Authentication', text: 'In account mode, technical session storage keeps the user authenticated and allows authorised data access. Without this storage, the account would not work correctly.' },
-          { title: 'Performance analytics', text: 'Technical metrics help us understand availability, speed and aggregate errors. These metrics are not used for personalised advertising.' },
-          { title: 'How to control it', text: 'You can block or delete cookies and storage in your browser. Some features, such as sessions, language and demo mode, may stop working correctly.' },
+          { title: 'Performance metrics', text: 'When you accept metrics, we use performance and availability tools to understand page loads, aggregate errors and stability. These metrics are not used for personalised advertising.' },
+          { title: 'How to control it', text: 'You can change preferences in the footer, block or delete cookies and storage in your browser. Essential features such as sessions, language and demo mode may stop working correctly if you block all storage.' },
         ],
         viewPrivacy: 'View privacy policy',
       },

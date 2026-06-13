@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import CuidarJuntosLogo from './brand/CuidarJuntosLogo';
 import { useLanguage } from '../i18n/LanguageContext';
+import { openPrivacyPreferences } from '../lib/privacyConsent';
 
 const FooterLink: React.FC<{ to: string; children: React.ReactNode }> = ({ to, children }) => {
   const className = 'inline-flex min-h-10 items-center text-label-md text-on-surface-variant hover:text-primary transition-colors';
@@ -123,6 +124,9 @@ const PublicFooter: React.FC = () => {
             <Link to="/contacto" className="text-label-md font-bold text-primary hover:underline">
               {t('footer.contactPrompt')}
             </Link>
+            <button type="button" onClick={openPrivacyPreferences} className="text-label-md font-bold text-primary hover:underline">
+              {t('footer.privacyPreferences')}
+            </button>
           </div>
         </div>
       </div>
