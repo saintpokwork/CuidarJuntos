@@ -9,6 +9,7 @@ import DashboardAlerts from '../components/DashboardAlerts';
 import ActivityFeed from '../components/ActivityFeed';
 import ReferralBanner from '../components/ReferralBanner';
 import DashboardUpgradeCard from '../components/DashboardUpgradeCard';
+import { getMedicationDoseTimeline } from '../lib/medicationSchedule';
 
 const parseAppointmentDate = (value?: string) => {
   if (!value) return null;
@@ -42,15 +43,9 @@ const Dashboard: React.FC = () => {
   const { t } = useLanguage();
   const { medications, appointments, tasks, documents, emergencyContacts, careNotes } = data;
 
-  const medicationsToday = medications
-    .filter((m) => m.estado === 'Ativo')
-    .slice(0, 2)
-    .map((m) => ({
-      id: m.id,
-      nome: `${m.nome} ${m.dosagem}`,
-      horario: m.horario.split(',')[0]?.trim() || m.horario,
-      instrucoes: m.instrucoes || m.frequencia,
-    }));
+  const medicationsToday = getMedicationDoseTimeline(medications)
+    .filter((item) => item.dose.status === 'por_tomar')
+    .slice(0, 3);
 
   const pendingTasks = tasks.filter((t) => t.status === 'por_fazer');
   const latestCareNote = careNotes[0];
@@ -202,7 +197,7 @@ const Dashboard: React.FC = () => {
                 <div className="space-y-4">
                   {medicationsToday.map((med, i) => (
                     <div
-                      key={med.id}
+                      key={`${med.medicationId}-${med.dose.id}`}
                       className={`flex items-center p-3 rounded-xl ${
                         i === 0 ? 'bg-primary-fixed/20' : 'bg-surface-container'
                       }`}
@@ -217,14 +212,14 @@ const Dashboard: React.FC = () => {
                         <span className="material-symbols-outlined">alarm</span>
                       </div>
                       <div className="flex-1">
-                        <p className="text-label-md font-bold">{med.nome}</p>
+                        <p className="text-label-md font-bold">{med.medicationName} {med.dosage}</p>
                         <p className="text-label-sm text-on-surface-variant">
-                          {med.horario} • {med.instrucoes}
+                          {med.dose.horario} • {med.instructions || t('pages.medications.pending')}
                         </p>
                       </div>
                       <button
                         type="button"
-                        onClick={() => updateMedicationTaken(med.id, true)}
+                        onClick={() => updateMedicationTaken(med.medicationId, true)}
                         className="min-h-11 rounded-full bg-primary px-3 text-label-sm font-bold text-on-primary"
                       >
                         {t('pages.medications.markTaken')}

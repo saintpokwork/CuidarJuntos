@@ -9,7 +9,9 @@ import {
   FamilyMember,
   FamilyRole,
   Medication,
+  MedicationForm,
   MedicationDoseStatus,
+  MedicationRoute,
   MedicationUnit,
   Task,
   TaskPriority,
@@ -20,6 +22,12 @@ import {
 } from '../data/initialData';
 import translations from '../i18n/translations';
 import { useAuth } from './AuthContext';
+import {
+  buildMedicationDoses,
+  getMedicationDoseTimeline,
+  getNextMedicationDose,
+  getDoseStatusTiming,
+} from '../lib/medicationSchedule';
 import {
   getOrCreateUserProfile,
   getOrCreateDefaultCareProfile,
@@ -80,19 +88,6 @@ const getTodayKey = () => {
   const dd = String(now.getDate()).padStart(2, '0');
   return `${yyyy}-${mm}-${dd}`;
 };
-
-const getDoseId = (medicationId: string, horario: string) => `${medicationId}-${horario}`;
-
-const buildMedicationDoses = (m: Medication, status: MedicationDoseStatus = 'por_tomar') =>
-  m.horario
-    .split(',')
-    .map((item) => item.trim())
-    .filter(Boolean)
-    .map((horario) => ({
-      id: getDoseId(m.id, horario),
-      horario,
-      status,
-    }));
 
 const normalizeRecurrence = (value?: TaskRecurrence | string): TaskRecurrence => {
   switch (value) {
@@ -259,10 +254,11 @@ export type SyncStatus = 'idle' | 'loading' | 'saving' | 'error' | 'synced';
 
 export interface CareNotification {
   id: string;
-  type: 'missedDose' | 'appointmentTomorrow' | 'taskOverdue' | 'documentExpiring';
+  type: 'doseDue' | 'doseOverdue' | 'missedDose' | 'appointmentTomorrow' | 'taskOverdue' | 'documentExpiring';
   title: string;
   body: string;
   path: string;
+  actionLabel?: string;
 }
 
 export interface ActivityEvent {
@@ -290,7 +286,7 @@ interface CareDataContextValue {
   syncError: string | null;
   reloadCloudData: () => Promise<void>;
   showFeedback: (message: string) => void;
-  addMedication: (med: Omit<Medication, 'id' | 'estado' | 'instrucoes' | 'responsavel' | 'dosesHoje' | 'tomadoHoje'> & { responsavel?: string; instrucoes?: string }) => boolean;
+  addMedication: (med: Omit<Medication, 'id' | 'estado' | 'instrucoes' | 'responsavel' | 'dosesHoje' | 'tomadoHoje'> & { responsavel?: string; instrucoes?: string; forma?: MedicationForm; via?: MedicationRoute }) => boolean;
   removeMedication: (id: string) => void;
   updateMedicationTaken: (id: string, tomadoHoje: boolean) => void;
   updateMedicationDoseStatus: (medicationId: string, doseId: string, status: MedicationDoseStatus) => void;
@@ -447,6 +443,8 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         nome: med.nome.trim(),
         dosagem: med.dosagem.trim(),
         unidade: med.unidade,
+        forma: med.forma,
+        via: med.via,
         horario: med.horario.trim(),
         frequencia: med.frequencia.trim(),
         responsavel: med.responsavel?.trim() || caregiver.nome,
@@ -468,6 +466,8 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       nome: med.nome.trim(),
       dosagem: med.dosagem.trim(),
       unidade: med.unidade,
+      forma: med.forma,
+      via: med.via,
       horario: med.horario.trim(),
       frequencia: med.frequencia.trim(),
       responsavel: med.responsavel?.trim() || caregiver.nome,
@@ -1126,19 +1126,12 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // ---------------------------------------------------------------------------
   const dashboardSummary = React.useMemo(() => {
     const lang = getCurrentLang();
-    const medCount = data.medications.filter((m) => m.estado === 'Ativo').length;
     const medsAtivos = data.medications.filter((m) => m.estado === 'Ativo');
-    const takenToday = medsAtivos.filter((m) => m.tomadoHoje).length;
-    const times = medsAtivos
-      .filter((m) => !m.tomadoHoje)
-      .flatMap((m) => m.horario.split(',').map((item) => item.trim()))
-      .map((time) => {
-        const match = time.match(/^(\d{2}:\d{2})$/);
-        return match ? match[1] : null;
-      })
-      .filter((value): value is string => !!value)
-      .sort();
-    const nextMedicationTime = times[0] || (lang === 'en' ? 'No time set' : 'Sem horário definido');
+    const todayDoses = getMedicationDoseTimeline(medsAtivos);
+    const medCount = todayDoses.length;
+    const takenToday = todayDoses.filter((item) => item.dose.status === 'tomado').length;
+    const nextDose = getNextMedicationDose(medsAtivos);
+    const nextMedicationTime = nextDose?.dose.horario || (lang === 'en' ? 'No time set' : 'Sem horário definido');
     const pendingTasks = data.tasks.filter((t) => t.status === 'por_fazer').length;
     const overdueTasks = data.tasks.filter(isTaskOverdue).length;
     const aptCount = data.appointments.length;
@@ -1280,14 +1273,40 @@ export const CareDataProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const notifications = React.useMemo<CareNotification[]>(() => {
     const medicationAlerts = data.medications
-      .filter((med) => med.estado === 'Em falta' || med.dosesHoje?.some((dose) => dose.status === 'em_falta'))
-      .map((med) => ({
-        id: `missed-${med.id}`,
-        type: 'missedDose' as const,
-        title: tt('notifications.missedDoseTitle'),
-        body: `${med.nome} · ${med.horario}`,
-        path: '/dashboard/medicamentos',
-      }));
+      .filter((med) => med.estado === 'Ativo' || med.estado === 'Em falta')
+      .flatMap((med) =>
+        (med.dosesHoje || []).map((dose) => {
+          const timing = med.estado === 'Em falta' ? 'missed' : getDoseStatusTiming(dose.horario, dose.status);
+          if (!['due', 'overdue', 'missed'].includes(timing)) return null;
+
+          const title =
+            timing === 'due'
+              ? tt('notifications.doseDueTitle')
+              : timing === 'overdue'
+                ? tt('notifications.doseOverdueTitle')
+                : tt('notifications.missedDoseTitle');
+          return {
+            id: `dose-${timing}-${med.id}-${dose.id}`,
+            type: timing === 'due' ? ('doseDue' as const) : timing === 'overdue' ? ('doseOverdue' as const) : ('missedDose' as const),
+            title,
+            body: `${med.nome} ${med.dosagem} · ${dose.horario}${med.instrucoes ? ` · ${med.instrucoes}` : ''}`,
+            path: '/dashboard/medicamentos',
+            actionLabel: tt('notifications.openMedication'),
+          };
+        }),
+      )
+      .filter((item): item is CareNotification => Boolean(item))
+      .sort((a, b) => {
+        const priority: Record<CareNotification['type'], number> = {
+          missedDose: 0,
+          doseOverdue: 1,
+          doseDue: 2,
+          taskOverdue: 3,
+          documentExpiring: 4,
+          appointmentTomorrow: 5,
+        };
+        return priority[a.type] - priority[b.type];
+      });
 
     const taskAlerts = data.tasks
       .filter(isTaskOverdue)
@@ -1402,5 +1421,7 @@ export type {
   CareNote,
   EmergencyContact,
   MedicationDoseStatus,
+  MedicationForm,
+  MedicationRoute,
   MedicationUnit,
 };

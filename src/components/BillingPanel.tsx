@@ -117,6 +117,15 @@ const BillingPanel: React.FC = () => {
         </div>
       </div>
 
+      <div className="mb-5 grid gap-3 md:grid-cols-3">
+        {(['free', 'family', 'households'] as const).map((planKey) => (
+          <div key={planKey} className="rounded-2xl border border-cj-border bg-cj-branco p-4">
+            <p className="text-label-md font-bold text-on-surface">{t(`billing.planClarity.${planKey}.title`)}</p>
+            <p className="mt-1 text-label-sm text-on-surface-variant">{t(`billing.planClarity.${planKey}.text`)}</p>
+          </div>
+        ))}
+      </div>
+
       <div className="grid gap-4 md:grid-cols-2">
         {(['family', 'households'] as PaidPlanKey[]).map((planKey) => (
           <div

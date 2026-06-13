@@ -114,6 +114,9 @@ const NotificationBell: React.FC = () => {
                   >
                     <p className="text-label-md font-bold text-on-surface">{item.title}</p>
                     <p className="mt-1 text-label-sm text-on-surface-variant">{item.body}</p>
+                    {item.actionLabel && (
+                      <p className="mt-2 text-label-sm font-bold text-primary">{item.actionLabel}</p>
+                    )}
                   </Link>
                 ))}
               </div>

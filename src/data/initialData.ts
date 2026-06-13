@@ -13,6 +13,8 @@ import {
 export type MedicationEstado = 'Ativo' | 'Em falta';
 export type MedicationDoseStatus = 'por_tomar' | 'tomado' | 'em_falta';
 export type MedicationUnit = 'comprimidos' | 'mg' | 'ml' | 'gotas' | 'unidades';
+export type MedicationForm = 'comprimido' | 'capsula' | 'gotas' | 'xarope' | 'inalador' | 'injecao' | 'creme' | 'outro';
+export type MedicationRoute = 'oral' | 'topica' | 'inalada' | 'injetavel' | 'outra';
 export type TaskStatus = 'por_fazer' | 'em_progresso' | 'concluido';
 export type TaskPriority = 'Baixa' | 'Média' | 'Urgente';
 export type TaskRecurrence = 'none' | 'daily' | 'weekly' | 'monthly';
@@ -32,6 +34,7 @@ export interface MedicationDose {
   status: MedicationDoseStatus;
   markedBy?: string;
   markedAt?: string;
+  note?: string;
 }
 
 export interface Medication {
@@ -39,6 +42,8 @@ export interface Medication {
   nome: string;
   dosagem: string;
   unidade?: MedicationUnit;
+  forma?: MedicationForm;
+  via?: MedicationRoute;
   horario: string;
   frequencia: string;
   responsavel: string;
