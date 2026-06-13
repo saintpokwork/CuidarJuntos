@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
 import EmptyState from '../components/EmptyState';
@@ -6,14 +6,18 @@ import { useLanguage } from '../i18n/LanguageContext';
 import { useCareData, DocumentCategory } from '../context/CareDataContext';
 import { documentCategories } from '../data/initialData';
 import HelpTip from '../components/HelpTip';
+import { useAuth } from '../context/AuthContext';
+import { loadSubscriptionStatus, SubscriptionStatus } from '../lib/billing';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
 
 const Documentos: React.FC = () => {
   const { data, removeDocument, addDocumentWithFile, getDocumentDownloadUrl, storageMode } = useCareData();
+  const { user } = useAuth();
   const { t } = useLanguage();
   const { documents } = data;
+  const [subscription, setSubscription] = useState<SubscriptionStatus | null>(null);
   const [filtro, setFiltro] = useState<DocumentCategory | 'Todos'>('Todos');
   const [busca, setBusca] = useState('');
   const [titulo, setTitulo] = useState('');
@@ -24,6 +28,23 @@ const Documentos: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isFreeCloudUser = storageMode === 'cloud' && !!user && (!subscription || subscription.planKey === 'free');
+
+  useEffect(() => {
+    if (!user || storageMode !== 'cloud') {
+      setSubscription(null);
+      return;
+    }
+
+    let active = true;
+    loadSubscriptionStatus().then((status) => {
+      if (active) setSubscription(status);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [storageMode, user]);
 
   const parseDateValue = (value: string) => {
     if (!value) return null;
@@ -57,6 +78,12 @@ const Documentos: React.FC = () => {
     );
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (isFreeCloudUser) {
+      setErro(t('proFeature.documents.message'));
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
     const file = e.target.files?.[0] || null;
     setErro('');
 
@@ -111,6 +138,10 @@ const Documentos: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (uploading) return; // Prevent double submit
+    if (isFreeCloudUser) {
+      setErro(t('proFeature.documents.message'));
+      return;
+    }
 
     const nomeFicheiro = titulo.trim() || selectedFile?.name || 'documento_novo';
 
@@ -157,6 +188,26 @@ const Documentos: React.FC = () => {
 
         <div className="max-w-[1200px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
           <HelpTip text={t('pages.documents.help')} />
+          {isFreeCloudUser && (
+            <section className="mb-stack-lg rounded-2xl border border-primary/20 bg-cj-verde-pale/60 p-5 shadow-cj-sm">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="flex items-start gap-3">
+                  <span className="material-symbols-outlined mt-1 text-primary">lock</span>
+                  <div>
+                    <p className="text-label-sm font-bold uppercase tracking-[0.16em] text-primary">{t('proFeature.badgeFamily')}</p>
+                    <h2 className="text-headline-sm font-headline-sm text-on-surface">{t('proFeature.documents.title')}</h2>
+                    <p className="mt-1 text-label-md text-on-surface-variant">{t('proFeature.documents.body')}</p>
+                  </div>
+                </div>
+                <a
+                  href="/dashboard/definicoes?upgrade=1"
+                  className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full bg-primary px-5 text-label-md font-bold text-on-primary"
+                >
+                  {t('proFeature.cta')}
+                </a>
+              </div>
+            </section>
+          )}
           <div className="grid gap-4 mb-stack-lg md:grid-cols-[2fr_1fr]">
             <div>
               <label className="text-label-sm text-on-surface-variant mb-2 inline-block">{t('pages.documents.search')}</label>
@@ -302,6 +353,7 @@ const Documentos: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
+                      disabled={isFreeCloudUser}
                       className="mt-3 px-4 py-2 bg-primary text-on-primary text-label-sm font-bold rounded-full hover:opacity-90 transition-all"
                     >
                       {t('pages.documents.selectFile')}
@@ -378,7 +430,7 @@ const Documentos: React.FC = () => {
                   type="submit"
                   disabled={uploading}
                   className={`w-full py-4 bg-primary text-on-primary font-bold rounded-full shadow-lg transition-all ${
-                    uploading ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
+                    uploading || isFreeCloudUser ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
                   }`}
                 >
                   {uploading ? t('pages.documents.uploading') : t('pages.documents.saveDocument')}

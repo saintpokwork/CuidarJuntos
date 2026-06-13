@@ -8,4 +8,4 @@ Disallow: /criar-conta
 Disallow: /recuperar-password
 Disallow: /atualizar-password
 
-Sitemap: https://www.cuidarjuntos.pt/sitemap.xml
+Sitemap: https://cuidarjuntos.pt/sitemap.xml

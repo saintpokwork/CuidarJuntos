@@ -24,6 +24,7 @@ const publicRoutes = [
   '/atualizar-password',
   '/aceitar-convite?token=invalid-preview-token',
   '/blog',
+  '/guia',
   '/privacidade',
   '/termos',
   '/cookies',
@@ -191,6 +192,31 @@ test.describe('CuidarJuntos preview routes', () => {
     await expect(page.getByRole('contentinfo').getByText('Supabase')).toHaveCount(0);
     await expect(page.getByRole('contentinfo').getByText('Vercel')).toHaveCount(0);
     await expect(page.getByRole('contentinfo').getByText('Resend')).toHaveCount(0);
+  });
+
+  test('footer quick guide opens the public guide, not the dashboard guide', async ({ page }) => {
+    await page.goto('/');
+
+    await page.getByRole('contentinfo').getByRole('link', { name: 'Guia rápido' }).click();
+
+    await expect(page).toHaveURL(/\/guia$/);
+    await expect(page.getByRole('heading', { name: 'Guia rápido' })).toBeVisible();
+    await expect(page).not.toHaveURL(/dashboard/);
+  });
+
+  test('dashboard billing cards show prices, trial timing and free plan inclusions', async ({ page }) => {
+    await page.goto('/dashboard/definicoes?upgrade=1');
+
+    await expect(page.getByText('Incluído no plano Grátis')).toBeVisible();
+    await expect(page.getByText('Ficha de emergência básica')).toBeVisible();
+    await expect(page.getByText('4,99€', { exact: true })).toBeVisible();
+    await expect(page.getByText('8,99€', { exact: true })).toBeVisible();
+    await expect(page.getByText(/Depois dos 14 dias: 4,99€\/mês/)).toBeVisible();
+
+    await page.getByRole('button', { name: 'Anual' }).click();
+    await expect(page.getByText('39€', { exact: true })).toBeVisible();
+    await expect(page.getByText('79€', { exact: true })).toBeVisible();
+    await expect(page.getByText(/Depois dos 14 dias: 39€\/ano/)).toBeVisible();
   });
 
   test('legal pages no longer show unfinished review notes', async ({ page }) => {

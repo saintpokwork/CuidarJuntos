@@ -30,7 +30,7 @@ const PublicFooter: React.FC = () => {
         { label: t('global.signIn'), to: '/entrar' },
         { label: t('global.createAccount'), to: '/criar-conta' },
         { label: t('footer.billing'), to: '/#precos' },
-        { label: t('nav.quickGuide'), to: '/dashboard/guia' },
+        { label: t('nav.quickGuide'), to: '/guia' },
       ],
     },
     {

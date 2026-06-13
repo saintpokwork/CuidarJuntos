@@ -195,7 +195,7 @@ const Definicoes: React.FC = () => {
                 </div>
               </div>
 
-              {isCloud && <BillingPanel />}
+              <BillingPanel />
 
               <div className="bg-white p-6 rounded-[24px] soft-shadow border border-outline-variant/30">
                 <h3 className="text-headline-md font-headline-md text-on-surface mb-2">{t('pages.settings.demoData')}</h3>

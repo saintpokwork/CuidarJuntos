@@ -3,15 +3,26 @@ import { Link } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import DashboardPageHeader from '../components/DashboardPageHeader';
 import { useLanguage } from '../i18n/LanguageContext';
+import PublicFooter from '../components/PublicFooter';
+import CuidarJuntosLogo from '../components/brand/CuidarJuntosLogo';
 
-const Guia: React.FC = () => {
+type GuiaProps = {
+  publicPage?: boolean;
+};
+
+const GuiaContent: React.FC<{ publicPage: boolean }> = ({ publicPage }) => {
   const { t } = useLanguage();
   return (
-    <DashboardLayout>
-      <main className="flex-1 w-full relative">
-        <DashboardPageHeader title={t('pages.guide.title')} showSearch={false} />
+    <main className="flex-1 w-full relative">
+      {!publicPage && <DashboardPageHeader title={t('pages.guide.title')} showSearch={false} />}
 
-        <div className="max-w-[900px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
+      <div className="max-w-[900px] mx-auto px-container-padding-mobile md:px-container-padding-desktop py-stack-lg">
+        {publicPage && (
+          <div className="mb-8 text-center">
+            <p className="mb-3 text-label-md font-bold uppercase tracking-[0.18em] text-primary">{t('pages.guide.publicEyebrow')}</p>
+            <h1 className="text-headline-lg font-headline-lg text-on-surface">{t('pages.guide.title')}</h1>
+          </div>
+        )}
           <p className="text-body-md text-on-surface-variant mb-6 p-4 bg-warm-beige rounded-xl">
             {t('pages.guide.intro')}
           </p>
@@ -90,26 +101,59 @@ const Guia: React.FC = () => {
 
           <div className="flex flex-wrap gap-4">
             <Link
-              to="/dashboard/medicamentos"
+              to={publicPage ? '/criar-conta' : '/dashboard/medicamentos'}
               className="px-6 py-3 bg-primary text-on-primary font-bold rounded-full hover:opacity-90 transition-all"
             >
-              {t('pages.guide.goToMedications')}
+              {publicPage ? t('global.createAccount') : t('pages.guide.goToMedications')}
             </Link>
             <Link
-              to="/dashboard/tarefas"
+              to={publicPage ? '/#precos' : '/dashboard/tarefas'}
               className="px-6 py-3 bg-secondary text-on-secondary font-bold rounded-full hover:opacity-90 transition-all"
             >
-              {t('pages.guide.createTask')}
+              {publicPage ? t('nav.pricing') : t('pages.guide.createTask')}
             </Link>
             <Link
-              to="/dashboard/emergencia"
+              to={publicPage ? '/entrar' : '/dashboard/emergencia'}
               className="px-6 py-3 bg-error-container text-on-error-container font-bold rounded-full hover:opacity-90 transition-all"
             >
-              {t('pages.guide.viewEmergencyCard')}
+              {publicPage ? t('global.signIn') : t('pages.guide.viewEmergencyCard')}
             </Link>
           </div>
         </div>
       </main>
+  );
+};
+
+const Guia: React.FC<GuiaProps> = ({ publicPage = false }) => {
+  const { t } = useLanguage();
+
+  if (publicPage) {
+    return (
+      <div className="min-h-screen bg-background text-on-surface">
+        <header className="border-b border-cj-border bg-cj-branco">
+          <nav className="mx-auto flex h-20 max-w-[1200px] items-center justify-between px-container-padding-mobile md:px-container-padding-desktop">
+            <Link to="/">
+              <CuidarJuntosLogo variant="default" size="md" />
+            </Link>
+            <div className="flex items-center gap-3">
+              <Link className="text-label-md font-bold text-primary hover:underline" to="/entrar">
+                {t('global.signIn')}
+              </Link>
+              <Link className="rounded-full bg-primary px-5 py-3 text-label-md font-bold text-on-primary" to="/criar-conta">
+                {t('global.createAccount')}
+              </Link>
+            </div>
+          </nav>
+        </header>
+        <GuiaContent publicPage />
+        <PublicFooter />
+      </div>
+    );
+  }
+
+  return (
+    <DashboardLayout>
+      <GuiaContent publicPage={false} />
     </DashboardLayout>
   );
 };

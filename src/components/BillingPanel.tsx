@@ -3,11 +3,12 @@ import { BillingCycle, PaidPlanKey, createBillingPortalSession, createCheckoutSe
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../i18n/LanguageContext';
 import { clearPendingPlan, getPendingPlan } from '../lib/navigation';
+import { freePlanSummaryKeys, paidPlanHighlightKeys, planAfterTrial, planPrices, planSavings } from '../lib/planCatalog';
 
 const BillingPanel: React.FC = () => {
   const { user } = useAuth();
   const { t } = useLanguage();
-  const [billingCycle, setBillingCycle] = useState<BillingCycle>('yearly');
+  const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
   const [subscription, setSubscription] = useState<SubscriptionStatus | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<PaidPlanKey>('family');
   const [hasPendingPlan, setHasPendingPlan] = useState(false);
@@ -94,13 +95,26 @@ const BillingPanel: React.FC = () => {
         </div>
       )}
 
-      <div className="mb-5 rounded-2xl border border-outline-variant bg-surface-container-low p-4">
-        <p className="text-label-md font-bold text-on-surface">
-          {t('billing.currentPlan')}: {subscription ? t(`billing.plans.${subscription.planKey}`) : t('billing.plans.free')}
-        </p>
-        <p className="text-label-sm text-on-surface-variant mt-1">
-          {subscription?.status ? `${t('billing.status')}: ${subscription.status}` : t('billing.noPaidPlan')}
-        </p>
+      <div className="mb-5 grid gap-4 rounded-2xl border border-outline-variant bg-surface-container-low p-4 md:grid-cols-[1fr_1.2fr]">
+        <div>
+          <p className="text-label-md font-bold text-on-surface">
+            {t('billing.currentPlan')}: {subscription ? t(`billing.plans.${subscription.planKey}`) : t('billing.plans.free')}
+          </p>
+          <p className="text-label-sm text-on-surface-variant mt-1">
+            {subscription?.status ? `${t('billing.status')}: ${subscription.status}` : t('billing.noPaidPlan')}
+          </p>
+        </div>
+        <div>
+          <p className="text-label-sm font-bold uppercase tracking-[0.14em] text-primary">{t('billing.freeIncludes.title')}</p>
+          <ul className="mt-2 grid gap-1 text-label-sm text-on-surface-variant sm:grid-cols-2">
+            {freePlanSummaryKeys.map((key) => (
+              <li key={key} className="flex items-start gap-1.5">
+                <span className="material-symbols-outlined mt-0.5 text-[16px] text-primary">check_circle</span>
+                <span>{t(key)}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -120,6 +134,28 @@ const BillingPanel: React.FC = () => {
                 {t('billing.trial')}
               </span>
             </div>
+            <div className="mt-4 rounded-2xl bg-surface-container-low p-4">
+              <div className="flex flex-wrap items-end gap-2">
+                <span className="text-headline-md font-headline-md text-on-surface">{planPrices[planKey][billingCycle]}</span>
+                <span className="pb-1 text-label-sm text-on-surface-variant">
+                  {billingCycle === 'monthly' ? t('billing.perMonth') : t('billing.perYear')}
+                </span>
+              </div>
+              {billingCycle === 'yearly' && (
+                <p className="mt-1 text-label-sm font-bold text-primary">{planSavings[planKey]}</p>
+              )}
+              <p className="mt-2 text-label-sm text-on-surface-variant">
+                {t('billing.afterTrial')} {planAfterTrial[planKey][billingCycle]}.
+              </p>
+            </div>
+            <ul className="mt-4 space-y-2">
+              {paidPlanHighlightKeys[planKey].map((key) => (
+                <li key={key} className="flex items-start gap-2 text-label-sm text-on-surface-variant">
+                  <span className="material-symbols-outlined mt-0.5 text-[17px] text-secondary">check</span>
+                  <span>{t(key)}</span>
+                </li>
+              ))}
+            </ul>
             <button
               type="button"
               disabled={loading || !user}
@@ -137,7 +173,12 @@ const BillingPanel: React.FC = () => {
       </div>
 
       <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-label-sm text-on-surface-variant">{t('billing.guarantee')}</p>
+        <p className="text-label-sm text-on-surface-variant">
+          {t('billing.guarantee')}{' '}
+          <a className="font-bold text-primary hover:underline" href="/#precos">
+            {t('billing.comparePlans')}
+          </a>
+        </p>
         <button
           type="button"
           disabled={loading || !user}

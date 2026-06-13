@@ -19,6 +19,10 @@ const routeMeta: Record<string, { title: string; description: string; index?: bo
     title: 'Guias para cuidadores — CuidarJuntos',
     description: 'Guias práticos para famílias e cuidadores em Portugal.',
   },
+  '/guia': {
+    title: 'Guia rápido — CuidarJuntos',
+    description: 'Guia rápido para começar a organizar medicamentos, consultas, tarefas, documentos e contactos de emergência.',
+  },
   '/privacidade': {
     title: 'Política de Privacidade — CuidarJuntos',
     description: 'Como o CuidarJuntos recolhe, utiliza e protege dados pessoais.',

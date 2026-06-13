@@ -1,48 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://www.cuidarjuntos.pt/</loc>
-    <lastmod>2026-06-12</lastmod>
+    <loc>https://cuidarjuntos.pt/</loc>
+    <lastmod>2026-06-13</lastmod>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://www.cuidarjuntos.pt/como-funciona</loc>
-    <lastmod>2026-06-12</lastmod>
+    <loc>https://cuidarjuntos.pt/como-funciona</loc>
+    <lastmod>2026-06-13</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.cuidarjuntos.pt/blog</loc>
-    <lastmod>2026-06-12</lastmod>
+    <loc>https://cuidarjuntos.pt/guia</loc>
+    <lastmod>2026-06-13</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.cuidarjuntos.pt/blog/organizar-cuidados-familiar-idoso</loc>
-    <lastmod>2026-06-12</lastmod>
+    <loc>https://cuidarjuntos.pt/blog</loc>
+    <lastmod>2026-06-13</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://cuidarjuntos.pt/blog/organizar-cuidados-familiar-idoso</loc>
+    <lastmod>2026-06-13</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.cuidarjuntos.pt/blog/checklist-ficha-emergencia</loc>
-    <lastmod>2026-06-12</lastmod>
+    <loc>https://cuidarjuntos.pt/blog/checklist-ficha-emergencia</loc>
+    <lastmod>2026-06-13</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.cuidarjuntos.pt/blog/gestao-medicamentos-familia</loc>
-    <lastmod>2026-06-12</lastmod>
+    <loc>https://cuidarjuntos.pt/blog/gestao-medicamentos-familia</loc>
+    <lastmod>2026-06-13</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.cuidarjuntos.pt/blog/documentos-importantes-cuidador</loc>
-    <lastmod>2026-06-12</lastmod>
+    <loc>https://cuidarjuntos.pt/blog/documentos-importantes-cuidador</loc>
+    <lastmod>2026-06-13</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.cuidarjuntos.pt/privacidade</loc>
-    <lastmod>2026-06-12</lastmod>
+    <loc>https://cuidarjuntos.pt/privacidade</loc>
+    <lastmod>2026-06-13</lastmod>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://www.cuidarjuntos.pt/termos</loc>
-    <lastmod>2026-06-12</lastmod>
+    <loc>https://cuidarjuntos.pt/termos</loc>
+    <lastmod>2026-06-13</lastmod>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://cuidarjuntos.pt/cookies</loc>
+    <lastmod>2026-06-13</lastmod>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://cuidarjuntos.pt/cancelamento</loc>
+    <lastmod>2026-06-13</lastmod>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://cuidarjuntos.pt/seguranca</loc>
+    <lastmod>2026-06-13</lastmod>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://cuidarjuntos.pt/contacto</loc>
+    <lastmod>2026-06-13</lastmod>
     <priority>0.3</priority>
   </url>
 </urlset>

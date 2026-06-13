@@ -81,6 +81,19 @@ const translations = {
       pendingPlan: 'Plano escolhido guardado. Confirme abaixo para abrir o checkout seguro.',
       pendingTitle: 'Pronto para começar o plano',
       noChargeToday: 'A Stripe recolhe os dados de pagamento, mas não cobra hoje.',
+      afterTrial: 'Depois dos 14 dias:',
+      perMonth: '/mês',
+      perYear: '/ano',
+      comparePlans: 'Comparar planos',
+      freeIncludes: {
+        title: 'Incluído no plano Grátis',
+        items: [
+          '1 familiar cuidado',
+          'Medicamentos, consultas e tarefas',
+          'Até 2 pessoas da família',
+          'Ficha de emergência básica',
+        ],
+      },
       plans: {
         free: 'Grátis',
         family: 'Família',
@@ -89,6 +102,18 @@ const translations = {
       planDescriptions: {
         family: 'Organização completa para um familiar cuidado, com família e documentos ilimitados.',
         households: 'Para quem coordena cuidados de vários familiares, com suporte prioritário.',
+      },
+      planHighlights: {
+        family: [
+          'Família ilimitada e documentos ilimitados',
+          'Ficha de emergência completa + PDF',
+          'Notas partilhadas e histórico exportável',
+        ],
+        households: [
+          'Até 6 perfis de familiares cuidados',
+          'Alternância rápida entre perfis',
+          'Relatórios PDF e suporte prioritário',
+        ],
       },
       errors: {
         signin_required: 'Entre na sua conta para gerir o plano.',
@@ -354,7 +379,7 @@ const translations = {
       terms: 'Termos de utilização',
       privacy: 'Política de privacidade',
       cookies: 'Política de cookies',
-      billing: 'Plano e faturação',
+      billing: 'Preços e planos',
       dataSecurity: 'Segurança dos dados',
       cancellation: 'Cancelamento',
       refunds: 'Reembolsos e cancelamento',
@@ -420,10 +445,20 @@ const translations = {
       searchPlaceholder: 'Procurar medicamentos, tarefas...',
     },
     upgradeCard: {
+      planLabel: 'Plano atual: Grátis',
       title: 'Desbloquear o plano Família',
-      subtitle: 'Documentos ilimitados, família ilimitada e ficha de emergência completa.',
+      subtitle: 'O essencial já está incluído. Atualize quando precisar de documentos, mais família ou exportações.',
       body: 'Comece com 14 dias grátis. A Stripe recolhe os dados de pagamento, mas não cobra hoje.',
       cta: 'Experimentar 14 dias grátis',
+    },
+    proFeature: {
+      badgeFamily: 'Plano Família',
+      cta: 'Experimentar 14 dias grátis',
+      documents: {
+        title: 'Documentos são uma funcionalidade do plano Família',
+        body: 'A ficha de emergência básica continua disponível no plano Grátis. O envio e armazenamento de documentos privados fica no plano Família para manter ficheiros médicos organizados e seguros.',
+        message: 'O envio de documentos está disponível no plano Família. Pode experimentar 14 dias grátis em Plano e faturação.',
+      },
     },
     guideBanner: {
       title: 'Novo no CuidarJuntos?',
@@ -809,6 +844,7 @@ const translations = {
       },
       guide: {
         title: 'Guia rápido',
+        publicEyebrow: 'Comece aqui',
         comingSoon: 'Disponível',
         intro: 'Os dados apresentados são exemplos para demonstrar como a plataforma funciona.',
         firstStepsTitle: 'Primeiros passos',
@@ -1086,6 +1122,19 @@ const translations = {
       pendingPlan: 'Selected plan saved. Confirm below to open secure checkout.',
       pendingTitle: 'Ready to start the',
       noChargeToday: 'Stripe collects payment details, but you are not charged today.',
+      afterTrial: 'After 14 days:',
+      perMonth: '/month',
+      perYear: '/year',
+      comparePlans: 'Compare plans',
+      freeIncludes: {
+        title: 'Included in the Free plan',
+        items: [
+          '1 care recipient',
+          'Medications, appointments and tasks',
+          'Up to 2 family helpers',
+          'Basic emergency card',
+        ],
+      },
       plans: {
         free: 'Free',
         family: 'Family',
@@ -1094,6 +1143,18 @@ const translations = {
       planDescriptions: {
         family: 'Complete organisation for one care recipient, with unlimited family helpers and documents.',
         households: 'For coordinating care across several relatives, with priority support.',
+      },
+      planHighlights: {
+        family: [
+          'Unlimited family helpers and documents',
+          'Complete emergency card + PDF',
+          'Shared notes and exportable history',
+        ],
+        households: [
+          'Up to 6 care recipient profiles',
+          'Quick switching between profiles',
+          'PDF reports and priority support',
+        ],
       },
       errors: {
         signin_required: 'Sign in to manage your plan.',
@@ -1359,7 +1420,7 @@ const translations = {
       terms: 'Terms of use',
       privacy: 'Privacy policy',
       cookies: 'Cookie policy',
-      billing: 'Plan and billing',
+      billing: 'Pricing and plans',
       dataSecurity: 'Data security',
       cancellation: 'Cancellation',
       refunds: 'Refunds and cancellation',
@@ -1425,10 +1486,20 @@ const translations = {
       searchPlaceholder: 'Search medications, tasks...',
     },
     upgradeCard: {
+      planLabel: 'Current plan: Free',
       title: 'Unlock the Family plan',
-      subtitle: 'Unlimited documents, unlimited family helpers and a complete emergency card.',
+      subtitle: 'The essentials are already included. Upgrade when you need documents, more family helpers or exports.',
       body: 'Start with 14 days free. Stripe collects payment details, but you are not charged today.',
       cta: 'Try 14 days free',
+    },
+    proFeature: {
+      badgeFamily: 'Family plan',
+      cta: 'Try 14 days free',
+      documents: {
+        title: 'Documents are a Family plan feature',
+        body: 'The basic emergency card stays available on the Free plan. Uploading and storing private documents is part of the Family plan so medical files stay organised and secure.',
+        message: 'Document upload is available on the Family plan. You can try it free for 14 days in Plan and billing.',
+      },
     },
     guideBanner: {
       title: 'New to CuidarJuntos?',
@@ -1816,6 +1887,7 @@ const translations = {
       },
       guide: {
         title: 'Quick guide',
+        publicEyebrow: 'Start here',
         comingSoon: 'Available',
         intro: 'The data shown are examples to demonstrate how the platform works.',
         firstStepsTitle: 'First steps',
