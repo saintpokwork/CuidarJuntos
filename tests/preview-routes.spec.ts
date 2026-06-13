@@ -132,4 +132,16 @@ test.describe('CuidarJuntos preview routes', () => {
     await expect(page.getByText(/Save more than 4 months/)).toBeVisible();
     await expect(page.getByText(/Save more than 3 months/)).toBeVisible();
   });
+
+  test('signup catches common email domain typos before auth request', async ({ page }) => {
+    await page.goto('/criar-conta');
+    await page.getByLabel('Nome').fill('Joao Guilherme');
+    await page.getByLabel('Email').fill('joaoguilhermesilva02@gmail.cor');
+    await page.getByLabel('Palavra-passe', { exact: true }).fill('password123');
+    await page.getByLabel('Confirmar palavra-passe', { exact: true }).fill('password123');
+    await page.getByRole('button', { name: 'Criar conta' }).click();
+
+    await expect(page.getByText(/Verifique o domínio do email/)).toBeVisible();
+    await expect(page.getByText(/Error sending confirmation email/)).toHaveCount(0);
+  });
 });

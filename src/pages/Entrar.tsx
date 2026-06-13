@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../i18n/LanguageContext';
 import LanguageToggle from '../components/LanguageToggle';
 import PublicFooter from '../components/PublicFooter';
+import { getEmailValidationKey, getFriendlyAuthErrorKey, normalizeEmail } from '../lib/authValidation';
 
 const Entrar: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -38,7 +39,8 @@ const Entrar: React.FC = () => {
 
   const validate = (): boolean => {
     const errors: string[] = [];
-    if (!email.trim()) errors.push(t('global.emailRequired'));
+    const emailErrorKey = getEmailValidationKey(email);
+    if (emailErrorKey) errors.push(t(emailErrorKey));
     if (!password) errors.push(t('global.passwordRequired'));
     setValidationErrors(errors);
     return errors.length === 0;
@@ -51,11 +53,11 @@ const Entrar: React.FC = () => {
     setMessage('');
     setError('');
 
-    const { error: authError } = await signIn(email, password);
+    const { error: authError } = await signIn(normalizeEmail(email), password);
     setLoading(false);
 
     if (authError) {
-      setError(authError.message || t('auth.errorSignIn'));
+      setError(t(getFriendlyAuthErrorKey(authError.message, 'auth.errorSignIn')));
       return;
     }
 
@@ -92,18 +94,24 @@ const Entrar: React.FC = () => {
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-label-sm font-bold text-on-surface mb-2">{t('auth.email')}</label>
+              <label htmlFor="signin-email" className="block text-label-sm font-bold text-on-surface mb-2">{t('auth.email')}</label>
               <input
+                id="signin-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="seu@email.com"
+                inputMode="email"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
                 className="w-full h-12 px-4 rounded-2xl border border-outline-variant bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
               />
             </div>
             <div>
-              <label className="block text-label-sm font-bold text-on-surface mb-2">{t('auth.password')}</label>
+              <label htmlFor="signin-password" className="block text-label-sm font-bold text-on-surface mb-2">{t('auth.password')}</label>
               <input
+                id="signin-password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

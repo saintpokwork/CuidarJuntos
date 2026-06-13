@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../i18n/LanguageContext';
 import LanguageToggle from '../components/LanguageToggle';
 import PublicFooter from '../components/PublicFooter';
+import { getEmailValidationKey, getFriendlyAuthErrorKey, normalizeEmail } from '../lib/authValidation';
 
 const CriarConta: React.FC = () => {
   const [nome, setNome] = useState('');
@@ -39,7 +40,8 @@ const CriarConta: React.FC = () => {
   const validate = (): boolean => {
     const errors: string[] = [];
     if (!nome.trim()) errors.push(t('global.nameRequired'));
-    if (!email.trim()) errors.push(t('global.emailRequired'));
+    const emailErrorKey = getEmailValidationKey(email);
+    if (emailErrorKey) errors.push(t(emailErrorKey));
     if (!password) errors.push(t('global.passwordRequired'));
     else if (password.length < 6) errors.push(t('global.passwordMinLength'));
     if (!confirmPassword) errors.push(t('global.passwordConfirmation'));
@@ -55,23 +57,24 @@ const CriarConta: React.FC = () => {
     setError('');
     setMessage('');
 
-    const { error: signUpError, requiresEmailConfirmation, alreadyRegistered, email: createdEmail } = await signUp(email, password, nome);
+    const normalizedEmail = normalizeEmail(email);
+    const { error: signUpError, requiresEmailConfirmation, alreadyRegistered, email: createdEmail } = await signUp(normalizedEmail, password, nome);
     setLoading(false);
 
     if (signUpError) {
-      setError(signUpError.message || t('auth.errorSignUp'));
+      setError(t(getFriendlyAuthErrorKey(signUpError.message)));
       return;
     }
 
     if (alreadyRegistered) {
       setError(t('auth.accountAlreadyExists'));
-      setConfirmationEmail(createdEmail || email.trim().toLowerCase());
+      setConfirmationEmail(createdEmail || normalizedEmail);
       return;
     }
 
     if (requiresEmailConfirmation) {
       setMessage(t('auth.successSignUpConfirmEmail'));
-      setConfirmationEmail(createdEmail || email.trim().toLowerCase());
+      setConfirmationEmail(createdEmail || normalizedEmail);
     } else {
       setMessage(t('auth.successSignUp'));
       setConfirmationEmail('');
@@ -85,7 +88,7 @@ const CriarConta: React.FC = () => {
   };
 
   const handleResendConfirmation = async () => {
-    const targetEmail = confirmationEmail || email.trim().toLowerCase();
+    const targetEmail = confirmationEmail || normalizeEmail(email);
     if (!targetEmail || resending) return;
 
     setResending(true);
@@ -125,8 +128,9 @@ const CriarConta: React.FC = () => {
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-label-sm font-bold text-on-surface mb-2">{t('global.name')}</label>
+              <label htmlFor="signup-name" className="block text-label-sm font-bold text-on-surface mb-2">{t('global.name')}</label>
               <input
+                id="signup-name"
                 type="text"
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
@@ -135,18 +139,24 @@ const CriarConta: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-label-sm font-bold text-on-surface mb-2">{t('auth.email')}</label>
+              <label htmlFor="signup-email" className="block text-label-sm font-bold text-on-surface mb-2">{t('auth.email')}</label>
               <input
+                id="signup-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="seu@email.com"
+                inputMode="email"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
                 className="w-full h-12 px-4 rounded-2xl border border-outline-variant bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
               />
             </div>
             <div>
-              <label className="block text-label-sm font-bold text-on-surface mb-2">{t('auth.password')}</label>
+              <label htmlFor="signup-password" className="block text-label-sm font-bold text-on-surface mb-2">{t('auth.password')}</label>
               <input
+                id="signup-password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -155,8 +165,9 @@ const CriarConta: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-label-sm font-bold text-on-surface mb-2">{t('global.confirmPassword')}</label>
+              <label htmlFor="signup-confirm-password" className="block text-label-sm font-bold text-on-surface mb-2">{t('global.confirmPassword')}</label>
               <input
+                id="signup-confirm-password"
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}

@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../i18n/LanguageContext';
 import LanguageToggle from '../components/LanguageToggle';
 import PublicFooter from '../components/PublicFooter';
+import { getEmailValidationKey, getFriendlyAuthErrorKey, normalizeEmail } from '../lib/authValidation';
 
 const RecuperarPassword: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -17,7 +18,8 @@ const RecuperarPassword: React.FC = () => {
 
   const validate = (): boolean => {
     const errors: string[] = [];
-    if (!email.trim()) errors.push(t('global.emailRequired'));
+    const emailErrorKey = getEmailValidationKey(email);
+    if (emailErrorKey) errors.push(t(emailErrorKey));
     setValidationErrors(errors);
     return errors.length === 0;
   };
@@ -29,11 +31,11 @@ const RecuperarPassword: React.FC = () => {
     setMessage('');
     setError('');
 
-    const { error: resetError } = await resetPassword(email);
+    const { error: resetError } = await resetPassword(normalizeEmail(email));
     setLoading(false);
 
     if (resetError) {
-      setError(resetError.message || t('auth.errorReset'));
+      setError(t(getFriendlyAuthErrorKey(resetError.message, 'auth.errorReset')));
       return;
     }
 
@@ -64,12 +66,17 @@ const RecuperarPassword: React.FC = () => {
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-label-sm font-bold text-on-surface mb-2">{t('auth.email')}</label>
+              <label htmlFor="reset-email" className="block text-label-sm font-bold text-on-surface mb-2">{t('auth.email')}</label>
               <input
+                id="reset-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="seu@email.com"
+                inputMode="email"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
                 className="w-full h-12 px-4 rounded-2xl border border-outline-variant bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
               />
             </div>
