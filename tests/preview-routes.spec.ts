@@ -26,6 +26,10 @@ const publicRoutes = [
   '/blog',
   '/privacidade',
   '/termos',
+  '/cookies',
+  '/cancelamento',
+  '/seguranca',
+  '/contacto',
 ];
 
 test.describe('CuidarJuntos preview routes', () => {
@@ -173,5 +177,26 @@ test.describe('CuidarJuntos preview routes', () => {
 
     await expect(page.getByRole('link', { name: 'Entrar' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Criar conta' })).toBeVisible();
+  });
+
+  test('footer exposes production-ready support and legal links', async ({ page }) => {
+    await page.goto('/');
+
+    await expect(page.getByRole('contentinfo').getByRole('link', { name: 'Contacto' })).toBeVisible();
+    await expect(page.getByRole('contentinfo').getByRole('link', { name: 'Segurança dos dados' })).toBeVisible();
+    await expect(page.getByRole('contentinfo').getByRole('link', { name: 'Política de cookies' })).toBeVisible();
+    await expect(page.getByRole('contentinfo').getByText('Dados protegidos')).toBeVisible();
+    await expect(page.getByRole('contentinfo').getByText('Pagamentos seguros')).toBeVisible();
+    await expect(page.getByRole('contentinfo').getByText('Cancele quando quiser')).toBeVisible();
+    await expect(page.getByRole('contentinfo').getByText('Supabase')).toHaveCount(0);
+    await expect(page.getByRole('contentinfo').getByText('Vercel')).toHaveCount(0);
+    await expect(page.getByRole('contentinfo').getByText('Resend')).toHaveCount(0);
+  });
+
+  test('legal pages no longer show unfinished review notes', async ({ page }) => {
+    for (const route of ['/privacidade', '/termos', '/cookies', '/cancelamento', '/seguranca', '/contacto']) {
+      await page.goto(route);
+      await expect(page.getByText(/profissional jurídico|legal professional/i)).toHaveCount(0);
+    }
   });
 });

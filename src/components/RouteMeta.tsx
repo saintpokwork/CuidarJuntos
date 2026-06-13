@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-const SITE_URL = 'https://www.cuidarjuntos.pt';
+const SITE_URL = 'https://cuidarjuntos.pt';
 const DEFAULT_TITLE = 'CuidarJuntos — Organize os cuidados da sua família';
 const DEFAULT_DESCRIPTION =
   'CuidarJuntos ajuda famílias portuguesas a organizar medicamentos, consultas, documentos, tarefas e contactos de emergência.';
@@ -26,6 +26,22 @@ const routeMeta: Record<string, { title: string; description: string; index?: bo
   '/termos': {
     title: 'Termos de Utilização — CuidarJuntos',
     description: 'Termos de utilização do CuidarJuntos.',
+  },
+  '/cookies': {
+    title: 'Política de Cookies — CuidarJuntos',
+    description: 'Como o CuidarJuntos usa armazenamento essencial, sessão e análise técnica.',
+  },
+  '/cancelamento': {
+    title: 'Cancelamento e Reembolsos — CuidarJuntos',
+    description: 'Como funcionam os 14 dias grátis, a cobrança, o cancelamento e pedidos de apoio.',
+  },
+  '/seguranca': {
+    title: 'Segurança dos Dados — CuidarJuntos',
+    description: 'Como protegemos contas, documentos, família, pagamentos e dados de cuidado.',
+  },
+  '/contacto': {
+    title: 'Contacto — CuidarJuntos',
+    description: 'Contacte o suporte CuidarJuntos para conta, faturação, privacidade, documentos ou convites.',
   },
   '/entrar': {
     title: 'Entrar — CuidarJuntos',

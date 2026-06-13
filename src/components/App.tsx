@@ -16,6 +16,10 @@ import Definicoes from '../pages/Definicoes';
 import Mais from '../pages/Mais';
 import Privacidade from '../pages/Privacidade';
 import Termos from '../pages/Termos';
+import Cookies from '../pages/Cookies';
+import Cancelamento from '../pages/Cancelamento';
+import Seguranca from '../pages/Seguranca';
+import Contacto from '../pages/Contacto';
 import NotFound from '../pages/NotFound';
 import ComoFunciona from '../pages/ComoFunciona';
 import Guia from '../pages/Guia';
@@ -52,6 +56,10 @@ const AppRoutes: React.FC = () => {
         <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/privacidade" element={<Privacidade />} />
         <Route path="/termos" element={<Termos />} />
+        <Route path="/cookies" element={<Cookies />} />
+        <Route path="/cancelamento" element={<Cancelamento />} />
+        <Route path="/seguranca" element={<Seguranca />} />
+        <Route path="/contacto" element={<Contacto />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard/guia" element={<Guia />} />
         <Route path="/dashboard/mais" element={<Mais />} />
