@@ -97,7 +97,7 @@ const CriarConta: React.FC = () => {
     setResending(false);
 
     if (resendError) {
-      setError(resendError.message || t('auth.errorResendConfirmation'));
+      setError(t(getFriendlyAuthErrorKey(resendError.message, 'auth.errorResendConfirmation')));
       return;
     }
 

@@ -50,10 +50,10 @@ const Home: React.FC = () => {
           </div>
           <div className="flex items-center gap-4">
             <LanguageToggle variant="light" />
-            <Link className="hidden md:block text-primary font-bold hover:text-primary-container transition-colors font-label-md text-label-md" to="/entrar">
+            <Link className="text-primary font-bold hover:text-primary-container transition-colors font-label-md text-label-sm sm:text-label-md whitespace-nowrap" to="/entrar">
               {t('global.signIn')}
             </Link>
-            <Link className="bg-primary text-on-primary px-6 py-2.5 rounded-full font-label-md text-label-md shadow-sm hover:scale-105 active:scale-95 transition-all" to="/criar-conta">
+            <Link className="bg-primary text-on-primary px-4 sm:px-6 py-2.5 rounded-full font-label-md text-label-sm sm:text-label-md shadow-sm hover:scale-105 active:scale-95 transition-all whitespace-nowrap" to="/criar-conta">
               {t('global.createAccount')}
             </Link>
           </div>

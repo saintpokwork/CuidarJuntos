@@ -21,5 +21,8 @@ describe('authValidation', () => {
   it('maps provider email sending failures to a friendly translation key', () => {
     expect(getFriendlyAuthErrorKey('Error sending confirmation email')).toBe('auth.confirmationEmailFailed');
     expect(getFriendlyAuthErrorKey('confirmation_email_failed')).toBe('auth.confirmationEmailFailed');
+    expect(getFriendlyAuthErrorKey('resend_rejected')).toBe('auth.confirmationEmailRejected');
+    expect(getFriendlyAuthErrorKey('account_already_confirmed')).toBe('auth.accountAlreadyConfirmed');
+    expect(getFriendlyAuthErrorKey('account_not_found')).toBe('auth.accountNotFound');
   });
 });

@@ -162,6 +162,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     const normalizedEmail = normalizeEmail(email);
+    if (typeof window !== 'undefined') {
+      try {
+        const response = await fetch('/api/resend-confirmation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: normalizedEmail }),
+        });
+        const contentType = response.headers.get('content-type') || '';
+
+        if (contentType.includes('application/json')) {
+          const body = await response.json();
+          if (response.ok) return { error: null };
+          if (body.error !== 'signup_not_configured') {
+            return { error: new Error(body.error || 'error_resend_confirmation') };
+          }
+        }
+      } catch (apiError) {
+        if (import.meta.env.PROD) {
+          return { error: apiError instanceof Error ? apiError : new Error('error_resend_confirmation') };
+        }
+      }
+    }
+
     const emailRedirectTo = typeof window !== 'undefined' ? `${window.location.origin}/entrar?confirmed=1` : undefined;
     const { error } = await supabase.auth.resend({
       type: 'signup',

@@ -27,6 +27,12 @@ export const getFriendlyAuthErrorKey = (message?: string, fallbackKey = 'auth.er
   if (normalized === 'invalid_email') return 'auth.invalidEmailFormat';
   if (normalized === 'weak_password') return 'global.passwordMinLength';
   if (normalized === 'confirmation_email_failed') return 'auth.confirmationEmailFailed';
+  if (normalized === 'resend_rejected') return 'auth.confirmationEmailRejected';
+  if (normalized === 'supabase_link_failed') return 'auth.confirmationLinkFailed';
+  if (normalized === 'supabase_lookup_failed') return 'auth.errorSignUp';
+  if (normalized === 'unconfirmed_account_recovery_failed') return 'auth.unconfirmedRecoveryFailed';
+  if (normalized === 'account_already_confirmed') return 'auth.accountAlreadyConfirmed';
+  if (normalized === 'account_not_found') return 'auth.accountNotFound';
   if (normalized === 'account_exists') return 'auth.accountAlreadyExists';
   if (normalized.includes('error sending confirmation')) return 'auth.confirmationEmailFailed';
   if (normalized.includes('invalid email')) return 'auth.invalidEmailFormat';

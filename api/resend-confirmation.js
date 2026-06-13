@@ -15,7 +15,7 @@ const {
 } = require('./_auth-email');
 
 const logError = (requestId, step, error) => {
-  console.error(`[create-account] ${requestId} ${step}:`, error?.message || error);
+  console.error(`[resend-confirmation] ${requestId} ${step}:`, error?.message || error);
 };
 
 module.exports = async (req, res) => {
@@ -33,18 +33,13 @@ module.exports = async (req, res) => {
 
   const payload = parseBody(req.body);
   const email = normalizeEmail(payload.email);
-  const password = String(payload.password || '');
   const name = String(payload.name || '').trim();
 
   if (!validateEmail(email)) {
     return json(res, 400, { error: 'invalid_email', requestId });
   }
-  if (password.length < 6) {
-    return json(res, 400, { error: 'weak_password', requestId });
-  }
 
   const supabaseAdmin = createSupabaseAdmin(config);
-  const redirectTo = getRedirectTo(req);
   const existing = await findUserByEmail(supabaseAdmin, email);
 
   if (existing.error) {
@@ -52,29 +47,24 @@ module.exports = async (req, res) => {
     return json(res, 500, { error: 'supabase_lookup_failed', requestId, email });
   }
 
-  if (existing.user && isEmailConfirmed(existing.user)) {
-    return json(res, 409, { error: 'account_exists', requestId, email });
+  if (!existing.user) {
+    return json(res, 404, { error: 'account_not_found', requestId, email });
   }
 
-  if (existing.user && !isEmailConfirmed(existing.user)) {
-    const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(existing.user.id);
-    if (deleteError) {
-      logError(requestId, 'delete_unconfirmed_user_failed', deleteError);
-      return json(res, 409, { error: 'unconfirmed_account_recovery_failed', requestId, email });
-    }
+  if (isEmailConfirmed(existing.user)) {
+    return json(res, 409, { error: 'account_already_confirmed', requestId, email });
   }
 
   const link = await getActionLink({
     supabaseAdmin,
-    type: 'signup',
+    type: 'magiclink',
     email,
-    password,
     name,
-    redirectTo,
+    redirectTo: getRedirectTo(req),
   });
 
   if (link.error) {
-    logError(requestId, 'generate_signup_link_failed', link.error);
+    logError(requestId, 'generate_magic_link_failed', link.error);
     return json(res, 500, { error: 'supabase_link_failed', requestId, email });
   }
 
@@ -93,7 +83,6 @@ module.exports = async (req, res) => {
 
   return json(res, 200, {
     ok: true,
-    requiresEmailConfirmation: true,
     email,
     requestId,
   });

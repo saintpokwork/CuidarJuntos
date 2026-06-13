@@ -144,4 +144,19 @@ test.describe('CuidarJuntos preview routes', () => {
     await expect(page.getByText(/Verifique o domínio do email/)).toBeVisible();
     await expect(page.getByText(/Error sending confirmation email/)).toHaveCount(0);
   });
+
+  test('mobile home exposes both sign in and create account actions', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/');
+
+    await expect(page.getByRole('link', { name: 'Entrar' }).first()).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Criar conta' }).first()).toBeVisible();
+  });
+
+  test('demo dashboard exposes sign in and create account actions', async ({ page }) => {
+    await page.goto('/dashboard');
+
+    await expect(page.getByRole('link', { name: 'Entrar' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Criar conta' })).toBeVisible();
+  });
 });
